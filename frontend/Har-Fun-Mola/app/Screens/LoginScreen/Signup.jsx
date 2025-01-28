@@ -1,15 +1,16 @@
 import { useState } from 'react';
-import { View, Text, TextInput, TouchableOpacity, StyleSheet, Image, ScrollView, Alert, KeyboardAvoidingView, Platform } from 'react-native';
+import { View, Text, Button, TextInput, TouchableOpacity, StyleSheet, Image, ScrollView, Alert, KeyboardAvoidingView, Platform } from 'react-native';
+import * as ImagePicker from 'expo-image-picker'; // Import Image Picker
 import { useNavigation } from '@react-navigation/native';
 import axios from 'axios';
 import Colors from '@/constants/Colors';
 import { userBaseUrl } from '../../URL/userBaseUrl.js';
 import { useDispatch } from 'react-redux';
-import { setUser } from '../../redux/authSlice.js'; // Import the Redux action
+import { setUser } from '../../redux/authSlice.js';
 
 const Signup = () => {
     const navigation = useNavigation();
-    const dispatch = useDispatch(); // Initialize dispatch to call Redux actions
+    const dispatch = useDispatch();
 
     const [fullName, setFullName] = useState('');
     const [email, setEmail] = useState('');
@@ -18,40 +19,64 @@ const Signup = () => {
     const [role, setRole] = useState('Service User');
     const [city, setCity] = useState('Rawalpindi');
     const [area, setArea] = useState('');
+    const [selectedImage, setSelectedImage] = useState(null);
+
+    const pickImage = async () => {
+        const permissionResult = await ImagePicker.requestMediaLibraryPermissionsAsync();
+        if (permissionResult.granted === false) {
+            Alert.alert('Permission Denied', 'You need to allow access to your photos.');
+            return;
+        }
+
+        const result = await ImagePicker.launchImageLibraryAsync({
+            mediaTypes: ['images'],
+            allowsEditing: true,
+            aspect: [1, 1],
+            quality: 1,
+        });
+
+        if (!result.canceled) {
+            setSelectedImage(result.assets[0].uri);
+        }
+    };
 
     const handleSignup = async () => {
         try {
-            // Validate input fields
             if (!fullName || !email || !phoneNumber || !password || !area) {
                 Alert.alert('Error', 'All fields are required');
                 return;
             }
 
-            const data = {
-                fullName,
-                email,
-                phoneNumber,
-                password,
-                role,
-                city,
-                area,
-            };
+            const formData = new FormData();
+            formData.append('fullName', fullName);
+            formData.append('email', email);
+            formData.append('phoneNumber', phoneNumber);
+            formData.append('password', password);
+            formData.append('role', role);
+            formData.append('city', city);
+            formData.append('area', area);
 
-            // Send signup data to backend
-            const response = await axios.post(`${userBaseUrl}/register`, data, {
+            if (selectedImage) {
+                const fileName = selectedImage.split('/').pop();
+                const fileType = fileName.split('.').pop();
+
+                formData.append('file', {
+                    uri: selectedImage,
+                    name: fileName,
+                    type: `image/${fileType}`,
+                });
+            }
+
+            const response = await axios.post(`${userBaseUrl}/register`, formData, {
                 headers: {
-                    'Content-Type': 'application/json',
+                    'Content-Type': 'multipart/form-data',
                 },
             });
 
-            // Handle success
             if (response.data.success) {
                 Alert.alert(response.data.message, 'Verify your email');
-
-                // Save user data to Redux
-                dispatch(setUser(response.data.newUser)); // Save the user in Redux
-
-                navigation.push('EmailOTPScreen'); // Redirect to OTP verification screen
+                dispatch(setUser(response.data.newUser));
+                navigation.push('EmailOTPScreen');
             } else {
                 Alert.alert('Signup Failed', response.data.message);
             }
@@ -68,21 +93,17 @@ const Signup = () => {
     return (
         <KeyboardAvoidingView
             style={{ flex: 1 }}
-            behavior={Platform.OS === 'ios' ? 'padding' : 'height'} // Adjust behavior based on platform
-            keyboardVerticalOffset={60} // Offset for better placement
+            behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+            keyboardVerticalOffset={60}
         >
             <ScrollView contentContainerStyle={styles.scrollContainer} keyboardShouldPersistTaps="handled">
                 <View style={styles.container}>
-                    {/* Logo Section */}
                     <View style={styles.logoContainer}>
                         <Image source={require('../../../assets/images/logohmtr.png')} style={styles.logo} />
                     </View>
-
-                    {/* Signup Title */}
                     <Text style={styles.title}>Sign Up</Text>
                     <Text style={styles.subtitle}>Create your account to get started</Text>
 
-                    {/* Input Fields */}
                     <View style={styles.inputContainer}>
                         <TextInput
                             placeholder="Full Name"
@@ -122,7 +143,6 @@ const Signup = () => {
                             onChangeText={(text) => setArea(text)}
                         />
 
-                        {/* Role Selector */}
                         <View style={styles.radioButtons}>
                             <Text style={styles.inputLabel}>Role</Text>
                             <TouchableOpacity
@@ -143,7 +163,6 @@ const Signup = () => {
                             </TouchableOpacity>
                         </View>
 
-                        {/* City Selector */}
                         <View style={styles.radioButtons}>
                             <Text style={styles.inputLabel}>City</Text>
                             <TouchableOpacity
@@ -171,14 +190,21 @@ const Signup = () => {
                                 </Text>
                             </TouchableOpacity>
                         </View>
+
+                        <TouchableOpacity style={styles.imagePickerButton} onPress={pickImage}>
+                            <Text style={styles.imagePickerText}>
+                                Pick a Profile Picture
+                            </Text>
+                        </TouchableOpacity>
+                        {selectedImage && (
+                            <Image source={{ uri: selectedImage }} style={styles.previewImage} />
+                        )}
                     </View>
 
-                    {/* Signup Button */}
                     <TouchableOpacity style={styles.signupButton} onPress={handleSignup}>
                         <Text style={styles.signupText}>Sign Up</Text>
                     </TouchableOpacity>
 
-                    {/* Already have an account? Login */}
                     <TouchableOpacity>
                         <Text style={styles.loginText}>
                             Already have an account?{' '}
@@ -194,6 +220,7 @@ const Signup = () => {
 };
 
 const styles = StyleSheet.create({
+    // Same styles as before
     container: {
         flex: 1,
         backgroundColor: '#F9F9F9',
@@ -208,7 +235,7 @@ const styles = StyleSheet.create({
     logo: {
         width: 200, // Adjusted size to fit better
         height: 200,
-        marginBottom:-50,
+        marginBottom: -50,
         resizeMode: 'contain', // Ensures proper scaling
     },
     title: {
@@ -296,7 +323,25 @@ const styles = StyleSheet.create({
         justifyContent: 'center',
         paddingBottom: 20, // Added padding for better alignment
     },
+    imagePickerButton: {
+        backgroundColor: '#ddd',
+        paddingVertical: 12,
+        borderRadius: 8,
+        alignItems: 'center',
+        marginTop: 10,
+    },
+    imagePickerText: {
+        color: '#333',
+        fontSize: 14,
+        fontWeight: 'bold',
+    },
+    previewImage: {
+        width: 100,
+        height: 100,
+        borderRadius: 50,
+        marginTop: 10,
+        alignSelf: 'center',
+    },
 });
-
 
 export default Signup;

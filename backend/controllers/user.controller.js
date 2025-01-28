@@ -25,22 +25,29 @@ export const register = async (req, res) => {
                 success: false,
             });
         }
+
         let profilePic = null;
         let file = req.file;
 
         if (file) {
-            // Convert the file to a data URI using getDataUri
-            const fileUri = getDataUri(file);
+            try {
+                // Convert the file to a data URI
+                const fileUri = getDataUri(file);
 
-            // Upload the image to Cloudinary in the 'userprofilepic' folder
-            const cloudResponse = await cloudinary.uploader.upload(fileUri.content, {
-                folder: 'userprofilepic', // Specify the folder
-            });
+                // Upload the image to Cloudinary
+                const cloudResponse = await cloudinary.uploader.upload(fileUri.content, {
+                    folder: 'userprofilepic', // Specify the folder
+                });
 
-            // Save the Cloudinary URL for the profile picture
-            profilePic = cloudResponse.secure_url;
+                // Save the Cloudinary URL for the profile picture
+                profilePic = cloudResponse.secure_url;
+                
+            } catch (error) {
+                console.error('Error uploading profile picture to Cloudinary:', error);
+                // Optional: Set a default profile picture or handle this case
+                profilePic = null;
+            }
         }
-
         // Update user profile in the database (example logic)
         // const user = await User.findByIdAndUpdate(
         //     req.user._id,
@@ -70,7 +77,7 @@ export const register = async (req, res) => {
             verificationCode,
             area,
             profile: { // Add profile picture if available
-                // profilePic,
+                profilePic,
                 bio
             },
         });
