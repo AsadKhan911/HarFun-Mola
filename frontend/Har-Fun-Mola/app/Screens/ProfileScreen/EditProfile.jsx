@@ -1,5 +1,18 @@
 import React, { useState } from 'react';
-import { View, Text, TextInput, StyleSheet, Image, ScrollView, TouchableOpacity, Alert, KeyboardAvoidingView, Platform } from 'react-native';
+import {
+    View,
+    Text,
+    TextInput,
+    StyleSheet,
+    Image,
+    ScrollView,
+    TouchableOpacity,
+    Alert,
+    KeyboardAvoidingView,
+    Platform,
+    ActivityIndicator
+} from 'react-native';
+import * as ImagePicker from 'expo-image-picker'; // Import ImagePicker
 import { useSelector, useDispatch } from 'react-redux';
 import { Ionicons } from '@expo/vector-icons';
 import Colors from '../../../constants/Colors';
@@ -12,8 +25,11 @@ import ModalDropdown from 'react-native-modal-dropdown';
 const EditProfile = () => {
     const navigation = useNavigation();
     const dispatch = useDispatch();
+    const [loading , setLoading ] = useState(false)
 
-    const { fullName, email, phoneNumber, profilePic, profile, area, city, token } = useSelector(state => state?.auth?.user || {});
+    const { fullName, email, phoneNumber, profilePic, profile, area, city, token } = useSelector(
+        (state) => state?.auth?.user || {}
+    );
 
     const [formData, setFormData] = useState({
         fullName: fullName || '',
@@ -21,20 +37,63 @@ const EditProfile = () => {
         bio: profile.bio || '',
         city: city || '',
         area: area || '',
+        profilePic: profilePic || '',
     });
 
+    const [selectedImage, setSelectedImage] = useState(profilePic); // Store selected profile picture
+
     const handleInputChange = (name, value) => {
-        setFormData(prevState => ({
+        setFormData((prevState) => ({
             ...prevState,
             [name]: value,
         }));
     };
 
+    const pickImage = async () => {
+        const permissionResult = await ImagePicker.requestMediaLibraryPermissionsAsync();
+
+        if (permissionResult.granted === false) {
+            Alert.alert('Permission required', 'Permission to access camera roll is required.');
+            return;
+        }
+
+        const result = await ImagePicker.launchImageLibraryAsync({
+            mediaTypes: ['images'],
+            allowsEditing: true,
+            aspect: [1, 1],
+            quality: 1,
+        });
+
+        if (!result.canceled) {
+            setSelectedImage(result.assets[0].uri); // Set the selected image URI
+        }
+    };
+
     const handleSave = async () => {
+        const formDataToSend = new FormData();
+        formDataToSend.append('fullName', formData.fullName);
+        formDataToSend.append('phoneNumber', formData.phoneNumber);
+        formDataToSend.append('bio', formData.bio);
+        formDataToSend.append('city', formData.city);
+        formDataToSend.append('area', formData.area);
+
+        if (selectedImage) {
+            const fileName = selectedImage.split('/').pop();
+            const fileType = fileName.split('.').pop();
+
+            formDataToSend.append('file', {
+                uri: selectedImage,
+                name: fileName,
+                type: `image/${fileType}`,
+            });
+        }
+
         try {
-            const response = await axios.put(`${userBaseUrl}/profile/update`, formData, {
+            setLoading(true)
+            const response = await axios.put(`${userBaseUrl}/profile/update`, formDataToSend, {
                 headers: {
                     Authorization: `Bearer ${token}`,
+                    'Content-Type': 'multipart/form-data', // Ensure proper headers for file upload
                 },
             });
 
@@ -49,13 +108,16 @@ const EditProfile = () => {
             console.error('Error:', error);
             Alert.alert('Error updating profile', 'An error occurred while updating your profile.');
         }
+        finally{
+            setLoading(false)
+        }
     };
 
     return (
         <KeyboardAvoidingView
             style={{ flex: 1 }}
             behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-            keyboardVerticalOffset={Platform.OS === 'ios' ? 60 : 0} // For iOS, add a vertical offset to prevent the keyboard from overlapping
+            keyboardVerticalOffset={Platform.OS === 'ios' ? 60 : 0}
         >
             <ScrollView contentContainerStyle={{ flexGrow: 1, backgroundColor: Colors.LIGHT_GRAY }}>
                 <View style={styles.headerContainer}>
@@ -67,7 +129,13 @@ const EditProfile = () => {
 
                 <View style={styles.card}>
                     <View style={styles.innerContainer}>
-                        <Image source={require('../../../assets/images/mypic.png')} style={styles.imgStyle} />
+                        <TouchableOpacity onPress={pickImage}>
+                            <Image 
+                                source={selectedImage ? { uri: selectedImage } : {uri:profile?.profilePic}}
+                                style={styles.imgStyle}
+                            />
+                        </TouchableOpacity>
+                        <Text style={styles.changePhotoText}>Change Profile Picture</Text>
                     </View>
 
                     <View style={styles.formContainer}>
@@ -75,13 +143,13 @@ const EditProfile = () => {
                             style={styles.input}
                             placeholder="Full Name"
                             value={formData.fullName}
-                            onChangeText={value => handleInputChange('fullName', value)}
+                            onChangeText={(value) => handleInputChange('fullName', value)}
                         />
                         <TextInput
                             style={styles.input}
                             placeholder="Phone Number"
                             value={formData.phoneNumber}
-                            onChangeText={value => handleInputChange('phoneNumber', value)}
+                            onChangeText={(value) => handleInputChange('phoneNumber', value)}
                             keyboardType="phone-pad"
                         />
 
@@ -98,14 +166,14 @@ const EditProfile = () => {
                             style={styles.input}
                             placeholder="Area"
                             value={formData.area}
-                            onChangeText={value => handleInputChange('area', value)}
+                            onChangeText={(value) => handleInputChange('area', value)}
                         />
 
                         <TextInput
                             style={styles.textArea}
                             placeholder="About Me"
                             value={formData.bio}
-                            onChangeText={value => handleInputChange('bio', value)}
+                            onChangeText={(value) => handleInputChange('bio', value)}
                             multiline
                             numberOfLines={4}
                         />
@@ -113,7 +181,7 @@ const EditProfile = () => {
                 </View>
 
                 <TouchableOpacity style={styles.saveButton} onPress={handleSave}>
-                    <Text style={styles.saveButtonText}>Save Changes</Text>
+                    <Text style={styles.saveButtonText}>{!loading ? "Save Changes" :  <ActivityIndicator color="white"/>}</Text>
                 </TouchableOpacity>
             </ScrollView>
         </KeyboardAvoidingView>
@@ -233,6 +301,12 @@ const styles = StyleSheet.create({
         fontFamily: 'outfit-bold',
         color: Colors.WHITE,
         textTransform: 'uppercase',
+    },
+    changePhotoText: {
+        marginTop: 10,
+        fontSize: 14,
+        fontFamily: 'outfit',
+        color: Colors.PRIMARY,
     },
 });
 

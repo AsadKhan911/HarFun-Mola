@@ -9,6 +9,6 @@ router.route('/register').post(singleUpload , register)
 router.route('/verifyemail').post(VerifyEmail)
 router.route('/resend').post(resendOTP)
 router.route('/login').post(login)
-router.route('/profile/update').put(isAuthenticated , updateProfile)
+router.route('/profile/update').put(isAuthenticated , singleUpload , updateProfile)
 
 export default router

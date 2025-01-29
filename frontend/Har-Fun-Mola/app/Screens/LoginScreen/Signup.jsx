@@ -24,7 +24,7 @@ const Signup = () => {
     const pickImage = async () => {
         const permissionResult = await ImagePicker.requestMediaLibraryPermissionsAsync();
         if (permissionResult.granted === false) {
-            Alert.alert('Permission Denied', 'You need to allow access to your photos.');
+            Alert.alert('Permission Denied', 'Permission to access camera roll is required.');
             return;
         }
 

@@ -26,7 +26,7 @@ const ViewProfile = () => {
       <View style={styles.card}>
         {/* User Profile Info */}
         <View style={styles.innerContainer}>
-          <Image source={require('../../../assets/images/mypic.png')} style={styles.imgStyle} />
+          <Image source={{uri:profile?.profilePic}} style={styles.imgStyle} />
           <Text style={styles.userName}>{fullName}</Text>
           <Text style={styles.email}>{email}</Text>
           <View style={styles.badgeContainer}>

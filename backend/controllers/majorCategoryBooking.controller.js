@@ -4,6 +4,38 @@ import { Booking } from "../models/MajorListings/booking.js"; // Importing the B
 import { serviceListings } from "../models/MajorListings/servicesListings.js"; // Importing the serviceListings model
 import { User } from "../models/User/user.js"; // Importing the User model
 
+export const getAllBookings = async (req, res) => {
+  const userId = req.id; // Assuming userId is passed as a URL parameter
+  
+  try {
+    const bookings = await Booking.find({ user: userId })
+      .populate({
+        path: "service", // Populates the `service` field in Booking
+        select: "serviceName price created_by location", // Include these fields from `majorListing`
+        populate: { // Nested population for `created_by`
+          path: "created_by",
+          select: "profile fullName" // The field in `majorListing` referencing `user`
+        },
+      })
+      .populate("user", "fullName email") // Populates the `user` field in Booking
+      .sort({ createdAt: -1 }); // Sort by latest booking
+
+    // If no bookings found
+    if (!bookings.length) {
+      return res.status(404).json({ message: "No bookings found for this user." });
+    }
+
+    res.status(200).json({
+      success: true,
+      bookings,
+    });
+  } catch (error) {
+    console.error("Error fetching bookings:", error);
+    res.status(500).json({ message: "An error occurred while fetching bookings.", error });
+  }
+};
+
+
 export const BookServiceListingByListingId = async (req, res) => {
     try {
         const { serviceListingId } = req.params; // Service listing ID from the URL parameter

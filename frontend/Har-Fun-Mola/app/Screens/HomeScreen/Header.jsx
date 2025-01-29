@@ -5,7 +5,7 @@ import { useSelector } from 'react-redux';
 
 export const Header = () => {
   //Fetchind user data from redux
-  const fullName = useSelector(state => state.auth.user?.fullName); // Get fullName from Redux
+  const {fullName , profile} = useSelector(state => state.auth.user); // Get fullName from Redux
 
   return (
     <View style={styles.container}>
@@ -13,7 +13,7 @@ export const Header = () => {
       <View style={styles.profileMainContainer}>
         <View style={styles.profileContainer}>
           {/* <Image source={{uri:user?.imageUrl}} */}
-          <Image source={require('../../../assets/images/mypic.png')}
+          <Image source={{uri:profile?.profilePic}}
             style={styles.userImage} />
 
           <View>

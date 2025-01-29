@@ -1,13 +1,14 @@
 // import React from 'react';
-import { Provider } from 'react-redux';
-import store from '../redux/store.js'; // Make sure the path to your store is correct
 import LoginNavigation from '../Navigations/LoginNavigation';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useEffect, useState } from 'react';
-// import HomeNavigation from '../Navigations/HomeNavigation.jsx'
 import { useFonts } from 'expo-font';
 import TabNavigation from '../Navigations/TabNavigation.jsx'
 import { LogBox } from 'react-native';
+import { GestureHandlerRootView } from 'react-native-gesture-handler';
+import { Provider } from 'react-redux';
+import { store,persistor } from '../redux/store.js'; // Make sure the path to your store is correct
+import { PersistGate } from 'redux-persist/integration/react';
 
 const Index = () => {
   
@@ -39,9 +40,13 @@ const Index = () => {
 
   
   return (
+    <GestureHandlerRootView style={{ flex: 1 }}>
     <Provider store={store}>
+      <PersistGate loading={null} persistor={persistor}>
       {isLoggedIn  ? <TabNavigation /> :  <LoginNavigation />  }
+      </PersistGate>
     </Provider>
+    </GestureHandlerRootView>
   );
 }
 

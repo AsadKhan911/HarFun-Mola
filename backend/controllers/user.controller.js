@@ -180,7 +180,7 @@ export const login = async (req, res) => {
         const tokenData = {
             userID: user._id
         }
-        const token = await jwt.sign(tokenData, process.env.SECRET_KEY, { expiresIn: '1d' })
+        const token = jwt.sign(tokenData, process.env.SECRET_KEY, { expiresIn: '1d' })
 
         user = {
             _id: user._id,
@@ -211,22 +211,19 @@ export const login = async (req, res) => {
 export const updateProfile = async (req, res) => {
     try {
         const { fullName, email, phoneNumber, role, city, area, bio } = req.body;
-        // const file = req.file; // If you're handling files, but not in this snippet
-        // //Cloudinary
-        // const fileUri = getDataUri(file)
-        // const cloudResponse = await cloudinary.uploader.upload(fileUri.content)
-
+        const file = req.file; // Handle file upload
         const userID = req.id; // Comes from middleware authentication
+
         let user = await User.findById(userID);
 
         if (!user) {
             return res.status(400).json({
                 message: "User not found",
-                success: false // This should be false if the user is not found
+                success: false,
             });
         }
 
-        // The purpose of these ifs is that the user can update one key or all
+        // Update user fields if provided
         if (fullName) user.fullName = fullName;
         if (email) user.email = email;
         if (phoneNumber) user.phoneNumber = phoneNumber;
@@ -235,14 +232,15 @@ export const updateProfile = async (req, res) => {
         if (area) user.area = area;
         if (bio) user.profile.bio = bio;
 
-        // if (cloudResponse) {
-        //     user.profile.resume = cloudResponse.secure_url //save the cloudinary url
-        //     // user.profile.resume = file.originalname //save the orignal file name
-        // }
+        // If a file is provided, upload it to Cloudinary
+        if (file) {
+            const fileUri = getDataUri(file);
+            const cloudResponse = await cloudinary.uploader.upload(fileUri.content);
+            user.profile.profilePic = cloudResponse.secure_url; // Save the Cloudinary URL
+        }
 
         await user.save();
 
-        // Return the updated user details
         return res.status(200).json({
             message: "Profile updated successfully",
             updatedUser: {
@@ -256,15 +254,15 @@ export const updateProfile = async (req, res) => {
                 bio: user.profile.bio,
                 isEmailVerified: user.isEmailVerified,
                 isDocVerified: user.isDocVerified,
-                profile: user.profile
+                profile: user.profile,
             },
-            success: true
+            success: true,
         });
     } catch (error) {
         console.error("Error updating profile:", error);
         return res.status(500).json({
             message: "Internal server error",
-            success: false
+            success: false,
         });
     }
 };

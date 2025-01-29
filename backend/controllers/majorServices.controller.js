@@ -9,8 +9,7 @@ export const postListing = async (req, res) => {
     try {
         // Destructure the required fields from req.body
         const { serviceName, description, price, location, categoryId } = req.body;
-        const userID = req.id;  // Assuming req.id is the authenticated user's ID
-        console.log(userID)
+        const userID = req.id;  
 
         // Check for missing fields
         if (!serviceName || !description || !price || !location || !categoryId) {
@@ -31,19 +30,19 @@ export const postListing = async (req, res) => {
 
         // If a file is uploaded, handle it
         let Listingpicture = "";  // Default to an empty string if no picture is uploaded
-        if (req.file) {
-            // Convert file to Data URI
-            const fileUri = getDataUri(req.file);  // Get the Data URI
+        // if (req.file) {
+        //     // Convert file to Data URI
+        //     const fileUri = getDataUri(req.file);  // Get the Data URI
 
-            // Upload the image to Cloudinary
-            const cloudResponse = await cloudinary.uploader.upload(fileUri.content, {
-                folder: 'majorserviceListings',  // Specify folder in Cloudinary
-                resource_type: 'image'  // Specify resource type
-            });
+        //     // Upload the image to Cloudinary
+        //     const cloudResponse = await cloudinary.uploader.upload(fileUri.content, {
+        //         folder: 'majorserviceListings',  // Specify folder in Cloudinary
+        //         resource_type: 'image'  // Specify resource type
+        //     });
 
-            // Get the secure URL for the uploaded image
-            Listingpicture = cloudResponse.secure_url;
-        }
+        //     // Get the secure URL for the uploaded image
+        //     Listingpicture = cloudResponse.secure_url;
+        // }
 
         // Create a new service listing
         const listing = await serviceListings.create({

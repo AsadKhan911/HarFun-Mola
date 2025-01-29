@@ -9,8 +9,7 @@ import axios from 'axios';
 import { useNavigation } from '@react-navigation/native';
 
 const Profile = () => {
-  const fullName = useSelector(state => state.auth.user?.fullName);
-  const role = useSelector(state => state.auth.user?.role); // Get the role from the Redux state
+  const {user} = useSelector(store => store.auth)
 
   const profileMenu = [
     { id: 1, name: 'View Profile', icon: 'person' },
@@ -71,12 +70,12 @@ const Profile = () => {
 
       {/* User Profile Info */}
       <View style={styles.innerContainer}>
-        <Image source={require('../../../assets/images/mypic.png')} style={styles.imgStyle} />
-        <Text style={styles.userName}>{fullName}</Text>
+        <Image source={{uri:user?.profile?.profilePic}} style={styles.imgStyle} />
+        <Text style={styles.userName}>{user?.fullName}</Text>
 
         {/* Role Badge */}
         <View style={styles.roleBadgeContainer}>
-          <Text style={styles.roleBadge}>{role}</Text>
+          <Text style={styles.roleBadge}>{user?.role}</Text>
         </View>
       </View>
 

@@ -11,7 +11,7 @@ const isAuthenticated = (req, res, next) => {
             });
         }
 
-        const refineToken = authorization.replace("Bearer ", ""); // removing "Bearer " from token header
+        const refineToken = authorization.replace("Bearer ", ""); // removing "Bearer " from token header , replacing bearer with empty space
 
         // JWT token verification
         const decode = jwt.verify(refineToken, process.env.SECRET_KEY);
