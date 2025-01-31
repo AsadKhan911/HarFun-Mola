@@ -1,4 +1,4 @@
-import { View, Text, Image, StyleSheet } from 'react-native';
+import { View } from 'react-native';
 import {Header} from '../HomeScreen/Header.jsx';
 import {Slider} from '../HomeScreen/Slider.jsx';
 import {Categories} from '../HomeScreen/Categories.jsx';

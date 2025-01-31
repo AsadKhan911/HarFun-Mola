@@ -1,12 +1,12 @@
-import React from 'react';
 import { View, Text, StyleSheet, FlatList, TouchableOpacity, Image, ScrollView, Alert } from 'react-native';
-import { useSelector } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { Ionicons } from '@expo/vector-icons';
 import Colors from '../../../constants/Colors.ts';
 import { LinearGradient } from 'expo-linear-gradient';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import axios from 'axios';
 import { useNavigation } from '@react-navigation/native';
+import { logout } from '@/app/redux/authSlice.js';
 
 const Profile = () => {
   const {user} = useSelector(store => store.auth)
@@ -18,6 +18,7 @@ const Profile = () => {
   ];
 
   const navigation = useNavigation();
+  const dispatch = useDispatch();
 
   const handleLogout = async () => {
     try {
@@ -26,12 +27,16 @@ const Profile = () => {
   
       // Remove the Authorization header from axios interceptor
       delete axios.defaults.headers['Authorization'];
+
   
       // Show a success alert
       Alert.alert("Logged out", "You have been logged out successfully.");
   
+      dispatch(logout()); //making user state null
+
       // Redirect the user to the login screen or home screen
-      navigation.replace('Login'); // Adjust the screen as needed
+      navigation.replace('Login'); 
+
     } catch (error) {
       console.error("Logout error:", error);
       Alert.alert("Error", "Something went wrong. Please try again.");

@@ -1,12 +1,12 @@
 // import React from 'react';
-import LoginNavigation from '../Navigations/LoginNavigation';
+import LoginNavigation from '../Navigations/AuthNavigation/LoginNavigation.jsx';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useEffect, useState } from 'react';
 import { useFonts } from 'expo-font';
-import TabNavigation from '../Navigations/TabNavigation.jsx'
+import TabNavigation from '../Navigations/ServiceUser/TabNavigation.jsx'
 import { LogBox } from 'react-native';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
-import { Provider } from 'react-redux';
+import { Provider, useSelector } from 'react-redux';
 import { store,persistor } from '../redux/store.js'; // Make sure the path to your store is correct
 import { PersistGate } from 'redux-persist/integration/react';
 

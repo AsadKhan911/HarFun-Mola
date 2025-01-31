@@ -1,8 +1,8 @@
 //This navigation section is for when we click on category on home , it redirects to new screen.
-import Home from '../Screens/HomeScreen/HomeScreen.jsx'
+import Home from '../../Screens/HomeScreen/HomeScreen.jsx'
 import { createStackNavigator } from '@react-navigation/stack';
-import BusinessListByCategoryScreen from '../Screens/BusinessListByCategory/BusinessListByCategory.jsx';
-import BusinessDetailsScreen from '../Screens/BusinessDetailsScreen/BusinessDetailsScreen.jsx'
+import BusinessListByCategoryScreen from '../../Screens/BusinessListByCategory/BusinessListByCategory.jsx';
+import BusinessDetailsScreen from '../../Screens/BusinessDetailsScreen/BusinessDetailsScreen.jsx'
 const Stack = createStackNavigator();
 
 const HomeNavigation = () => {
