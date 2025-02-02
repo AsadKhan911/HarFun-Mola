@@ -9,6 +9,7 @@ const services = new mongoose.Schema({
         type: mongoose.Schema.Types.ObjectId,
         ref: 'user' //refrence from user schema
     },
+    city : {type: String , required: true},
     location : {type: String , required: true},
     availability: { type: Boolean, default: true },
     Listingpicture: {

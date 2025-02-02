@@ -8,11 +8,11 @@ import { User } from '../models/User/user.js';
 export const postListing = async (req, res) => {
     try {
         // Destructure the required fields from req.body
-        const { serviceName, description, price, location, categoryId } = req.body;
+        const { serviceName, description, price, city, location, categoryId } = req.body;
         const userID = req.id;  
 
         // Check for missing fields
-        if (!serviceName || !description || !price || !location || !categoryId) {
+        if (!serviceName || !description || !price || !city || !location || !categoryId) {
             return res.status(400).json({
                 message: "All fields are required, including categoryId.",
                 success: false
@@ -49,6 +49,7 @@ export const postListing = async (req, res) => {
             serviceName,
             description,
             price,
+            city,
             location,
             category: categoryId,  // Associate the listing with the category
             created_by: userID,
@@ -84,7 +85,7 @@ export const getListingsByCategory = async (req, res) => {
         const listings = await serviceListings
             .find({ category: categoryId })
             .populate('category', 'name') // Populate category name
-            .populate('created_by', 'fullName email') // Populate user details
+            .populate('created_by', 'fullName email profile') // Populate user details
             .exec();
 
         // Return the listings
