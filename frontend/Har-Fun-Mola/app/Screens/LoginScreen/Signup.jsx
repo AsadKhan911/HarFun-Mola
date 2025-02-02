@@ -7,6 +7,7 @@ import Colors from '@/constants/Colors';
 import { userBaseUrl } from '../../URL/userBaseUrl.js';
 import { useDispatch } from 'react-redux';
 import { setUser } from '../../redux/authSlice.js';
+import { ActivityIndicator } from 'react-native-paper';
 
 const Signup = () => {
     const navigation = useNavigation();
@@ -20,6 +21,7 @@ const Signup = () => {
     const [city, setCity] = useState('Rawalpindi');
     const [area, setArea] = useState('');
     const [selectedImage, setSelectedImage] = useState(null);
+    const [loading , setLoading] = useState(false)
 
     const pickImage = async () => {
         const permissionResult = await ImagePicker.requestMediaLibraryPermissionsAsync();
@@ -67,6 +69,7 @@ const Signup = () => {
                 });
             }
 
+            setLoading(true)
             const response = await axios.post(`${userBaseUrl}/register`, formData, {
                 headers: {
                     'Content-Type': 'multipart/form-data',
@@ -87,6 +90,9 @@ const Signup = () => {
             } else {
                 Alert.alert('Error', 'An unknown error occurred');
             }
+        }
+        finally{
+            setLoading(false)
         }
     };
 
@@ -202,7 +208,7 @@ const Signup = () => {
                     </View>
 
                     <TouchableOpacity style={styles.signupButton} onPress={handleSignup}>
-                        <Text style={styles.signupText}>Sign Up</Text>
+                        <Text style={styles.signupText}>{loading ? <ActivityIndicator /> : "Sign Up"}</Text>
                     </TouchableOpacity>
 
                     <TouchableOpacity>

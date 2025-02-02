@@ -11,18 +11,7 @@ export const BusinessListItemSmall = ({ business }) => {
                 <Text style={{ fontSize: 13, fontFamily: 'outfit', color: Colors.GRAY }}>
                     {business?.contactPerson}
                 </Text>
-                <Text
-                    style={{
-                        fontSize: 10,
-                        fontFamily: 'outfit',
-                        padding: 3,
-                        color: Colors.PRIMARY,
-                        backgroundColor: Colors.PRIMARY_LIGHT,
-                        borderRadius: 5,
-                        alignSelf: 'flex-start',
-                        paddingHorizontal: 5,
-                    }}
-                >
+                <Text style={styles.cateogryText}>
                     {business?.category}
                 </Text>
             </View>
@@ -46,4 +35,14 @@ const styles = StyleSheet.create({
         height: 130,
         borderRadius: 10,
     },
+    cateogryText: {
+        fontSize: 10,
+        fontFamily: 'outfit',
+        padding: 3,
+        color: Colors.PRIMARY,
+        backgroundColor: Colors.PRIMARY_LIGHT,
+        borderRadius: 5,
+        alignSelf: 'flex-start',
+        paddingHorizontal: 5,
+    }
 });

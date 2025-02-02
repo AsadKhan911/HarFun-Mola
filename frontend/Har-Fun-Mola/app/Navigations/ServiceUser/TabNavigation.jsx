@@ -6,6 +6,7 @@ import Colors from '../../../constants/Colors.ts';
 import HomeNavigation from '../ServiceUser/HomeNavigation.jsx';
 import ProfileNavigation from '../ServiceUser/ProfileNavigation.jsx';
 import Booking from '../../Screens/BookingScreen/Booking.jsx';
+import BookingServiceProvider from '../../Screens/ServiceProvider/ServiceBookings/Bookings.jsx';
 import HomeNavigationSP from '../ServiceProvider/HomeNavigationSP.jsx';
 import { useSelector } from 'react-redux';
 
@@ -81,7 +82,7 @@ const TabNavigation = () => {
                     />
                     <Tab.Screen
                         name="booking"
-                        component={Booking}
+                        component={BookingServiceProvider}
                         options={{
                             tabBarLabel: ({ color }) => (
                                 <Text style={{ color: color, fontSize: 12, marginTop: -1 }}>BookingSP</Text>

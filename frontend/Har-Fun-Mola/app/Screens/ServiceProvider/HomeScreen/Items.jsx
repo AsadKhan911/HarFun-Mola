@@ -1,19 +1,22 @@
 import React from 'react';
 import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
 import FontAwesome from '@expo/vector-icons/FontAwesome';
+import { useNavigation } from '@react-navigation/native';
 import Colors from '../../../../constants/Colors.ts';
 
 const Items = () => {
-  // Menu items
+  const navigation = useNavigation();
+
+  // Menu items with navigation targets
   const menuItems = [
-    { id: 1, title: 'Transfer Funds', icon: 'send' },
-    { id: 2, title: 'Pay Bills', icon: 'file-text-o' },
-    { id: 3, title: 'Mobile Load', icon: 'university' },
-    { id: 4, title: 'Manage Raast ID', icon: 'id-card-o' },
-    { id: 5, title: 'Roshan Account', icon: 'university' },
-    { id: 6, title: 'Manage Beneficiaries', icon: 'users' },
-    { id: 7, title: 'Manage Cards', icon: 'credit-card' },
-    { id: 8, title: 'More', icon: 'ellipsis-h' },
+    { id: 1, title: 'Major Listings', icon: 'send', screen: 'MajorListingsScreen' },
+    { id: 2, title: 'Minor Listings', icon: 'file-text-o', screen: 'MinorListingsScreen' },
+    { id: 3, title: 'View Jobs', icon: 'university', screen: 'JobsScreen' },
+    { id: 4, title: 'Reviews', icon: 'id-card-o', screen: 'ReviewsScreen' },
+    { id: 5, title: 'Payment', icon: 'university', screen: 'PaymentScreen' },
+    { id: 6, title: 'Orders', icon: 'users', screen: 'OrdersScreen' },
+    { id: 7, title: 'Manage Cards', icon: 'credit-card', screen: 'ManageCardsScreen' },
+    { id: 8, title: 'More', icon: 'ellipsis-h', screen: 'MoreOptionsScreen' },
   ];
 
   return (
@@ -21,9 +24,14 @@ const Items = () => {
       {/* Render menu items */}
       <View style={styles.gridContainer}>
         {menuItems.map((item) => (
-          <TouchableOpacity key={item.id} style={styles.menuItem}>
+          <TouchableOpacity 
+            key={item.id} 
+            style={styles.menuItem}
+            onPress={() => navigation.push('major-category')} // Navigation added
+            //isko update krna after major listings done , k hr item ka navigation alg alg screen pr ho
+          >
             <View style={styles.iconContainer}>
-              <FontAwesome name={item.icon} size={35} color={Colors.WHITE} />
+              <FontAwesome name={item.icon} size={35} color={Colors.PRIMARY} />
             </View>
             <Text style={styles.menuText}>{item.title}</Text>
           </TouchableOpacity>
@@ -35,7 +43,7 @@ const Items = () => {
 
 const styles = StyleSheet.create({
   container: {
-    marginTop:30,
+    marginTop: 30,
     flex: 1,
     backgroundColor: Colors.WHITE,
     padding: 20,
@@ -51,7 +59,7 @@ const styles = StyleSheet.create({
     marginBottom: 30, // Add extra margin for spacing between text and items
   },
   iconContainer: {
-    backgroundColor: Colors.BLACK, // Placeholder background color
+    backgroundColor: Colors.WHITE, // Placeholder background color
     borderRadius: 15,
     padding: 15,
     shadowColor: '#000',

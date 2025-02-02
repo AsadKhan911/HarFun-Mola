@@ -11,7 +11,7 @@ const BusinessListItem = ({ business }) => {
 
     <TouchableOpacity style={styles.container}
     onPress={()=>navigation.push('business-details' , {business:business})}> {/*sending business data*/}
-      <Image source={require('../../../assets/images/abd.jpg')} style={styles.image} />  {/* { uri: business?.images?.url } */}
+      <Image source={{uri:business?.created_by?.profile?.profilePic}} style={styles.image} />  {/* { uri: business?.images?.url } */}
 
       <View style={styles.subContainer}>
         <Text style={{ fontFamily: 'outfit', color: Colors.GRAY }}>{business?.contactPerson}</Text>
@@ -19,7 +19,7 @@ const BusinessListItem = ({ business }) => {
         <Text style={{ fontFamily: 'outfit-Medium', fontSize: 19 }}>{`${business?.price}Pkr`}</Text>
         <Text style={{ fontFamily: 'outfit', color: Colors.GRAY, fontSize: 16 }}>
           <FontAwesome6 name="location-dot" size={20} color={Colors.PRIMARY} 
-          style={{marginRight:20}}/> {business?.location}
+          style={{marginRight:20}}/> {business?.city}, {business?.location} 
           </Text>
       </View>
     </TouchableOpacity>

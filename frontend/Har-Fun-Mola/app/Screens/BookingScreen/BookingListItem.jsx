@@ -90,7 +90,7 @@ const styles = StyleSheet.create({
         marginRight: 10,
     },
     roleBadgeContainer: {
-        backgroundColor: Colors.PRIMARY_LIGHT, // Light background for the badge
+        backgroundColor: '#FFA726', // Light background for the badge
         borderRadius: 5,
         paddingHorizontal: 10, // Sufficient padding for text
         paddingVertical: 5,
@@ -101,7 +101,7 @@ const styles = StyleSheet.create({
     },
     roleBadge: {
         fontSize: 14,
-        color: Colors.PRIMARY, // Text color
+        color: Colors.WHITE, // Text color
         fontFamily: 'outfit-Medium',
         textAlign: 'center',
     },

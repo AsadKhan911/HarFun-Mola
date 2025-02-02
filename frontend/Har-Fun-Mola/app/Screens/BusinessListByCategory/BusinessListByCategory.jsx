@@ -6,7 +6,7 @@ import axios from 'axios';
 import { FlatList } from 'react-native-gesture-handler';
 import BusinessListItem from '../BusinessListByCategory/BusinessListItem.jsx';
 import Colors from '@/constants/Colors';
-import { CategoryBaseUrl } from '../../URL/userBaseUrl.js';
+import { MajorListingsBaseUrl } from '../../URL/userBaseUrl.js';
 
 const BusinessListByCategoryScreen = () => {
   const navigation = useNavigation();
@@ -17,7 +17,7 @@ const BusinessListByCategoryScreen = () => {
   // Fetch business list by category name
   const getBusinessByCategory = async () => {
     try {
-      const response = await axios.get(`${CategoryBaseUrl}/getlisting/${param.categoryId}`);
+      const response = await axios.get(`${MajorListingsBaseUrl}/getlisting/${param.categoryId}`);
       setBusinessList(response.data.listings);  // Assuming the response contains a 'listings' key
       setIsLoading(false); // Set loading to false once data is received
     } catch (error) {

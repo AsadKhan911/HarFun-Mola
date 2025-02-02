@@ -4,7 +4,7 @@ import { useRoute, useNavigation } from '@react-navigation/native';
 import Ionicons from '@expo/vector-icons/Ionicons';
 import FontAwesome6 from '@expo/vector-icons/FontAwesome6';
 import Colors from '../../../constants/Colors.ts';
-import {Heading} from '../../../components/Heading.jsx';
+import { Heading } from '../../../components/Heading.jsx';
 import BookingModal from '../BookingScreen/BookingModal.jsx';
 
 const BusinessDetailsScreen = () => {
@@ -48,7 +48,7 @@ const BusinessDetailsScreen = () => {
             <Ionicons name="arrow-back-outline" size={30} color="white" />
           </TouchableOpacity>
           <Image
-            source={require('../../../assets/images/abd.jpg')}   
+            source={{ uri: business?.created_by?.profile?.profilePic }}
             style={styles.businessImage}
           />
 
@@ -64,16 +64,16 @@ const BusinessDetailsScreen = () => {
                 {business?.category?.name || 'Category'}
               </Text>
             </View>
-            <Text style={{fontFamily:'outfit-Medium' , fontSize:20}}>
-                {`${business?.price}Pkr`}
-              </Text>
+            <Text style={{ fontFamily: 'outfit-Medium', fontSize: 20 }}>
+              {`${business?.price}Pkr`}
+            </Text>
             <Text style={styles.address}>
               <FontAwesome6
                 name="location-dot"
                 size={25}
                 color={Colors.PRIMARY}
               />{' '}
-              {business?.location || 'Business Address'}
+              {business?.location && business?.city ? `${business.location}, ${business.city}` : 'Business Address'}
             </Text>
 
             <View style={styles.horizontalLine}></View>
@@ -109,12 +109,12 @@ const BusinessDetailsScreen = () => {
         </TouchableOpacity>
       </View>
 
-    {/* Booking Screen Modal */}
+      {/* Booking Screen Modal */}
 
-      <Modal 
-      animationType="slide" 
-      visible={showModal}>
-        <BookingModal business={business} handleCloseModal={handleCloseModal}/>
+      <Modal
+        animationType="slide"
+        visible={showModal}>
+        <BookingModal business={business} handleCloseModal={handleCloseModal} />
       </Modal >
 
     </View>

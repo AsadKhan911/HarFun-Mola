@@ -6,7 +6,7 @@ import axios from 'axios';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { userBaseUrl } from '../../URL/userBaseUrl.js'
 import { useDispatch, useSelector } from "react-redux"
-import { setUser , setLoading } from '../../redux/authSlice.js'
+import { setUser } from '../../redux/authSlice.js'
 
 const Login = () => {
 
@@ -15,9 +15,9 @@ const Login = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [role, setRole] = useState('Service User'); // Default role
-  // const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(false);
 
-  const { loading } = useSelector(store => store.auth)
+  
   const dispatch = useDispatch()
 
   const handleLogin = async () => {
@@ -27,7 +27,7 @@ const Login = () => {
     }
 
     try {
-      dispatch(setLoading(true))
+      setLoading(true)
       const data = { email, password, role }; //"email" : email , "password" : password
       const response = await axios.post(`${userBaseUrl}/login`, data, {
         headers: {
@@ -69,7 +69,7 @@ const Login = () => {
       // console.error("Login error:", error);
       Alert.alert("Login Failed", "Incorrect email, password or role.");
     } finally {
-      dispatch(setLoading(false))
+      setLoading(false)
     }
   };
 

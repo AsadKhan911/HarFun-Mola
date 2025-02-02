@@ -1,8 +1,9 @@
 //This navigation section is for when we click on category on home , it redirects to new screen.
 import Home from '../../Screens/ServiceProvider/HomeScreen/HomeScreenSP.jsx'
 import { createStackNavigator } from '@react-navigation/stack';
-// import BusinessListByCategoryScreen from '../../Screens/BusinessListByCategory/BusinessListByCategory.jsx';
-// import BusinessDetailsScreen from '../../Screens/BusinessDetailsScreen/BusinessDetailsScreen.jsx'
+import MajorCategory from '../../Screens/ServiceProvider/MajorCategory/MajorCategory.jsx'
+import PostMajorListings from '../../Screens/ServiceProvider/MajorListings/PostMajorListings.jsx'
+
 const Stack = createStackNavigator();
 
 const HomeNavigationSP = () => {
@@ -11,9 +12,9 @@ const HomeNavigationSP = () => {
     screenOptions={{
         headerShown:false
     }}>
-        <Stack.Screen name='home-screen' component={Home}/>
-        {/* <Stack.Screen name='business-list' component={BusinessListByCategoryScreen}/>
-        <Stack.Screen name='business-details' component={BusinessDetailsScreen}/>  */}
+       <Stack.Screen name='home-screen' component={Home}/>
+       <Stack.Screen name='major-category' component={MajorCategory}/> 
+       <Stack.Screen name='post-major-listings' component={PostMajorListings}/>  
     </Stack.Navigator>
   )
 }
