@@ -15,10 +15,10 @@ const bookingSchema = new mongoose.Schema({
     required: true
   },
 
-  date: { 
-    type: Date, 
-    required: true 
-  }, // Desired date of the service
+  date: {
+    type: String,
+    require:true
+  },
 
   timeSlot: { 
     type: String, 

@@ -3,20 +3,22 @@ import mongoose from "mongoose";
 const services = new mongoose.Schema({
     serviceName: { type: String, required: true },
     description: { type: String, required: true },
-    category: { type: mongoose.Schema.Types.ObjectId, ref: 'category' }, // Reference to Category,
+    category: { type: mongoose.Schema.Types.ObjectId, ref: 'category' }, // Reference to Category
     price: { type: Number, required: true },
     created_by: {
         type: mongoose.Schema.Types.ObjectId,
-        ref: 'user' //refrence from user schema
+        ref: 'user' // Reference from user schema
     },
-    city : {type: String , required: true},
-    location : {type: String , required: true},
+    city: { type: String, required: true },
+    location: { type: String, required: true },
+    unavailableDates: [{ type: Date }], // Dates that are unavailable for work
+    timeSlots: [{ type: String, required: true }], // Available time slots
     availability: { type: Boolean, default: true },
     Listingpicture: {
         type: String,
         default: ""
-      }
-}, { timestamps: true })
+    }
+}, { timestamps: true });
 
 export const serviceListings = mongoose.model('majorListing', services)
 

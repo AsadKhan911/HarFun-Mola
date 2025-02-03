@@ -41,6 +41,8 @@ export const BookServiceListingByListingId = async (req, res) => {
     const { serviceListingId } = req.params; // Service listing ID from the URL parameter
     const { date, timeSlot, address, instructions, userId } = req.body; // Request body data
 
+    const formattedDate = new Date(date).toISOString().split("T")[0];
+
     // Fetch the service listing from the database and populate the provider's data
     const service = await serviceListings
       .findById(serviceListingId).populate('category', 'name').populate('created_by', 'fullName email').exec();
@@ -63,7 +65,7 @@ export const BookServiceListingByListingId = async (req, res) => {
     const newBooking = new Booking({
       service: service._id,
       user: user._id,
-      date,
+      date: formattedDate,
       timeSlot,
       address,
       instructions,
@@ -138,5 +140,33 @@ export const getServiceProviderBookings = async (req, res) => {
   } catch (error) {
     console.error("Error fetching bookings for provider:", error);
     res.status(500).json({ message: "An error occurred while fetching bookings for your services.", error });
+  }
+};
+
+export const getBookedSlots = async (req, res) => {
+  try {
+    const { serviceId, date } = req.params;
+
+    // Ensure we are comparing only the date (ignoring time)
+    const formattedDate = new Date(date).toISOString().split("T")[0];
+
+    console.log("Service ID:", serviceId); // Debugging
+    console.log("Formatted Date for Query:", formattedDate); // Debugging
+
+    const bookings = await Booking.find({
+      service: serviceId, // Use `service` instead of `serviceId`
+      date: formattedDate, // Compare only the date part
+    });
+
+    console.log("Fetched Bookings:", bookings); // Debugging
+
+    const bookedSlots = bookings.map(booking => booking.timeSlot); // Ensure this is an array of strings
+    res.status(200).json({ bookedSlots });
+
+    console.log("Final Booked Slots:", bookedSlots); // Debugging
+
+  } catch (error) {
+    console.error("Error fetching booked slots:", error);
+    res.status(500).json({ message: "Server error", error });
   }
 };

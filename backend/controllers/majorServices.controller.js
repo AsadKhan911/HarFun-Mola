@@ -4,17 +4,17 @@ import { majorCategory } from '../models/MajorListings/category.js';
 import { User } from '../models/User/user.js';
 
 // Modify postListing function to handle file upload
-// Modify postListing function to handle file upload
+
 export const postListing = async (req, res) => {
     try {
         // Destructure the required fields from req.body
-        const { serviceName, description, price, city, location, categoryId } = req.body;
-        const userID = req.id;  
+        const { serviceName, description, price, city, location, categoryId, unavailableDates, timeSlots } = req.body;
+        const userID = req.id;
 
         // Check for missing fields
-        if (!serviceName || !description || !price || !city || !location || !categoryId) {
+        if (!serviceName || !description || !price || !city || !location || !categoryId || !timeSlots) {
             return res.status(400).json({
-                message: "All fields are required, including categoryId.",
+                message: "All fields are required, including categoryId and timeSlots.",
                 success: false
             });
         }
@@ -28,22 +28,6 @@ export const postListing = async (req, res) => {
             });
         }
 
-        // If a file is uploaded, handle it
-        let Listingpicture = "";  // Default to an empty string if no picture is uploaded
-        // if (req.file) {
-        //     // Convert file to Data URI
-        //     const fileUri = getDataUri(req.file);  // Get the Data URI
-
-        //     // Upload the image to Cloudinary
-        //     const cloudResponse = await cloudinary.uploader.upload(fileUri.content, {
-        //         folder: 'majorserviceListings',  // Specify folder in Cloudinary
-        //         resource_type: 'image'  // Specify resource type
-        //     });
-
-        //     // Get the secure URL for the uploaded image
-        //     Listingpicture = cloudResponse.secure_url;
-        // }
-
         // Create a new service listing
         const listing = await serviceListings.create({
             serviceName,
@@ -53,7 +37,9 @@ export const postListing = async (req, res) => {
             location,
             category: categoryId,  // Associate the listing with the category
             created_by: userID,
-            Listingpicture  // Save the Cloudinary URL
+            unavailableDates,  // Save the unavailable dates
+            timeSlots,  // Save the available time slots
+            Listingpicture: ""  // Add logic for image upload if needed
         });
 
         return res.status(201).json({

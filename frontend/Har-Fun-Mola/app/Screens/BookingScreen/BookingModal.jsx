@@ -1,13 +1,13 @@
-import {View, Text, TouchableOpacity, StyleSheet, ScrollView, Platform, KeyboardAvoidingView, Alert} from "react-native";
+import { View, Text, TouchableOpacity, StyleSheet, ScrollView, Platform, KeyboardAvoidingView, Alert } from "react-native";
 import { useState, useEffect } from "react";
 import { useSelector } from "react-redux";
 import Ionicons from "@expo/vector-icons/Ionicons";
 import CalendarPicker from "react-native-calendar-picker";
-import axios from "axios"; 
+import axios from "axios";
 import Colors from "../../../constants/Colors.ts";
 import { Heading } from "../../../components/Heading.jsx";
 import { FlatList, TextInput } from "react-native-gesture-handler";
-import { BookingBaseUrl } from '../../URL/userBaseUrl.js'
+import { BookingBaseUrl } from '../../URL/userBaseUrl.js';
 
 const BookingModal = ({ business, handleCloseModal }) => {
   const [timeList, setTimeList] = useState([]);
@@ -15,85 +15,89 @@ const BookingModal = ({ business, handleCloseModal }) => {
   const [selectedDate, setSelectedDate] = useState(null);
   const [note, setNote] = useState("");
   const [address, setAddress] = useState("");
-  const [loading, setLoading] = useState(false); // State to manage API call status
-  
+  const [loading, setLoading] = useState(false);
+  const [bookedTimeSlots, setBookedTimeSlots] = useState([]);
+
   const { _id } = useSelector(state => state?.auth?.user || {});
 
   useEffect(() => {
-    generateTimeSlots();
-  }, []);
-
-  // Generate time slots
-  const generateTimeSlots = () => {
-    const times = [];
-    for (let i = 8; i <= 12; i++) {
-      times.push({ time: `${i}:00 AM` });
-      times.push({ time: `${i}:30 AM` });
+    if (business?.timeSlots && Array.isArray(business.timeSlots)) {
+      setTimeList(business.timeSlots); // Directly set the timeSlots array
+    } else {
+      console.log("No valid time slots found.");
     }
-    for (let i = 1; i <= 7; i++) {
-      times.push({ time: `${i}:00 PM` });
-      times.push({ time: `${i}:30 PM` });
-    }
-    setTimeList(times);
-  };
+  }, [business]);
 
-  // Confirm booking and call backend API
-  const confirmBooking = async () => {
-    if (!selectedDate || !selectedTime || !address) {
-      Alert.alert("Error", "Please select a date, time, and enter your address.");
+  const handleDateChange = async (date) => {
+    if (!date) {
+      console.log("Error: Selected date is undefined");
       return;
     }
 
-    // Alert.alert("Booking created successfully!")
-    // handleCloseModal()
+    const formattedDate = date.toISOString().split("T")[0]; // "YYYY-MM-DD"
 
-  
-    // Construct booking details object
+    // Ensure business?.unavailableDates is an array before checking
+    if (business?.unavailableDates?.some(d => new Date(d).toISOString().split("T")[0] === formattedDate)) {
+      Alert.alert("Date not available", "This date is not available for booking.");
+      return;
+    }
+
+    setSelectedDate(formattedDate);
+
+    try {
+      const response = await axios.get(`${BookingBaseUrl}/bookings/${business._id}/${formattedDate}`);
+      if (response.status === 200) {
+        setBookedTimeSlots(response.data.bookedSlots); // Ensure this is an array of strings
+      }
+    } catch (error) {
+      console.error("Error fetching booked slots:", error);
+    }
+  };
+
+  const confirmBooking = async () => {
+    if (!selectedDate || !selectedTime || !address) {
+      Alert.alert("Please fill all fields", "Please select a date, time, and enter your address.");
+      return;
+    }
+
+    const formattedDate = new Date(selectedDate).toISOString();
+
     const bookingDetails = {
-      date: selectedDate,
+      date: formattedDate,
       timeSlot: selectedTime,
       address,
       instructions: note,
-      userId:_id , // Replace with the actual user ID
+      userId: _id,
     };
-  
+
     try {
-      setLoading(true); // Start loading
-  
-      // Ensure the business._id is defined
+      setLoading(true);
+
       if (!business?._id) {
         Alert.alert("Error", "Invalid service listing ID.");
         setLoading(false);
         return;
       }
-  
+
       const response = await axios.post(`${BookingBaseUrl}/post/${business._id}`, bookingDetails);
-  
+
       if (response.status === 201) {
-        Alert.alert("Success", "Your booking has been added, You can check you booking status in booking tab");
-        handleCloseModal(); // Close the modal after successful booking
+        Alert.alert("Success", "Your booking has been added. You can check your booking status in the booking tab.");
+        handleCloseModal();
       } else {
         Alert.alert("Error", "Failed to book. Please try again later.");
       }
     } catch (error) {
-      console.error("Booking API error: ", error.response?.data || error.message);
       Alert.alert("Error", "An error occurred while booking. Please try again.");
     } finally {
-      setLoading(false); // Stop loading
+      setLoading(false);
     }
   };
-  
 
   return (
-    <KeyboardAvoidingView
-      behavior={Platform.OS === "ios" ? "padding" : "height"}
-      style={{ flex: 1 }}
-    >
+    <KeyboardAvoidingView behavior={Platform.OS === "ios" ? "padding" : "height"} style={{ flex: 1 }}>
       <ScrollView style={{ padding: 20, paddingTop: 60 }}>
-        <TouchableOpacity
-          style={styles.backButton}
-          onPress={handleCloseModal}
-        >
+        <TouchableOpacity style={styles.backButton} onPress={handleCloseModal}>
           <Ionicons name="arrow-back-outline" size={30} color="black" />
           <Text style={styles.headerText}>Booking</Text>
         </TouchableOpacity>
@@ -102,9 +106,9 @@ const BookingModal = ({ business, handleCloseModal }) => {
         <Heading text={"Select Date"} />
         <View style={styles.calendarContainer}>
           <CalendarPicker
-            onDateChange={setSelectedDate}
+            onDateChange={handleDateChange}
             width={340}
-            minDate={Date.now()}
+            minDate={new Date()}
             todayBackgroundColor={Colors.BLACK}
             todayTextStyle={{ color: Colors.WHITE }}
             selectedDayColor={Colors.PRIMARY}
@@ -122,17 +126,21 @@ const BookingModal = ({ business, handleCloseModal }) => {
             keyExtractor={(item, index) => index.toString()}
             renderItem={({ item }) => (
               <TouchableOpacity
-                style={styles.timeSlot}
-                onPress={() => setSelectedTime(item?.time)}
+                style={[
+                  styles.timeSlot,
+                  selectedTime === item && styles.selectedTimeSlot,
+                  bookedTimeSlots.includes(item) && styles.disabledTimeSlot // Apply disabled styles
+                ]}
+                onPress={() => !bookedTimeSlots.includes(item) && setSelectedTime(item)}
+                disabled={bookedTimeSlots.includes(item)} // Prevent selection
               >
                 <Text
-                  style={
-                    selectedTime === item.time
-                      ? styles.selectedTime
-                      : styles.unSelectedTime
-                  }
+                  style={[
+                    selectedTime === item ? styles.selectedTime : styles.unSelectedTime,
+                    bookedTimeSlots.includes(item) && styles.disabledTimeText // Apply disabled text styles
+                  ]}
                 >
-                  {item?.time}
+                  {item}
                 </Text>
               </TouchableOpacity>
             )}
@@ -171,9 +179,7 @@ const BookingModal = ({ business, handleCloseModal }) => {
           onPress={confirmBooking}
           disabled={loading}
         >
-          <Text style={styles.confirmButtonText}>
-            {loading ? "Booking..." : "Confirm & Book"}
-          </Text>
+          <Text style={styles.confirmButtonText}>{loading ? "Booking..." : "Confirm & Book"}</Text>
         </TouchableOpacity>
       </ScrollView>
     </KeyboardAvoidingView>
@@ -201,24 +207,35 @@ const styles = StyleSheet.create({
   },
   timeSlot: {
     marginRight: 10,
+    padding: 10,
+    borderWidth: 1,
+    borderColor: Colors.PRIMARY,
+    borderRadius: 99,
+    paddingHorizontal: 18,
+    alignItems: "center",
+    justifyContent: "center",
+    position: "relative", // For positioning the icon
+  },
+  selectedTimeSlot: {
+    backgroundColor: Colors.PRIMARY,
   },
   selectedTime: {
-    padding: 10,
-    borderWidth: 1,
-    borderColor: Colors.PRIMARY,
-    borderRadius: 99,
-    paddingHorizontal: 18,
-    backgroundColor: Colors.PRIMARY,
     color: Colors.WHITE,
+    fontWeight: "bold",
   },
   unSelectedTime: {
-    padding: 10,
-    borderWidth: 1,
-    borderColor: Colors.PRIMARY,
-    borderRadius: 99,
-    paddingHorizontal: 18,
     color: Colors.PRIMARY,
   },
+  disabledTimeSlot: {
+    backgroundColor: Colors.LIGHT_GRAY, // Muted background color
+    borderColor: Colors.GRAY, // Muted border color
+    opacity: 0.7, // Reduce opacity
+  },
+  disabledTimeText: {
+    color: Colors.GRAY, // Muted text color
+    textDecorationLine: "line-through", // Strikethrough effect
+  },
+
   addressInput: {
     borderWidth: 1,
     borderRadius: 15,
@@ -243,7 +260,7 @@ const styles = StyleSheet.create({
     backgroundColor: Colors.PRIMARY,
     borderRadius: 99,
     padding: 15,
-    marginBottom:20
+    marginBottom: 20,
   },
   confirmButtonText: {
     textAlign: "center",
