@@ -1,7 +1,8 @@
 import { User } from "../models/User/user.js";
 import jwt from 'jsonwebtoken'
 import bcrypt from 'bcryptjs'
-import { sendVerificationCode, WelcomeEmail } from "../middlewares/Email.js";
+import { sendVerificationCode } from "../middlewares/EmailFunctions/EmailVerification.js";
+import { WelcomeEmail } from "../middlewares/EmailFunctions/WelcomeEmail.js";
 import { getDataUri } from '../utils/dataURI.js'
 import cloudinary from "../utils/cloudinary.js";
 
@@ -83,7 +84,6 @@ export const register = async (req, res) => {
         });
 
         //Send verification code
-        console.log('Calling sendVerificationCode for:', newUser.email);
         sendVerificationCode(newUser?.email, verificationCode, newUser?.fullName)
 
         return res.status(201).json({

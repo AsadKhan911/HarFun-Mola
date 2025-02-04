@@ -6,6 +6,18 @@ import { useNavigation } from 'expo-router';
 const BookingListItem = ({ booking }) => {
     const navigation = useNavigation();
 
+    // Determine badge color based on status
+    const getStatusColor = (status) => {
+        switch (status) {
+            case "Confirmed":
+                return "#4CAF50"; // Green
+            case "Cancelled":
+                return "#D32F2F"; // Red
+            default:
+                return "#FFA726"; // Orange (Pending and other statuses)
+        }
+    };
+
     return (
         <TouchableOpacity
             style={styles.container}
@@ -17,10 +29,14 @@ const BookingListItem = ({ booking }) => {
             />
 
             <View style={styles.subContainer}>
-                <Text style={{ fontFamily: 'outfit', color: Colors.GRAY, marginBottom:4 }}>{booking?.service?.created_by?.fullName}</Text>
-                <Text style={{ fontFamily: 'outfit-bold', fontSize: 19, marginBottom:4 }}>{booking?.service?.serviceName}</Text>
-                
-                <Text style={{ fontFamily: 'outfit', color: Colors.GRAY, fontSize: 16, marginBottom:4 }}>
+                <Text style={{ fontFamily: 'outfit', color: Colors.GRAY, marginBottom: 4 }}>
+                    {booking?.service?.created_by?.fullName}
+                </Text>
+                <Text style={{ fontFamily: 'outfit-bold', fontSize: 19, marginBottom: 4 }}>
+                    {booking?.service?.serviceName}
+                </Text>
+
+                <Text style={{ fontFamily: 'outfit', color: Colors.GRAY, fontSize: 16, marginBottom: 4 }}>
                     <FontAwesome6
                         name="location-dot"
                         size={20}
@@ -29,7 +45,9 @@ const BookingListItem = ({ booking }) => {
                     />{" "}
                     {booking?.address}
                 </Text>
-                <View style={styles.roleBadgeContainer}>
+
+                {/* Dynamic Badge */}
+                <View style={[styles.roleBadgeContainer, { backgroundColor: getStatusColor(booking?.status) }]}>
                     <Text style={styles.roleBadge}>{booking?.status}</Text>
                 </View>
             </View>
@@ -61,51 +79,21 @@ const styles = StyleSheet.create({
         height: 100,
         borderRadius: 15,
     },
-    contactPerson: {
-        fontFamily: 'outfit',
-        color: Colors.GRAY,
-        fontSize: 14,
-    },
-    serviceName: {
-        fontFamily: 'outfit-bold',
-        fontSize: 19,
-        color: Colors.BLACK,
-        marginVertical: 2,
-    },
-    price: {
-        fontFamily: 'outfit-Medium',
-        fontSize: 16,
-        color: Colors.BLACK,
-        marginVertical: 2,
-    },
-    location: {
-        fontFamily: 'outfit',
-        color: Colors.GRAY,
-        fontSize: 14,
-        marginTop: 2,
-        flexDirection: 'row',
-        alignItems: 'center',
-    },
-    locationIcon: {
-        marginRight: 10,
-    },
     roleBadgeContainer: {
-        backgroundColor: '#FFA726', // Light background for the badge
         borderRadius: 5,
-        paddingHorizontal: 10, // Sufficient padding for text
+        paddingHorizontal: 10,
         paddingVertical: 5,
         alignItems: 'center',
         justifyContent: 'center',
         marginTop: 5,
-        alignSelf: 'flex-start', // Keeps it aligned to the content and parent
+        alignSelf: 'flex-start', // Aligns with the content
     },
     roleBadge: {
         fontSize: 14,
-        color: Colors.WHITE, // Text color
+        color: Colors.WHITE,
         fontFamily: 'outfit-Medium',
         textAlign: 'center',
     },
-    
 });
 
 export default BookingListItem;
