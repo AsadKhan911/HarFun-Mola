@@ -191,7 +191,7 @@ export const getBooking = async (req, res) => {
           select: "fullName profile",
         },
       })
-      .populate("user", "fullName email phoneNumber area city");
+      .populate("user", "fullName email phoneNumber area city profile");
 
     if (!booking) {
       return res.status(404).json({ message: "Booking not found." });

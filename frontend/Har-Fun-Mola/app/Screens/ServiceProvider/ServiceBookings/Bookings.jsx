@@ -1,25 +1,20 @@
 import React, { useEffect, useState } from "react";
 import { View, Text, FlatList, ActivityIndicator, StyleSheet, TouchableOpacity } from "react-native";
 import axios from "axios";
-import { Card, Badge } from "react-native-paper";
+import { Card } from "react-native-paper";
 import { FontAwesome } from "@expo/vector-icons";
 import { BookingBaseUrl } from "../../../URL/userBaseUrl";
 import Colors from "../../../../constants/Colors.ts"; // Assuming colors are stored here
-import { useFonts } from "expo-font";
-import { setAllProviderBookings } from "../../../redux/bookingSlice.js";
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigation } from "expo-router";
+import { setAllProviderBookings } from "../../../redux/bookingSlice.js";
 
 const ServiceProviderBookings = () => {
   const navigation = useNavigation();
   const [loading, setLoading] = useState(true);
+  const [selectedTab, setSelectedTab] = useState("Pending"); // Default selected tab
   const { allProviderBookings } = useSelector((store) => store.bookings);
   const dispatch = useDispatch();
-
-  // Filter bookings to show only those with status "Pending"
-  const pendingBookings = allProviderBookings.filter(
-    (booking) => booking.status === "Pending"
-  );
 
   useEffect(() => {
     const fetchBookings = async () => {
@@ -36,23 +31,78 @@ const ServiceProviderBookings = () => {
     fetchBookings();
   }, []);
 
+  // Filter bookings based on selectedTab
+  const filteredBookings = allProviderBookings.filter((booking) => {
+    if (selectedTab === "Pending") return booking.status === "Pending";
+    if (selectedTab === "Active") return booking.status === "Confirmed"; // Adjust based on your DB status
+    if (selectedTab === "On-Going") return booking.status === "in-progress";
+    if (selectedTab === "Cancelled") return booking.status === "Cancelled";
+    return false;
+  });
+
+  // Define the action when a booking is clicked based on selectedTab
+  const handlePress = (item) => {
+    if (selectedTab === "Pending") {
+      navigation.push("pending-detail-booking-page", {
+        bookingId: item?._id,
+      });
+    } else if (selectedTab === "Active") {
+      navigation.push("active-detail-booking-page", {
+        bookingId: item?._id,
+      });
+    } else if (selectedTab === "On-Going") {
+      navigation.push("completed-detail-booking-page", {
+        bookingId: item?._id,
+      });
+    } else if (selectedTab === "Cancelled") {
+      navigation.push("cancelled-detail-booking-page", {
+        bookingId: item?._id,
+      });
+    }
+  };
+
+  // Function to determine badge color based on booking status
+  const getStatusBadgeColor = (status) => {
+    switch (status) {
+      case "Pending":
+        return 'orange'; // Keep the same color for pending
+      case "Confirmed":
+        return Colors.PRIMARY; // Adjust this for active bookings
+      case "in-progress":
+        return '#4A90E2'; // Green for completed
+      case "Cancelled":
+        return 'red'; // Red for cancelled
+      default:
+        return Colors.GRAY; // Default fallback color
+    }
+  };
+
   return (
     <View style={styles.container}>
-      <Text style={styles.header}>Your Pending Service Bookings</Text>
+      {/* Top Tab Navigation */}
+      <View style={styles.tabContainer}>
+        {["Pending", "Active", "On-Going", "Cancelled"].map((tab) => (
+          <TouchableOpacity
+            key={tab}
+            style={[styles.tabButton, selectedTab === tab && styles.activeTab]}
+            onPress={() => setSelectedTab(tab)}
+          >
+            <Text style={[styles.tabText, selectedTab === tab && styles.activeTabText]}>
+              {tab} 
+            </Text>
+          </TouchableOpacity>
+        ))}
+      </View>
+
+      {/* List of Bookings */}
       {loading ? (
         <ActivityIndicator size="large" color={Colors.PRIMARY} style={styles.loader} />
       ) : (
         <FlatList
-          data={pendingBookings} // Use the filtered list
+          data={filteredBookings}
           keyExtractor={(item) => item._id}
           renderItem={({ item }) => (
-            <TouchableOpacity
-              onPress={() =>
-                navigation.push("detail-booking-page", {
-                  bookingId: item?._id,
-                })
-              }
-            >
+            <TouchableOpacity onPress={() => handlePress(item)}>
               <Card style={styles.card}>
                 <Card.Content>
                   <Text style={styles.title}>{item.service.serviceName}</Text>
@@ -72,7 +122,7 @@ const ServiceProviderBookings = () => {
                     <FontAwesome name="calendar" size={14} color={Colors.GRAY} /> {new Date(item.date).toDateString()} | {item.timeSlot}
                   </Text>
 
-                  <View style={[styles.roleBadgeContainer, { marginTop: 15 }]}>
+                  <View style={[styles.roleBadgeContainer, { backgroundColor: getStatusBadgeColor(item?.status), marginTop: 15 }]}>
                     <Text style={styles.roleBadge}>{item?.status}</Text>
                   </View>
                 </Card.Content>
@@ -96,12 +146,34 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     alignItems: "center",
   },
-  header: {
-    fontSize: 24,
-    fontFamily: "outfit-Bold",
-    color: Colors.BLACK,
-    textAlign: "center",
+  tabContainer: {
+    flexDirection: "row",
+    justifyContent: "space-around",
+    backgroundColor: Colors.WHITE,
+    paddingVertical: 10,
+    borderRadius: 10,
     marginBottom: 16,
+    shadowColor: Colors.BLACK,
+    shadowOpacity: 0.1,
+    shadowOffset: { width: 0, height: 2 },
+    shadowRadius: 5,
+    elevation: 5,
+  },
+  tabButton: {
+    paddingVertical: 8,
+    paddingHorizontal: 16,
+    borderRadius: 8,
+  },
+  activeTab: {
+    backgroundColor: Colors.PRIMARY,
+  },
+  tabText: {
+    fontSize: 16,
+    color: Colors.GRAY,
+    fontFamily: "outfit-Medium",
+  },
+  activeTabText: {
+    color: Colors.WHITE,
   },
   card: {
     marginBottom: 12,
@@ -130,8 +202,6 @@ const styles = StyleSheet.create({
     fontSize: 10,
     fontFamily: "outfit",
     padding: 3,
-    color: Colors.PRIMARY,
-    backgroundColor: "#FFA726",
     borderRadius: 5,
     alignSelf: "center", // Center the badge horizontally
     paddingHorizontal: 5,

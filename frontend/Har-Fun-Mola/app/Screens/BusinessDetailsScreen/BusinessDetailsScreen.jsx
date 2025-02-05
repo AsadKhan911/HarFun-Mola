@@ -98,25 +98,23 @@ const BusinessDetailsScreen = () => {
 
       <View style={styles.buttonContainer}>
         <TouchableOpacity style={styles.messageBtn}>
-          <Text style={styles.messageText}>Message</Text>
+          <Ionicons name="person-outline" size={18} color={Colors.PRIMARY} style={{ marginRight: 10 }} />
+          <Text style={styles.messageText}>View Profile</Text>
         </TouchableOpacity>
 
         <TouchableOpacity
           style={styles.bookBtn}
           onPress={() => setShowModal(true)}
         >
+          <Ionicons name="calendar-outline" size={18} color={Colors.WHITE} style={{ marginRight: 10 }} />
           <Text style={styles.bookText}>Book Now</Text>
         </TouchableOpacity>
       </View>
 
       {/* Booking Screen Modal */}
-
-      <Modal
-        animationType="slide"
-        visible={showModal}>
+      <Modal animationType="slide" visible={showModal}>
         <BookingModal business={business} handleCloseModal={handleCloseModal} />
-      </Modal >
-
+      </Modal>
     </View>
   );
 };
@@ -201,6 +199,9 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: Colors.PRIMARY,
     borderRadius: 99,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
   },
   messageText: {
     textAlign: 'center',
@@ -213,6 +214,9 @@ const styles = StyleSheet.create({
     padding: 15,
     backgroundColor: Colors.PRIMARY,
     borderRadius: 99,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
   },
   bookText: {
     textAlign: 'center',

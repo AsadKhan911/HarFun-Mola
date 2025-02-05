@@ -120,7 +120,7 @@ const Header = () => {
       <View style={styles.statsContainer}>
         <View style={styles.statBox}>
           <Text style={styles.statValue}>120</Text>
-          <Text style={styles.statLabel}>Total Orders</Text>
+          <Text style={styles.statLabel}>Completed Bookings</Text>
         </View>
         <View style={styles.statBox}>
           <Text style={styles.statValue}>$5,250</Text>

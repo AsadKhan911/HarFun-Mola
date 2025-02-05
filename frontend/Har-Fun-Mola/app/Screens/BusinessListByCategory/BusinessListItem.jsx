@@ -1,30 +1,42 @@
-import { View, Text, Image, StyleSheet, TouchableOpacity } from 'react-native'
-import React from 'react'
-import Colors from '@/constants/Colors'
+import { View, Text, Image, StyleSheet, TouchableOpacity } from 'react-native';
+import React from 'react';
+import Colors from '@/constants/Colors';
 import FontAwesome6 from '@expo/vector-icons/FontAwesome6';
+import Ionicons from '@expo/vector-icons/Ionicons'; // Import Ionicons
 import { useNavigation } from 'expo-router';
 
 const BusinessListItem = ({ business }) => {
+  const navigation = useNavigation();
 
-  const navigation = useNavigation()
   return (
-
-    <TouchableOpacity style={styles.container}
-    onPress={()=>navigation.push('business-details' , {business:business})}> {/*sending business data*/}
-      <Image source={{uri:business?.created_by?.profile?.profilePic}} style={styles.image} />  {/* { uri: business?.images?.url } */}
+    <TouchableOpacity
+      style={styles.container}
+      onPress={() => navigation.push('business-details', { business: business })} // Sending business data
+    >
+      <Image source={{ uri: business?.created_by?.profile?.profilePic }} style={styles.image} />
 
       <View style={styles.subContainer}>
+        {/* Contact Person */}
         <Text style={{ fontFamily: 'outfit', color: Colors.GRAY }}>{business?.contactPerson}</Text>
+
+        {/* Service Name */}
         <Text style={{ fontFamily: 'outfit-bold', fontSize: 19 }}>{business?.serviceName}</Text>
-        <Text style={{ fontFamily: 'outfit-Medium', fontSize: 19 }}>{`${business?.price}Pkr`}</Text>
+
+        {/* Price */}
+        <View style={styles.priceContainer}>
+          <Ionicons name="pricetag-outline" size={18} color={Colors.PRIMARY} style={styles.priceIcon} />
+          <Text style={{ fontFamily: 'outfit-Medium', fontSize: 19 }}>{`${business?.price} Pkr`}</Text>
+        </View>
+
+        {/* Location */}
         <Text style={{ fontFamily: 'outfit', color: Colors.GRAY, fontSize: 16 }}>
-          <FontAwesome6 name="location-dot" size={20} color={Colors.PRIMARY} 
-          style={{marginRight:20}}/> {business?.city}, {business?.location} 
-          </Text>
+          <FontAwesome6 name="location-dot" size={20} color={Colors.PRIMARY} />
+             {business?.city}, {business?.location}
+        </Text>
       </View>
     </TouchableOpacity>
-  )
-}
+  );
+};
 
 const styles = StyleSheet.create({
   container: {
@@ -43,41 +55,21 @@ const styles = StyleSheet.create({
   subContainer: {
     flex: 1, // Allow text to take up remaining space
     marginLeft: 15, // Space between image and text
-    marginBottom:20
+    marginBottom: 20,
   },
   image: {
     width: 100,
     height: 100,
     borderRadius: 15,
   },
-  contactPerson: {
-    fontFamily: 'outfit',
-    color: Colors.GRAY,
-    fontSize: 14,
-  },
-  serviceName: {
-    fontFamily: 'outfit-bold',
-    fontSize: 19,
-    color: Colors.BLACK,
-    marginVertical: 2,
-  },
-  price: {
-    fontFamily: 'outfit-Medium',
-    fontSize: 16,
-    color: Colors.BLACK,
-    marginVertical: 2,
-  },
-  location: {
-    fontFamily: 'outfit',
-    color: Colors.GRAY,
-    fontSize: 14,
-    marginTop: 2,
+  priceContainer: {
     flexDirection: 'row',
     alignItems: 'center',
+    marginVertical: 2,
   },
-  locationIcon: {
-    marginRight: 10, 
+  priceIcon: {
+    marginRight: 8, // Space between icon and price text
   },
 });
 
-export default BusinessListItem
+export default BusinessListItem;
