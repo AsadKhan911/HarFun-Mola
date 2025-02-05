@@ -1,6 +1,7 @@
 import { View, Text, Image, StyleSheet, TouchableOpacity } from "react-native";
 import Colors from "@/constants/Colors";
 import { FontAwesome6 } from "@expo/vector-icons";
+import { useNavigation } from "@react-navigation/native"; // Import navigation hook
 
 // Badge color based on status
 const getStatusColor = (status) => {
@@ -10,7 +11,7 @@ const getStatusColor = (status) => {
     case "Confirmed":
       return "#4CAF50"; // Green (Confirmed)
     case "in-progress":
-      return "#4A90E2"; // Green (Ongoing)
+      return "#4A90E2"; // Blue (Ongoing)
     case "Completed":
       return "#2196F3"; // Blue (Completed)
     case "Cancelled":
@@ -20,9 +21,34 @@ const getStatusColor = (status) => {
   }
 };
 
+// Define screen names based on status
+const getNavigationScreen = (status) => {
+  switch (status) {
+    case "Pending":
+      return "user-order-pending-screen";
+    case "Confirmed":
+      return "user-order-confirmed-screen";
+    case "in-progress":
+      return "user-order-inprogress-screen";
+    case "Completed":
+      return "user-order-completed-screen";
+    case "Cancelled":
+      return "user-order-cancelled-screen";
+    default:
+      return "UnknownScreen"; // Fallback screen
+  }
+};
+
 const BookingListItem = ({ booking }) => {
+  const navigation = useNavigation(); // Use navigation hook
+
+  const handlePress = () => {
+    const screen = getNavigationScreen(booking?.status);
+    navigation.navigate(screen , { booking }); // Pass booking details to the screen
+  };
+
   return (
-    <TouchableOpacity style={styles.card}>
+    <TouchableOpacity style={styles.card} onPress={handlePress}>
       <Image
         source={{ uri: booking?.service?.created_by?.profile?.profilePic }}
         style={styles.image}

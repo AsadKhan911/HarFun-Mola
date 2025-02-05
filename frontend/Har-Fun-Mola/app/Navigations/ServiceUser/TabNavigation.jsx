@@ -5,7 +5,7 @@ import AntDesign from '@expo/vector-icons/AntDesign';
 import Colors from '../../../constants/Colors.ts';
 import HomeNavigation from '../ServiceUser/HomeNavigation.jsx';
 import ProfileNavigation from '../ServiceUser/ProfileNavigation.jsx';
-import Booking from '../../Screens/BookingScreen/Booking.jsx';
+import BookingNavigationUser from '../ServiceUser/BookingNavigation.jsx'
 import HomeNavigationSP from '../ServiceProvider/HomeNavigationSP.jsx';
 import BookingNavigationSP from '../ServiceProvider/BookingNavigationSP.jsx'
 import { useSelector } from 'react-redux';
@@ -43,7 +43,7 @@ const TabNavigation = () => {
                     />
                     <Tab.Screen
                         name="booking"
-                        component={Booking}
+                        component={BookingNavigationUser}
                         options={{
                             tabBarLabel: ({ color }) => (
                                 <Text style={{ color: color, fontSize: 12, marginTop: -1 }}>Booking</Text>
