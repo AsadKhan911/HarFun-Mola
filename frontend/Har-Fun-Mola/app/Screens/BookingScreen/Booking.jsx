@@ -3,15 +3,20 @@ import { View, Text, FlatList, TouchableOpacity, StyleSheet, ActivityIndicator }
 import { useSelector } from "react-redux";
 import BookingListItem from "../BookingScreen/BookingListItem.jsx";
 import Colors from "@/constants/Colors";
+import useGetUserBooking from '../../../hooks/useGetUserBooking.jsx'
 
 const Booking = () => {
+
+
   const { allBookings } = useSelector((store) => store.bookings);
   const [selectedTab, setSelectedTab] = useState("Upcoming"); // Default selected tab
+
+  useGetUserBooking({ selectedTab });
 
   // Filter bookings based on selectedTab
   const filteredBookings = allBookings?.filter((booking) => {
     if (selectedTab === "Upcoming") return ["Pending", "Confirmed"].includes(booking.status);
-    if (selectedTab === "Ongoing") return booking.status === "in-progress";
+    if (selectedTab === "Ongoing") return booking.status === "In-Progress";
     if (selectedTab === "Completed") return booking.status === "Completed";
     if (selectedTab === "Cancelled") return booking.status === "Cancelled";
     return false;

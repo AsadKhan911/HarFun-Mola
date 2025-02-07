@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { View, Text, TouchableOpacity, StyleSheet, ScrollView, Platform, KeyboardAvoidingView, Image } from 'react-native';
+import { View, Text, TouchableOpacity, StyleSheet, ScrollView, Platform, KeyboardAvoidingView, Image, Alert, Modal, ActivityIndicator } from 'react-native';
 import { useSelector } from 'react-redux';
 import Ionicons from '@expo/vector-icons/Ionicons';
 import Colors from '../../../../constants/Colors.ts';
@@ -14,19 +14,53 @@ const ActiveDetailsBookingPage = ({ route, handleCloseModal }) => {
   const serviceUser = useSelector((state) => state.bookings.singleBooking?.user);
 
   const [isServiceStarted, setIsServiceStarted] = useState(false);
+  const [isLoading, setIsLoading] = useState(false); // For loading spinner
+  const [showConfirmationModal, setShowConfirmationModal] = useState(false); // For confirmation modal
   const { updateBookingStatus, loading } = useGetBookingAcceptedToInProgress(); // Use the custom hook
   const navigation = useNavigation();
 
   useGetFetchBookingDetails(bookingId);
 
   const handleStartService = async () => {
+    setIsLoading(true); // Show loading spinner
+
+    // Convert booking timeSlot to Date object
+    const bookingDate = new Date(bookingDetails.date);
+    const [hour, minute] = bookingDetails.timeSlot.split(/:| /);
+    const isPM = bookingDetails.timeSlot.includes('PM');
+    let bookingHour = parseInt(hour, 10);
+    if (isPM && bookingHour !== 12) bookingHour += 12;
+    if (!isPM && bookingHour === 12) bookingHour = 0;
+    bookingDate.setHours(bookingHour, parseInt(minute, 10), 0, 0);
+
+    // Get current time
+    const now = new Date();
+
+    // Check if service can be started
+    const twoHoursBefore = new Date(bookingDate);
+    twoHoursBefore.setHours(bookingDate.getHours() - 2);
+
+    if (now < twoHoursBefore) {
+      Alert.alert("Too Early", "You can't start the service more than two hours before the scheduled time.");
+      setIsLoading(false); // Hide loading spinner
+      return;
+    }
+
+    if (isServiceStarted) {
+      navigation.push('inprogress-detail-booking-page');
+      setIsLoading(false); // Hide loading spinner
+      return;
+    }
+
     const { success, message } = await updateBookingStatus(bookingId, 'In-Progress');
     if (success) {
-      setIsServiceStarted(true); // Change the button state
-      navigation.push('final-page'); // Navigate to the desired page after starting the service
+      setIsServiceStarted(true);
+      Alert.alert("Service Started", "Service has been started. Wish you the best of luck!");
+      navigation.push('inprogress-detail-booking-page');
     } else {
-      alert(message); // Show an error message if the update fails
+      alert(message);
     }
+    setIsLoading(false); // Hide loading spinner
   };
 
   const handleViewProfile = () => {
@@ -35,6 +69,15 @@ const ActiveDetailsBookingPage = ({ route, handleCloseModal }) => {
 
   const handleMessage = () => {
     console.log('Message User');
+  };
+
+  const handleConfirmation = () => {
+    setShowConfirmationModal(true); // Show confirmation modal
+  };
+
+  const handleConfirmStartService = () => {
+    setShowConfirmationModal(false); // Hide confirmation modal
+    handleStartService(); // Start the service
   };
 
   if (!bookingDetails || !serviceUser) {
@@ -57,7 +100,8 @@ const ActiveDetailsBookingPage = ({ route, handleCloseModal }) => {
         <Heading text="Booking Information" />
         <View style={styles.card}>
           <Text style={styles.fieldName}>Service: <Text style={styles.fieldValue}>{bookingDetails.service?.serviceName}</Text></Text>
-          <Text style={styles.fieldName}>Date: <Text style={styles.fieldValue}>{new Date(bookingDetails.date).toLocaleDateString()}</Text></Text>
+          <Text style={styles.fieldName}>Order No: <Text style={styles.fieldValue}>{bookingDetails.orderNumber}</Text></Text>
+          <Text style={styles.fieldName}>Date: <Text style={styles.fieldValue}>{new Date(bookingDetails.date).toDateString()}</Text></Text>
           <Text style={styles.fieldName}>Time Slot: <Text style={styles.fieldValue}>{bookingDetails.timeSlot}</Text></Text>
           <Text style={styles.fieldName}>Address: <Text style={styles.fieldValue}>{bookingDetails.address}</Text></Text>
           <Text style={styles.fieldName}>Status: <Text style={styles.fieldValue}>{bookingDetails.status}</Text></Text>
@@ -66,7 +110,7 @@ const ActiveDetailsBookingPage = ({ route, handleCloseModal }) => {
         {/* Service User Details */}
         <View style={styles.profileSection}>
           <Image
-            source={{ uri: serviceUser.profile.profilePic || "PROFILE PIC" }} 
+            source={{ uri: serviceUser.profile.profilePic || "PROFILE PIC" }}
             style={styles.profilePic}
           />
           <Text style={{ fontFamily: 'outfit-Medium', fontSize: 18, marginLeft: -5 }}>Service Client</Text>
@@ -85,13 +129,19 @@ const ActiveDetailsBookingPage = ({ route, handleCloseModal }) => {
           </TouchableOpacity>
           <TouchableOpacity
             style={[styles.button, styles.profileButton]}
-            onPress={handleStartService}
-            disabled={loading}
+            onPress={handleConfirmation} // Show confirmation modal
+            disabled={loading || isLoading}
           >
-            <Ionicons name="rocket-outline" size={18} color={Colors.WHITE} />
-            <Text style={styles.buttonText}>
-              {isServiceStarted ? 'View Order Activity' : 'Start Service'}
-            </Text>
+            {isLoading ? (
+              <ActivityIndicator size="small" color={Colors.WHITE} />
+            ) : (
+              <>
+                <Ionicons name="rocket-outline" size={18} color={Colors.WHITE} />
+                <Text style={styles.buttonText}>
+                  {isServiceStarted ? 'View Order Activity' : 'Start Service'}
+                </Text>
+              </>
+            )}
           </TouchableOpacity>
         </View>
 
@@ -103,6 +153,35 @@ const ActiveDetailsBookingPage = ({ route, handleCloseModal }) => {
           </Text>
         </View>
       </ScrollView>
+
+      {/* Confirmation Modal */}
+      <Modal
+        visible={showConfirmationModal}
+        transparent={true}
+        animationType="fade"
+        onRequestClose={() => setShowConfirmationModal(false)}
+      >
+        <View style={styles.modalOverlay}>
+          <View style={styles.modalContent}>
+            <Text style={styles.modalTitle}>Are you sure?</Text>
+            <Text style={styles.modalText}>Do you want to start the service?</Text>
+            <View style={styles.modalButtons}>
+              <TouchableOpacity
+                style={[styles.modalButton, styles.modalButtonNo]}
+                onPress={() => setShowConfirmationModal(false)}
+              >
+                <Text style={styles.modalButtonText}>No</Text>
+              </TouchableOpacity>
+              <TouchableOpacity
+                style={[styles.modalButton, styles.modalButtonYes]}
+                onPress={handleConfirmStartService}
+              >
+                <Text style={styles.modalButtonText}>Yes</Text>
+              </TouchableOpacity>
+            </View>
+          </View>
+        </View>
+      </Modal>
     </KeyboardAvoidingView>
   );
 };
@@ -151,7 +230,7 @@ const styles = StyleSheet.create({
   profileSection: {
     flexDirection: 'row',
     alignItems: 'center',
-    marginBottom:10,
+    marginBottom: 10,
   },
   profilePic: {
     width: 50,
@@ -162,7 +241,7 @@ const styles = StyleSheet.create({
     borderColor: Colors.PRIMARY,
   },
   actionButtons: {
-    marginBottom:15,
+    marginBottom: 15,
     flexDirection: 'row',
     justifyContent: 'space-between',
     marginTop: 2,
@@ -189,7 +268,7 @@ const styles = StyleSheet.create({
   },
   buttonText: {
     color: Colors.WHITE,
-    fontSize: 16,
+    fontSize: 13,
     fontFamily: 'outfit-bold',
     marginLeft: 10,
   },
@@ -221,6 +300,55 @@ const styles = StyleSheet.create({
     color: Colors.DARK_GRAY,
     fontFamily: 'outfit-medium',
     marginLeft: 10,
+  },
+  modalOverlay: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: 'rgba(0, 0, 0, 0.5)',
+  },
+  modalContent: {
+    backgroundColor: Colors.WHITE,
+    borderRadius: 12,
+    padding: 20,
+    width: '80%',
+    alignItems: 'center',
+  },
+  modalTitle: {
+    fontSize: 20,
+    fontFamily: 'outfit-bold',
+    color: Colors.BLACK,
+    marginBottom: 10,
+  },
+  modalText: {
+    fontSize: 16,
+    fontFamily: 'outfit-medium',
+    color: Colors.DARK_GRAY,
+    marginBottom: 20,
+    textAlign: 'center',
+  },
+  modalButtons: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    width: '100%',
+  },
+  modalButton: {
+    paddingVertical: 10,
+    paddingHorizontal: 20,
+    borderRadius: 8,
+    width: '45%',
+    alignItems: 'center',
+  },
+  modalButtonYes: {
+    backgroundColor: Colors.PRIMARY,
+  },
+  modalButtonNo: {
+    backgroundColor: Colors.GRAY,
+  },
+  modalButtonText: {
+    color: Colors.WHITE,
+    fontSize: 16,
+    fontFamily: 'outfit-bold',
   },
 });
 

@@ -19,8 +19,14 @@ const ServiceProviderBookings = () => {
   useEffect(() => {
     const fetchBookings = async () => {
       try {
+        dispatch(setAllProviderBookings([]))
         const response = await axios.get(`${BookingBaseUrl}/getproviderbookings`);
-        dispatch(setAllProviderBookings(response.data.bookings));
+        if (response.data.success) {
+          dispatch(setAllProviderBookings(response.data.bookings));
+        }
+        else {
+          console.log("No bookings available")
+        }
       } catch (error) {
         console.error("Error fetching bookings:", error);
       } finally {
@@ -29,13 +35,13 @@ const ServiceProviderBookings = () => {
     };
 
     fetchBookings();
-  }, []);
+  }, [selectedTab]);
 
   // Filter bookings based on selectedTab
   const filteredBookings = allProviderBookings.filter((booking) => {
     if (selectedTab === "Pending") return booking.status === "Pending";
     if (selectedTab === "Active") return booking.status === "Confirmed"; // Adjust based on your DB status
-    if (selectedTab === "On-Going") return booking.status === "in-progress";
+    if (selectedTab === "On-Going") return booking.status === "In-Progress";
     if (selectedTab === "Cancelled") return booking.status === "Cancelled";
     return false;
   });
@@ -68,7 +74,7 @@ const ServiceProviderBookings = () => {
         return 'orange'; // Keep the same color for pending
       case "Confirmed":
         return Colors.PRIMARY; // Adjust this for active bookings
-      case "in-progress":
+      case "In-Progress":
         return '#4A90E2'; // Green for completed
       case "Cancelled":
         return 'red'; // Red for cancelled
@@ -88,7 +94,7 @@ const ServiceProviderBookings = () => {
             onPress={() => setSelectedTab(tab)}
           >
             <Text style={[styles.tabText, selectedTab === tab && styles.activeTabText]}>
-              {tab} 
+              {tab}
             </Text>
           </TouchableOpacity>
         ))}
@@ -97,6 +103,9 @@ const ServiceProviderBookings = () => {
       {/* List of Bookings */}
       {loading ? (
         <ActivityIndicator size="large" color={Colors.PRIMARY} style={styles.loader} />
+
+      ) : filteredBookings.length === 0 ? (
+        <Text style={styles.noBookingsText}>No bookings available yet</Text>
       ) : (
         <FlatList
           data={filteredBookings}
@@ -106,6 +115,16 @@ const ServiceProviderBookings = () => {
               <Card style={styles.card}>
                 <Card.Content>
                   <Text style={styles.title}>{item.service.serviceName}</Text>
+                  <Text style={styles.detail}>
+                    {
+                      item?.orderNumber && (
+                        <>
+                          <FontAwesome name="first-order" size={14} color={Colors.GRAY} /> {item.orderNumber}
+                        </>
+                      )
+                    }
+                  </Text>
+
                   <Text style={styles.detail}>
                     <FontAwesome name="user" size={14} color={Colors.GRAY} /> {item.user.fullName}
                   </Text>
@@ -212,6 +231,13 @@ const styles = StyleSheet.create({
     color: Colors.WHITE, // Text color inside the badge
     fontFamily: "outfit-Medium",
   },
+  noBookingsText: {
+    textAlign: "center",
+    fontSize: 16,
+    color: Colors.GRAY,
+    marginTop: 20
+  },
+
 });
 
 export default ServiceProviderBookings;

@@ -77,6 +77,7 @@ export const Booking_Accepted_User_Template = `
         <p>Your booking for <strong>{service}</strong> has been <span style="color: green;">accepted</span> by <strong>{provider}</strong>.</p>
 
         <div class="details">
+            <p><strong>📦 Order Number: #{orderNumber}</strong></p>
             <p>📅 Date: {date}</p>
             <p>⏰ Time: {time}</p>
             <p>📍 Address: {address}</p>
@@ -176,6 +177,7 @@ export const Booking_Accepted_Provider_Template = `
         <p>You have successfully <span style="color: green;">accepted</span> a booking for <strong>{service}</strong> from <strong>{customer}</strong>.</p>
 
         <div class="details">
+            <p><strong>📦 Order Number: #{orderNumber}</strong></p>
             <p>📅 Date: {date}</p>
             <p>⏰ Time: {time}</p>
             <p>📍 Address: {address}</p>

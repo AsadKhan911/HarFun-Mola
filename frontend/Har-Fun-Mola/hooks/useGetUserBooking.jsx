@@ -4,14 +4,17 @@ import axios from "axios"
 import { useEffect } from "react"
 import { useDispatch, useSelector } from "react-redux"
 
-const useGetUserBooking = () => {
+const useGetUserBooking = ({ selectedTab }) => {
 
+    const { allBookings } = useSelector((store) => store.bookings);
     const { token } = useSelector((store) => store.auth.user)
     const dispatch = useDispatch()
 
     useEffect(() => {
         const fetchAllBookings = async () => {
             try {
+                dispatch(setAllBookings([]));
+                console.log("test")
                 const res = await axios.get(`${BookingBaseUrl}/get`, { withCredentials: true } , {
                     headers: {
                         "Content-Type": "application/json",
@@ -27,7 +30,7 @@ const useGetUserBooking = () => {
             }
         };
         fetchAllBookings();
-    }, []); 
+    }, [dispatch , selectedTab]); 
     
 }
 

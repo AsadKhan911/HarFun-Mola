@@ -10,7 +10,7 @@ const getStatusColor = (status) => {
       return "#FFA500"; // Orange (Pending)
     case "Confirmed":
       return "#4CAF50"; // Green (Confirmed)
-    case "in-progress":
+    case "In-Progress":
       return "#4A90E2"; // Blue (Ongoing)
     case "Completed":
       return "#2196F3"; // Blue (Completed)
@@ -28,7 +28,7 @@ const getNavigationScreen = (status) => {
       return "user-order-pending-screen";
     case "Confirmed":
       return "user-order-confirmed-screen";
-    case "in-progress":
+    case "In-Progress":
       return "user-order-inprogress-screen";
     case "Completed":
       return "user-order-completed-screen";

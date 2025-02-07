@@ -1,32 +1,47 @@
-import React from "react";
+import React, { useState } from "react";
 import { View, Text, TouchableOpacity, Alert, ActivityIndicator, StyleSheet } from "react-native";
 import { useNavigation, useRoute } from "@react-navigation/native";
 import { Card } from "react-native-paper";
-import { FontAwesome } from "@expo/vector-icons";
+import { FontAwesome, Ionicons } from "@expo/vector-icons";
 import { useSelector } from "react-redux";
 import useGetFetchBookingDetails from '../../../../customHooks/useGetFetchBookingDetails.jsx';
 import Colors from "../../../../constants/Colors.ts";
-import { useGetUpdateBookingStatus } from "../../../../customHooks/useGetBookingPendingToAccepted.jsx"; // Import the custom hook
+import { useGetUpdateBookingStatus } from "../../../../customHooks/useGetBookingPendingToAccepted.jsx"; 
 
 const OrderDetailsScreen = () => {
     const navigation = useNavigation();
     const route = useRoute();
     const { bookingId } = route.params;
     const { singleBooking } = useSelector((store) => store.bookings);
-    const { handleAction, loading } = useGetUpdateBookingStatus(bookingId); // Use the custom hook
+    const { handleAction } = useGetUpdateBookingStatus(bookingId); 
 
-    // Fetch booking details using the custom hook
+    
+    const [acceptLoading, setAcceptLoading] = useState(false);
+    const [rejectLoading, setRejectLoading] = useState(false);
+
+    // Fetch booking details
     useGetFetchBookingDetails(bookingId);
 
-    // Handle accept/reject action
+    
     const handleBookingAction = async (status) => {
+        if (status === "Accept") {
+            setAcceptLoading(true);
+        } else {
+            setRejectLoading(true);
+        }
+
         const result = await handleAction(status);
+        
         if (result.success) {
             Alert.alert("Success", result.message);
-            navigation.goBack(); // Go back to previous screen
+            navigation.goBack();
         } else {
             Alert.alert("Error", result.message);
         }
+
+        // Reset loading state after the action is completed
+        setAcceptLoading(false);
+        setRejectLoading(false);
     };
 
     if (!singleBooking) {
@@ -39,29 +54,45 @@ const OrderDetailsScreen = () => {
 
     return (
         <View style={styles.container}>
+            {/* Go Back Icon */}
+            <TouchableOpacity style={styles.goBackContainer} onPress={() => navigation.goBack()}>
+                <Ionicons name="arrow-back" size={24} color={Colors.BLACK} />
+            </TouchableOpacity>
+
             <Card style={styles.card}>
                 <Card.Content>
                     <Text style={styles.title}>{singleBooking.service.serviceName}</Text>
+
+                    <View style={styles.infoRow}>
+                        <FontAwesome name="file" size={16} color={Colors.GRAY} />
+                        <Text style={styles.detail}>Order Number: {singleBooking.orderNumber || "Assigns after confirmation"}</Text>
+                    </View>
+
                     <View style={styles.infoRow}>
                         <FontAwesome name="user" size={16} color={Colors.GRAY} />
                         <Text style={styles.detail}> {singleBooking.user.fullName}</Text>
                     </View>
+
                     <View style={styles.infoRow}>
                         <FontAwesome name="phone" size={16} color={Colors.GRAY} />
                         <Text style={styles.detail}> {singleBooking.user.phoneNumber}</Text>
                     </View>
+
                     <View style={styles.infoRow}>
                         <FontAwesome name="map-marker" size={16} color={Colors.GRAY} />
                         <Text style={styles.detail}> {singleBooking.address}, {singleBooking.user.city}</Text>
                     </View>
+
                     <View style={styles.infoRow}>
                         <FontAwesome name="dollar" size={16} color={Colors.GRAY} />
                         <Text style={styles.detail}> {singleBooking.service.price}</Text>
                     </View>
+
                     <View style={styles.infoRow}>
                         <FontAwesome name="calendar" size={16} color={Colors.GRAY} />
                         <Text style={styles.detail}> {new Date(singleBooking.date).toDateString()} | {singleBooking.timeSlot}</Text>
                     </View>
+
                     <View style={styles.statusContainer}>
                         <Text style={styles.statusText}>Status: {singleBooking.status}</Text>
                     </View>
@@ -73,16 +104,17 @@ const OrderDetailsScreen = () => {
                 <TouchableOpacity
                     style={[styles.button, styles.rejectButton]}
                     onPress={() => handleBookingAction("Reject")}
-                    disabled={loading}
+                    disabled={rejectLoading || acceptLoading}
                 >
-                    {loading ? <ActivityIndicator color="white" /> : <Text style={styles.buttonText}>Reject</Text>}
+                    {rejectLoading ? <ActivityIndicator color="white" /> : <Text style={styles.buttonText}>Reject</Text>}
                 </TouchableOpacity>
+
                 <TouchableOpacity
                     style={[styles.button, styles.acceptButton]}
                     onPress={() => handleBookingAction("Accept")}
-                    disabled={loading}
+                    disabled={acceptLoading || rejectLoading}
                 >
-                    {loading ? <ActivityIndicator color="white" /> : <Text style={styles.buttonText}>Accept</Text>}
+                    {acceptLoading ? <ActivityIndicator color="white" /> : <Text style={styles.buttonText}>Accept</Text>}
                 </TouchableOpacity>
             </View>
         </View>
@@ -105,6 +137,7 @@ const styles = StyleSheet.create({
         borderRadius: 12,
         padding: 20,
         elevation: 5,
+        marginTop: '50%',
     },
     title: {
         fontSize: 20,
@@ -157,6 +190,12 @@ const styles = StyleSheet.create({
         fontSize: 16,
         color: "white",
         fontFamily: "outfit-Medium",
+    },
+    goBackContainer: {
+        position: "absolute",
+        top: 20,
+        left: 18,
+        zIndex: 1,
     },
 });
 

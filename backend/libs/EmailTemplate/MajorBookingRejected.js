@@ -77,6 +77,7 @@ export const BookingRejectedUserTemplate = `
         <p>We regret to inform you that the booking for <strong>{service}</strong> has been <span style="color: red;">rejected</span>.</p>
 
         <div class="details">
+            <p><strong>📦 Order Number: #{orderNumber}</strong></p>
             <p>📅 Date: {date}</p>
             <p>⏰ Time: {time}</p>
             <p>📍 Address: {address}</p>
@@ -120,6 +121,7 @@ export const BookingRejectedProviderTemplate = `
             <p>Hello <strong>{name}</strong>,</p>
             <p>You have successfully rejected the booking request for <strong>{service}</strong>.</p>
             <div class="details">
+                <p><strong>📦 Order Number: #{orderNumber}</strong></p>
                 <p>📅 Date: {date}</p>
                 <p>⏰ Time: {time}</p>
                 <p>📍 Address: {address}</p>

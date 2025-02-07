@@ -212,42 +212,52 @@ export const updateBookingStatus = async (req, res) => {
   const { status } = req.body;
 
   try {
-      // Find and update the booking, populating necessary fields
-      const booking = await Booking.findByIdAndUpdate(
-          bookingId,
-          { status, updatedAt: Date.now() },
-          { new: true }
-      )
-      .populate({
-          path: "service",
-          populate: { path: "created_by", model: "user" } // Fetch the provider inside service using `created_by`
-      })
-      .populate("user"); // Fetch the user who made the booking
+    let updateData = { status, updatedAt: Date.now() };
 
-      if (!booking) {
-          return res.status(404).json({ message: "Booking not found." });
-      }  
+    // If the booking status is being updated to "Confirmed" (Accepted), generate an order number
+    if (status === "Confirmed") {
+       // Random order number
+       const orderNumber = `HFM-${Math.floor(1000 + Math.random() * 9000)}`; // HFM-xxxx format
+      // Random order number
+      updateData = { ...updateData, orderNumber }; // Add the order number to the update data
+    }
 
-      // Extract user and provider details
-      const serviceUser = booking.user;  // The user who booked the service
-      const serviceProvider = booking.service.created_by;  // The provider of the service (using `created_by`)
+    // Find and update the booking, populating necessary fields
+    const booking = await Booking.findByIdAndUpdate(
+      bookingId,
+      updateData,
+      { new: true }
+    )
+    .populate({
+      path: "service",
+      populate: { path: "created_by", model: "user" } // Fetch the provider inside service using `created_by`
+    })
+    .populate("user"); // Fetch the user who made the booking
 
-      // Send email notifications if booking is confirmed
-      if (status === "Confirmed") {
-          await BookingAcceptedEmail(serviceUser, serviceProvider, booking);
-      }
+    if (!booking) {
+      return res.status(404).json({ message: "Booking not found." });
+    }
 
-      if(status === "Cancelled") {
-        await BookingRejectedEmail(serviceUser , serviceProvider , booking)
-      }
+    // Extract user and provider details
+    const serviceUser = booking.user;  // The user who booked the service
+    const serviceProvider = booking.service.created_by;  // The provider of the service (using `created_by`)
 
-      res.status(200).json({
-          success: true,
-          message: `Booking status updated to ${status}.`,
-          booking,
-      });
+    // Send email notifications if booking is confirmed
+    if (status === "Confirmed") {
+      await BookingAcceptedEmail(serviceUser, serviceProvider, booking);
+    }
+
+    if (status === "Cancelled") {
+      await BookingRejectedEmail(serviceUser, serviceProvider, booking);
+    }
+
+    res.status(200).json({
+      success: true,
+      message: `Booking status updated to ${status}.`,
+      booking,
+    });
   } catch (error) {
-      console.error("Error updating booking status:", error);
-      res.status(500).json({ message: "An error occurred while updating the booking status.", error });
+    console.error("Error updating booking status:", error);
+    res.status(500).json({ message: "An error occurred while updating the booking status.", error });
   }
 };

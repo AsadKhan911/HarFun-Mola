@@ -3,11 +3,11 @@ import mongoose from "mongoose";
 const bookingSchema = new mongoose.Schema({
   // Reference to the service being booked and also we will fetch the provider(user data) who post the listings from inside it.
   service: {
-    type: mongoose.Schema.Types.ObjectId, 
+    type: mongoose.Schema.Types.ObjectId,
     ref: "majorListing", // References the serviceListings model.
     required: true
   },
-  
+
   // Reference to the user making the booking
   user: {
     type: mongoose.Schema.Types.ObjectId,
@@ -17,17 +17,17 @@ const bookingSchema = new mongoose.Schema({
 
   date: {
     type: String,
-    require:true
+    require: true
   },
 
-  timeSlot: { 
-    type: String, 
-    required: true 
+  timeSlot: {
+    type: String,
+    required: true
   }, // Preferred time slot
 
-  address: { 
-    type: String, 
-    required: true 
+  address: {
+    type: String,
+    required: true
   }, // Address for the service
 
   // Status of the booking (pending, confirmed, completed, etc.)
@@ -42,14 +42,17 @@ const bookingSchema = new mongoose.Schema({
     type: String,
     default: ""
   },
-
-  createdAt: { 
-    type: Date, 
-    default: Date.now 
+  orderNumber: {
+    type: String,
+    default: null, // This will be generated when status is "Confirmed"
   },
-  updatedAt: { 
-    type: Date, 
-    default: Date.now 
+  createdAt: {
+    type: Date,
+    default: Date.now
+  },
+  updatedAt: {
+    type: Date,
+    default: Date.now
   }
 }, { timestamps: true });
 

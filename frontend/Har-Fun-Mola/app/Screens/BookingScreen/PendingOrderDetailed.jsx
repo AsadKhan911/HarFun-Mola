@@ -3,7 +3,7 @@ import { View, Text, Image, StyleSheet, ScrollView, TouchableOpacity, ActivityIn
 import { useNavigation, useRoute } from "@react-navigation/native";
 import Colors from "@/constants/Colors";
 import { FontAwesome6, Ionicons } from "@expo/vector-icons";
-import  useGetCancelOrder  from "../../../customHooks/ServiceUser/useGetCancelOrder.jsx"; // Import custom hook
+import useGetCancelOrder from "../../../customHooks/ServiceUser/useGetCancelOrder.jsx"; // Import custom hook
 
 const PendingOrderDetailed = () => {
   const navigation = useNavigation();
@@ -21,6 +21,12 @@ const PendingOrderDetailed = () => {
 
   return (
     <ScrollView contentContainerStyle={styles.container}>
+
+      {/* Go Back Icon */}
+      <TouchableOpacity style={styles.goBackContainer} onPress={() => navigation.goBack()}>
+        <Ionicons name="arrow-back" size={24} color={Colors.BLACK} />
+      </TouchableOpacity>
+
       {/* Service Image */}
       <View style={styles.imageContainer}>
         <Image source={{ uri: booking?.service?.created_by?.profile?.profilePic }} style={styles.image} />
@@ -41,7 +47,7 @@ const PendingOrderDetailed = () => {
         <View style={styles.detailRow}>
           <FontAwesome6 name="calendar-alt" size={16} color={Colors.PRIMARY} />
           <Text style={{ fontFamily: 'outfit-Medium' }}> Booking Date: </Text>
-          <Text style={styles.detailText}>{booking?.date}</Text>
+          <Text style={styles.detailText}>{new Date(booking.date).toDateString()}</Text>
         </View>
 
         <View style={styles.detailRow}>
@@ -70,7 +76,7 @@ const PendingOrderDetailed = () => {
           Your order has been sent to the service provider
           <Text style={{ fontFamily: "outfit-Bold" }}> {booking?.service?.created_by?.fullName} </Text>
           and we are waiting for their confirmation. In the meantime, please wait until your order is confirmed.
-          We will notify you via email once the confirmation is successful.
+          We will assign you an <Text style={{ fontFamily: "outfit-Bold" }}>order number</Text> via email once the confirmation is successful.
         </Text>
       </View>
     </ScrollView>
@@ -179,6 +185,12 @@ const styles = StyleSheet.create({
     fontFamily: "outfit",
     color: Colors.DARK_GRAY,
     flex: 1,
+  },
+  goBackContainer: {
+    position: "absolute",
+    top: 20,
+    left: 18,
+    zIndex: 1,
   },
 });
 

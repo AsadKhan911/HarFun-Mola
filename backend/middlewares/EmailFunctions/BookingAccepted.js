@@ -5,7 +5,7 @@ import { BookingRejectedProviderTemplate , BookingRejectedUserTemplate } from ".
 
 export const BookingAcceptedEmail = async (serviceUser, serviceProvider, booking) => {
     try {
-        const { service, date, timeSlot, address } = booking;
+        const { service, date, timeSlot, address, orderNumber } = booking;
 
         const userEmailOptions = {
             from: '"HarFunMola ⚒" <kidsgardenus@gmail.com>',
@@ -19,6 +19,7 @@ export const BookingAcceptedEmail = async (serviceUser, serviceProvider, booking
                 .replace("{date}", date)
                 .replace("{time}", timeSlot)
                 .replace("{address}", address)
+                .replace("{orderNumber}", orderNumber)
         };
 
         const providerEmailOptions = {
@@ -33,6 +34,7 @@ export const BookingAcceptedEmail = async (serviceUser, serviceProvider, booking
                 .replace("{date}", date)
                 .replace("{time}", timeSlot)
                 .replace("{address}", address)
+                .replace("{orderNumber}", orderNumber)
         };
 
         // Send emails to both user and provider
@@ -49,7 +51,7 @@ export const BookingAcceptedEmail = async (serviceUser, serviceProvider, booking
 
 export const BookingRejectedEmail = async (serviceUser, serviceProvider, booking) => {
     try {
-        const { service, date, timeSlot, address } = booking;
+        const { service, date, timeSlot, address, orderNumber } = booking;
 
         // Email for Service User
         let serviceUserOptions = {
@@ -63,6 +65,7 @@ export const BookingRejectedEmail = async (serviceUser, serviceProvider, booking
                 .replace("{date}", date)
                 .replace("{time}", timeSlot)
                 .replace("{address}", address)
+                .replace("{orderNumber}", orderNumber)
         };
 
         // Email for Service Provider (Confirmation of Rejection)
@@ -77,6 +80,7 @@ export const BookingRejectedEmail = async (serviceUser, serviceProvider, booking
                 .replace("{date}", date)
                 .replace("{time}", timeSlot)
                 .replace("{address}", address)
+                .replace("{orderNumber}", orderNumber)
         };
 
         // Send emails asynchronously
