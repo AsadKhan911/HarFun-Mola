@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, StyleSheet, ScrollView, TouchableOpacity, Alert } from 'react-native';
+import { View, Text, StyleSheet, ScrollView, TouchableOpacity, Alert, ActivityIndicator } from 'react-native';
 import { useSelector } from 'react-redux';
 import axios from 'axios'; // Use axios for API calls
 import useGetFetchBookingDetails from '../../../../customHooks/useGetFetchBookingDetails.jsx';
@@ -14,6 +14,7 @@ const InProgressDetailBookingPage = ({ route }) => {
   const [elapsedTime, setElapsedTime] = useState(0); // Timer in seconds
   const [startTime, setStartTime] = useState(null);
   const [completedTime, setCompletedTime] = useState(null);
+  const [loading , setLoading] = useState(true); // Set initial loading state to true
 
   useGetFetchBookingDetails(bookingId);
 
@@ -37,6 +38,9 @@ const InProgressDetailBookingPage = ({ route }) => {
       }
     } catch (error) {
       console.error('Error fetching booking details:', error);
+    }
+    finally{
+      setLoading(false); // Set loading to false after fetching data
     }
   };
 
@@ -63,8 +67,7 @@ const InProgressDetailBookingPage = ({ route }) => {
     const hours = Math.floor(seconds / 3600);
     const minutes = Math.floor((seconds % 3600) / 60);
     const secs = seconds % 60;
-    return `${hours} hours ${minutes} min ${secs} sec`
-;
+    return `${hours} hours ${minutes} min ${secs} sec`;
   };
   
 
@@ -104,7 +107,7 @@ const InProgressDetailBookingPage = ({ route }) => {
       {/* Timer Section */}
       <View style={styles.timerContainer}>
         <Text style={styles.timerLabel}>Service Started Since</Text>
-        <Text style={styles.timer}>{formatTimer(elapsedTime)}</Text>
+        {loading ? <ActivityIndicator size="large" color={Colors.PRIMARY} /> : <Text style={styles.timer}>{formatTimer(elapsedTime)}</Text>}
       </View>
 
       {/* Order Details Section */}
