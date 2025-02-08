@@ -84,13 +84,18 @@ const OrderDetailsScreen = () => {
                     </View>
 
                     <View style={styles.infoRow}>
-                        <FontAwesome name="dollar" size={16} color={Colors.GRAY} />
-                        <Text style={styles.detail}> {singleBooking.service.price}</Text>
+                        <FontAwesome name="money" size={16} color={Colors.GRAY} />
+                        <Text style={styles.detail}> {singleBooking.service.price} Pkr</Text>
                     </View>
 
                     <View style={styles.infoRow}>
                         <FontAwesome name="calendar" size={16} color={Colors.GRAY} />
                         <Text style={styles.detail}> {new Date(singleBooking.date).toDateString()} | {singleBooking.timeSlot}</Text>
+                    </View>
+
+                    <View style={styles.infoRow}>
+                        <FontAwesome name="sticky-note-o" size={16} color={Colors.GRAY} />
+                        <Text style={styles.detail}>{singleBooking?.instructions}</Text>
                     </View>
 
                     <View style={styles.statusContainer}>

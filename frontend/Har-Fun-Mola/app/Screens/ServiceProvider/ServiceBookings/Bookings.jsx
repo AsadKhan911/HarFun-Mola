@@ -19,6 +19,7 @@ const ServiceProviderBookings = () => {
   useEffect(() => {
     const fetchBookings = async () => {
       try {
+        setLoading(true)
         dispatch(setAllProviderBookings([]))
         const response = await axios.get(`${BookingBaseUrl}/getproviderbookings`);
         if (response.data.success) {
@@ -36,6 +37,7 @@ const ServiceProviderBookings = () => {
 
     fetchBookings();
   }, [selectedTab]);
+
 
   // Filter bookings based on selectedTab
   const filteredBookings = allProviderBookings.filter((booking) => {
@@ -57,9 +59,13 @@ const ServiceProviderBookings = () => {
         bookingId: item?._id,
       });
     } else if (selectedTab === "On-Going") {
-      navigation.push("completed-detail-booking-page", {
+      navigation.push("active-detail-booking-page", {
         bookingId: item?._id,
       });
+    // } else if (selectedTab === "On-Going") {
+    //   navigation.push("inprogress-detail-booking-page", {
+    //     bookingId: item?._id,
+    //   });
     } else if (selectedTab === "Cancelled") {
       navigation.push("cancelled-detail-booking-page", {
         bookingId: item?._id,
@@ -73,7 +79,7 @@ const ServiceProviderBookings = () => {
       case "Pending":
         return 'orange'; // Keep the same color for pending
       case "Confirmed":
-        return Colors.PRIMARY; // Adjust this for active bookings
+        return Colors.PRIMARY; 
       case "In-Progress":
         return '#4A90E2'; // Green for completed
       case "Cancelled":

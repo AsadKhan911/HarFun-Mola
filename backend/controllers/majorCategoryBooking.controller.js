@@ -197,15 +197,70 @@ export const getBooking = async (req, res) => {
       return res.status(404).json({ message: "Booking not found." });
     }
 
-    res.status(200).json({
-      success: true,
-      booking,
-    });
+    res.status(200).json({ success: true, booking });
   } catch (error) {
     console.error("Error fetching booking details:", error);
     res.status(500).json({ message: "An error occurred while fetching booking details.", error });
   }
 };
+
+
+// export const updateBookingStatus = async (req, res) => {
+//   const { bookingId } = req.params;
+//   const { status } = req.body;
+
+//   try {
+//     let updateData = { status, updatedAt: Date.now() };
+
+
+
+//     // If the booking status is being updated to "Confirmed" (Accepted), generate an order number
+//     if (status === "Confirmed") {
+//        // Random order number
+//        const orderNumber = `HFM-${Math.floor(1000 + Math.random() * 9000)}`; // HFM-xxxx format
+//       // Random order number
+//       updateData = { ...updateData, orderNumber }; // Add the order number to the update data
+//     }
+
+//     // Find and update the booking, populating necessary fields
+//     const booking = await Booking.findByIdAndUpdate(
+//       bookingId,
+//       updateData,
+//       { new: true }
+//     )
+//     .populate({
+//       path: "service",
+//       populate: { path: "created_by", model: "user" } // Fetch the provider inside service using `created_by`
+//     })
+//     .populate("user"); // Fetch the user who made the booking
+
+//     if (!booking) {
+//       return res.status(404).json({ message: "Booking not found." });
+//     }
+
+//     // Extract user and provider details
+//     const serviceUser = booking.user;  // The user who booked the service
+//     const serviceProvider = booking.service.created_by;  // The provider of the service (using `created_by`)
+
+//     // Send email notifications if booking is confirmed
+//     if (status === "Confirmed") {
+//       await BookingAcceptedEmail(serviceUser, serviceProvider, booking);
+//     }
+
+//     if (status === "Cancelled") {
+//       await BookingRejectedEmail(serviceUser, serviceProvider, booking);
+//     }
+
+//     res.status(200).json({
+//       success: true,
+//       message: `Booking status updated to ${status}.`,
+//       booking,
+//     });
+//   } catch (error) {
+//     console.error("Error updating booking status:", error);
+//     res.status(500).json({ message: "An error occurred while updating the booking status.", error });
+//   }
+// };
 
 export const updateBookingStatus = async (req, res) => {
   const { bookingId } = req.params;
@@ -216,10 +271,13 @@ export const updateBookingStatus = async (req, res) => {
 
     // If the booking status is being updated to "Confirmed" (Accepted), generate an order number
     if (status === "Confirmed") {
-       // Random order number
-       const orderNumber = `HFM-${Math.floor(1000 + Math.random() * 9000)}`; // HFM-xxxx format
-      // Random order number
+      const orderNumber = `HFM-${Math.floor(1000 + Math.random() * 9000)}`; // HFM-xxxx format
       updateData = { ...updateData, orderNumber }; // Add the order number to the update data
+    }
+
+    // If the booking status is being updated to "In-Progress", set the startTime
+    if (status === "In-Progress") {
+      updateData = { ...updateData, startTime: Date.now() };
     }
 
     // Find and update the booking, populating necessary fields

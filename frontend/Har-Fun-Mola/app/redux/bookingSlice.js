@@ -6,6 +6,9 @@ const listingSlice = createSlice({
     allBookings: [], // Stores all businesses for a category
     allProviderBookings: [],
     singleBooking: [],
+
+    // isServiceStarted: false, //for active details booking start service button state purpose.
+    // showConfirmationModal: false
   },
   
   reducers: {
@@ -17,9 +20,16 @@ const listingSlice = createSlice({
     },
     setSingleBooking: (state, action) => {
       state.singleBooking = action.payload;
-    }
+    },
+    // setIsServiceStarted: (state, action) => {
+    //   state.isServiceStarted = action.payload;
+    // },
+    // setShowConfirmationModal: (state, action) => {
+    //   state.showConfirmationModal = action.payload;
+    // }
   }
 });
 
-export const { setAllBookings , setAllProviderBookings, setSingleBooking } = listingSlice.actions;
+export const { setAllBookings , setAllProviderBookings, 
+  setSingleBooking  } = listingSlice.actions;
 export default listingSlice.reducer;

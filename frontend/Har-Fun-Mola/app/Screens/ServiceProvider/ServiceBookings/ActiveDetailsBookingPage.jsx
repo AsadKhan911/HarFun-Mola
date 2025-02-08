@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { View, Text, TouchableOpacity, StyleSheet, ScrollView, Platform, KeyboardAvoidingView, Image, Alert, Modal, ActivityIndicator } from 'react-native';
-import { useSelector } from 'react-redux';
+import {  useSelector } from 'react-redux';
 import Ionicons from '@expo/vector-icons/Ionicons';
 import Colors from '../../../../constants/Colors.ts';
 import { Heading } from '../../../../components/Heading.jsx';
@@ -13,9 +13,9 @@ const ActiveDetailsBookingPage = ({ route, handleCloseModal }) => {
   const bookingDetails = useSelector((state) => state.bookings.singleBooking);
   const serviceUser = useSelector((state) => state.bookings.singleBooking?.user);
 
-  const [isServiceStarted, setIsServiceStarted] = useState(false);
   const [isLoading, setIsLoading] = useState(false); // For loading spinner
-  const [showConfirmationModal, setShowConfirmationModal] = useState(false); // For confirmation modal
+  // const [isServiceStarted, setIsServiceStarted] = useState(false); // For loading spinner
+  const [showConfirmationModal, setShowConfirmationModal] = useState(false); // For loading spinner
   const { updateBookingStatus, loading } = useGetBookingAcceptedToInProgress(); // Use the custom hook
   const navigation = useNavigation();
 
@@ -24,7 +24,6 @@ const ActiveDetailsBookingPage = ({ route, handleCloseModal }) => {
   const handleStartService = async () => {
     setIsLoading(true); // Show loading spinner
 
-    // Convert booking timeSlot to Date object
     const bookingDate = new Date(bookingDetails.date);
     const [hour, minute] = bookingDetails.timeSlot.split(/:| /);
     const isPM = bookingDetails.timeSlot.includes('PM');
@@ -33,52 +32,42 @@ const ActiveDetailsBookingPage = ({ route, handleCloseModal }) => {
     if (!isPM && bookingHour === 12) bookingHour = 0;
     bookingDate.setHours(bookingHour, parseInt(minute, 10), 0, 0);
 
-    // Get current time
     const now = new Date();
-
-    // Check if service can be started
     const twoHoursBefore = new Date(bookingDate);
     twoHoursBefore.setHours(bookingDate.getHours() - 2);
 
     if (now < twoHoursBefore) {
       Alert.alert("Too Early", "You can't start the service more than two hours before the scheduled time.");
-      setIsLoading(false); // Hide loading spinner
-      return;
-    }
-
-    if (isServiceStarted) {
-      navigation.push('inprogress-detail-booking-page');
-      setIsLoading(false); // Hide loading spinner
+      setIsLoading(false);
       return;
     }
 
     const { success, message } = await updateBookingStatus(bookingId, 'In-Progress');
     if (success) {
-      setIsServiceStarted(true);
       Alert.alert("Service Started", "Service has been started. Wish you the best of luck!");
-      navigation.push('inprogress-detail-booking-page');
+      navigation.push('inprogress-detail-booking-page', { bookingId: bookingId });
     } else {
       alert(message);
     }
-    setIsLoading(false); // Hide loading spinner
-  };
-
-  const handleViewProfile = () => {
-    console.log('View Profile');
-  };
-
-  const handleMessage = () => {
-    console.log('Message User');
+    setIsLoading(false);
   };
 
   const handleConfirmation = () => {
-    setShowConfirmationModal(true); // Show confirmation modal
+    if (bookingDetails.status === 'In-Progress') {
+      navigation.push('inprogress-detail-booking-page', { bookingId: bookingId });
+    } else {
+      setShowConfirmationModal(true)
+    }
   };
 
   const handleConfirmStartService = () => {
-    setShowConfirmationModal(false); // Hide confirmation modal
-    handleStartService(); // Start the service
+    setShowConfirmationModal(false)
+    handleStartService();
   };
+
+  const handleMessage = () => {
+    console.log("message done")
+  }
 
   if (!bookingDetails || !serviceUser) {
     return (
@@ -105,6 +94,7 @@ const ActiveDetailsBookingPage = ({ route, handleCloseModal }) => {
           <Text style={styles.fieldName}>Time Slot: <Text style={styles.fieldValue}>{bookingDetails.timeSlot}</Text></Text>
           <Text style={styles.fieldName}>Address: <Text style={styles.fieldValue}>{bookingDetails.address}</Text></Text>
           <Text style={styles.fieldName}>Status: <Text style={styles.fieldValue}>{bookingDetails.status}</Text></Text>
+          <Text style={styles.fieldName}>Instructions: <Text style={styles.fieldValue}>{bookingDetails?.instructions || "No instructions given by user"}</Text></Text>
         </View>
 
         {/* Service User Details */}
@@ -129,7 +119,7 @@ const ActiveDetailsBookingPage = ({ route, handleCloseModal }) => {
           </TouchableOpacity>
           <TouchableOpacity
             style={[styles.button, styles.profileButton]}
-            onPress={handleConfirmation} // Show confirmation modal
+            onPress={handleConfirmation}
             disabled={loading || isLoading}
           >
             {isLoading ? (
@@ -138,7 +128,7 @@ const ActiveDetailsBookingPage = ({ route, handleCloseModal }) => {
               <>
                 <Ionicons name="rocket-outline" size={18} color={Colors.WHITE} />
                 <Text style={styles.buttonText}>
-                  {isServiceStarted ? 'View Order Activity' : 'Start Service'}
+                  {bookingDetails.status === 'In-Progress' ? 'View Order Activity' : 'Start Service'}
                 </Text>
               </>
             )}
@@ -146,12 +136,15 @@ const ActiveDetailsBookingPage = ({ route, handleCloseModal }) => {
         </View>
 
         {/* Disclaimer */}
+        {
+          bookingDetails.status === 'Confirmed' ? 
         <View style={styles.disclaimerContainer}>
           <Ionicons name="information-circle-outline" size={20} color={Colors.PRIMARY} />
           <Text style={styles.disclaimerText}>
             The service can be started up to two hours before the scheduled time slot. For example, if the time slot is 9:00 AM, you can start the service at 7:00 AM, but not before that.
           </Text>
-        </View>
+        </View> : null
+        }
       </ScrollView>
 
       {/* Confirmation Modal */}
@@ -185,6 +178,7 @@ const ActiveDetailsBookingPage = ({ route, handleCloseModal }) => {
     </KeyboardAvoidingView>
   );
 };
+
 
 const styles = StyleSheet.create({
   container: {
@@ -287,8 +281,8 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     backgroundColor: Colors.WHITE,
     borderRadius: 12,
-    padding: 15,
-    marginTop: 10,
+    padding: 11,
+    marginTop: 5,
     shadowColor: Colors.BLACK,
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.1,
@@ -297,9 +291,10 @@ const styles = StyleSheet.create({
   },
   disclaimerText: {
     fontSize: 14,
+    paddingHorizontal: 0,
     color: Colors.DARK_GRAY,
     fontFamily: 'outfit-medium',
-    marginLeft: 10,
+    marginLeft: 2
   },
   modalOverlay: {
     flex: 1,
