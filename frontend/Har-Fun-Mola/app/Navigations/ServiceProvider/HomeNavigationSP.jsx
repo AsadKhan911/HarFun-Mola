@@ -3,6 +3,7 @@ import Home from '../../Screens/ServiceProvider/HomeScreen/HomeScreenSP.jsx'
 import { createStackNavigator } from '@react-navigation/stack';
 import MajorCategory from '../../Screens/ServiceProvider/MajorCategory/MajorCategory.jsx'
 import PostMajorListings from '../../Screens/ServiceProvider/MajorListings/PostMajorListings.jsx'
+import CompletedDetailsBookingPage from '../../Screens/ServiceProvider/ServiceBookings/CompletedDetailsBookingPage.jsx'
 
 const Stack = createStackNavigator();
 
@@ -15,6 +16,7 @@ const HomeNavigationSP = () => {
        <Stack.Screen name='home-screen' component={Home}/>
        <Stack.Screen name='major-category' component={MajorCategory}/> 
        <Stack.Screen name='post-major-listings' component={PostMajorListings}/>  
+       <Stack.Screen name='completed-booking' component={CompletedDetailsBookingPage}/>  
     </Stack.Navigator>
   )
 }

@@ -1,25 +1,32 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, StyleSheet, ScrollView, TouchableOpacity, Alert, ActivityIndicator } from 'react-native';
+import { View, Text, StyleSheet, ScrollView, TouchableOpacity, Alert, ActivityIndicator, Image } from 'react-native';
 import { useSelector } from 'react-redux';
-import axios from 'axios'; // Use axios for API calls
+import { useNavigation } from '@react-navigation/native'; // Import navigation
+import axios from 'axios';
 import useGetFetchBookingDetails from '../../../../customHooks/useGetFetchBookingDetails.jsx';
 import { BookingBaseUrl } from '../../../URL/userBaseUrl.js';
 import Colors from '../../../../constants/Colors.ts';
+import { Heading } from '../../../../components/Heading.jsx';
 
 const InProgressDetailBookingPage = ({ route }) => {
   const { bookingId } = route.params;
+  const navigation = useNavigation(); // Initialize navigation
+
   const bookingDetails = useSelector((state) => state.bookings.singleBooking);
   const serviceUser = useSelector((state) => state.bookings.singleBooking?.user);
 
-  const [elapsedTime, setElapsedTime] = useState(0); // Timer in seconds
+  const [elapsedTime, setElapsedTime] = useState(0);
   const [startTime, setStartTime] = useState(null);
   const [completedTime, setCompletedTime] = useState(null);
-  const [loading , setLoading] = useState(true); // Set initial loading state to true
+  const [loading, setLoading] = useState(true);
+  const [isCompleted , setIsCompleted] = useState(false)
+  let intervalRef = null; // Store interval reference
 
   useGetFetchBookingDetails(bookingId);
 
   useEffect(() => {
     fetchBookingStartTime();
+    return () => clearInterval(intervalRef); // Cleanup interval on unmount
   }, []);
 
   const fetchBookingStartTime = async () => {
@@ -34,63 +41,75 @@ const InProgressDetailBookingPage = ({ route }) => {
 
       if (startTime) {
         setStartTime(new Date(startTime));
-        updateElapsedTime();
+        setElapsedTime(0);
+        startElapsedTime();
       }
     } catch (error) {
       console.error('Error fetching booking details:', error);
-    }
-    finally{
-      setLoading(false); // Set loading to false after fetching data
+    } finally {
+      setLoading(false);
     }
   };
 
-  const updateElapsedTime = () => {
+  const startElapsedTime = () => {
     if (!startTime) return;
 
-    const interval = setInterval(() => {
+    intervalRef = setInterval(() => {
       const now = new Date();
       const diffInSeconds = Math.floor((now - new Date(startTime)) / 1000);
       setElapsedTime(diffInSeconds);
     }, 1000);
-
-    return () => clearInterval(interval);
   };
 
   useEffect(() => {
     if (startTime && !completedTime) {
-      updateElapsedTime();
+      startElapsedTime();
     }
   }, [startTime]);
 
-  // Helper function to format the timer as HH:MM:SS
   const formatTimer = (seconds) => {
     const hours = Math.floor(seconds / 3600);
     const minutes = Math.floor((seconds % 3600) / 60);
     const secs = seconds % 60;
     return `${hours} hours ${minutes} min ${secs} sec`;
   };
-  
 
   const handleCompleteService = () => {
     Alert.alert(
-      'Complete Service',
-      'Are you sure you want to mark this service as completed?',
+      "Confirm Completion",
+      "Do you want to complete the service?",
       [
-        { text: 'Cancel', style: 'cancel' },
-        { text: 'Yes', onPress: completeService },
+        { text: "No", style: "cancel" },
+        { text: "Yes", onPress: completeService },
       ]
     );
   };
 
   const completeService = async () => {
     try {
+      setIsCompleted(true)
       const now = new Date().toISOString();
-      await axios.patch(`${BookingBaseUrl}/updateBooking/${bookingId}`, { completedTime: now });
+      const response = await axios.patch(`${BookingBaseUrl}/updateBooking/${bookingId}`, {
+        status: "Completed",
+        completedTime: now,
+      });
 
-      setCompletedTime(now);
-      Alert.alert('Service Completed', 'The service has been marked as completed.');
+      if (response.status === 200) {
+        setCompletedTime(now);
+        clearInterval(intervalRef); // Stop timer
+
+        Alert.alert(
+          "Service Completed",
+          "The service has been marked as completed.",
+          [{ text: "OK", onPress: () => navigation.navigate('home') }]
+        );
+      }
     } catch (error) {
-      console.error('Error completing service:', error);
+      console.error("Error completing service:", error);
+      Alert.alert("Error", "Failed to complete the service. Please try again.");
+    }
+    finally{
+      setIsCompleted(false)
     }
   };
 
@@ -104,44 +123,40 @@ const InProgressDetailBookingPage = ({ route }) => {
 
   return (
     <ScrollView style={styles.container}>
-      {/* Timer Section */}
       <View style={styles.timerContainer}>
+        <Text>Booking Starts At:</Text>
+        <Text style={styles.fieldName}>
+          <Text style={[styles.fieldValue, { fontSize: 13 }]}>
+            {new Date(startTime).toLocaleString()}
+          </Text>
+        </Text>
         <Text style={styles.timerLabel}>Service Started Since</Text>
         {loading ? <ActivityIndicator size="large" color={Colors.PRIMARY} /> : <Text style={styles.timer}>{formatTimer(elapsedTime)}</Text>}
       </View>
 
-      {/* Order Details Section */}
       <View style={styles.orderDetailsContainer}>
-        <Text style={styles.orderDetailsTitle}>Order Details</Text>
-
-        {/* Booking ID */}
-        <View style={styles.detailRow}>
-          <Text style={styles.detailLabel}>Booking ID:</Text>
-          <Text style={styles.detailValue}>{bookingDetails?.orderNumber}</Text>
-        </View>
-
-        {/* Service User */}
-        <View style={styles.detailRow}>
-          <Text style={styles.detailLabel}>Service User:</Text>
-          <Text style={styles.detailValue}>{bookingDetails?.user?.fullName || 'N/A'}</Text>
-        </View>
-
-        {/* Service Type */}
-        <View style={styles.detailRow}>
-          <Text style={styles.detailLabel}>Service:</Text>
-          <Text style={styles.detailValue}>{bookingDetails?.service?.serviceName || 'N/A'}</Text>
-        </View>
-
-        {/* Service Start Time */}
-        <View style={styles.detailRow}>
-          <Text style={styles.detailLabel}>Start Time:</Text>
-          <Text style={styles.detailValue}>{new Date(startTime).toLocaleString()}</Text>
+        <Heading text="Booking Information" />
+        <View style={styles.card}>
+          <View style={styles.profileSection}>
+            <Image
+              source={{ uri: serviceUser.profile.profilePic || "PROFILE PIC" }}
+              style={styles.profilePic}
+            />
+            <View style={{ flexDirection: 'column' }}>
+              <Text style={{ fontFamily: 'outfit-Medium', fontSize: 18, marginLeft: -5 }}>{serviceUser.fullName}</Text>
+              <Text style={{ fontFamily: 'outfit-Medium', fontSize: 13, marginLeft: -5 }}>{serviceUser.phoneNumber}</Text>
+            </View>
+          </View>
+          <Text style={styles.fieldName}>Service: <Text style={styles.fieldValue}>{bookingDetails.service?.serviceName}</Text></Text>
+          <Text style={styles.fieldName}>Order No: <Text style={styles.fieldValue}>{bookingDetails.orderNumber}</Text></Text>
+          <Text style={styles.fieldName}>Date: <Text style={styles.fieldValue}>{new Date(bookingDetails.date).toDateString()}, {bookingDetails.timeSlot}</Text></Text>
+          <Text style={styles.fieldName}>Address: <Text style={styles.fieldValue}>{bookingDetails.address}</Text></Text>
+          <Text style={styles.fieldName}>Instructions: <Text style={styles.fieldValue}>{bookingDetails?.instructions || "No instructions given by user"}</Text></Text>
         </View>
       </View>
 
-      {/* Complete Service Button */}
       <TouchableOpacity style={styles.completeButton} onPress={handleCompleteService}>
-        <Text style={styles.completeButtonText}>Complete Service</Text>
+        <Text style={styles.completeButtonText}>{isCompleted ? <ActivityIndicator/> : "Complete Service"}</Text>
       </TouchableOpacity>
     </ScrollView>
   );
@@ -179,7 +194,7 @@ const styles = StyleSheet.create({
     textAlign: 'center',
   },
   orderDetailsContainer: {
-    backgroundColor: Colors.WHITE,
+    backgroundColor: Colors.PRIMARY_LIGHT,
     borderRadius: 12,
     padding: 20,
     marginBottom: 20,
@@ -228,6 +243,12 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontFamily: 'outfit-bold',
   },
+  fieldName: {
+      fontSize: 16,
+      marginBottom: 10,
+      color: Colors.DARK_GRAY,
+      fontFamily: 'outfit-bold',
+    },
   center: {
     flex: 1,
     justifyContent: 'center',
@@ -238,6 +259,35 @@ const styles = StyleSheet.create({
     color: Colors.GRAY,
     fontFamily: 'outfit-medium',
   },
+  fieldValue: {
+      fontSize: 16,
+      color: Colors.DARK_GRAY,
+      fontFamily: 'outfit-medium',
+    },
+    card: {
+        backgroundColor: Colors.WHITE,
+        borderRadius: 12,
+        padding: 20,
+        marginBottom: 20,
+        shadowColor: Colors.BLACK,
+        shadowOffset: { width: 0, height: 4 },
+        shadowOpacity: 0.1,
+        shadowRadius: 6,
+        elevation: 5,
+      },
+     profileSection: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        marginBottom: 10,
+      },
+      profilePic: {
+        width: 50,
+        height: 50,
+        borderRadius: 25, // Makes the image circular
+        marginRight: 15,
+        borderWidth: 2,
+        borderColor: Colors.PRIMARY,
+      },  
 });
 
 export default InProgressDetailBookingPage;
