@@ -7,6 +7,7 @@ import { BookingAcceptedEmail } from '../middlewares/EmailFunctions/BookingAccep
 import { BookingRejectedEmail } from '../middlewares/EmailFunctions/BookingAccepted.js'
 import { sendBookingPendingEmail } from '../middlewares/EmailFunctions/MajorBookingCreate.js'
 import { BookingInProgressEmail } from "../middlewares/EmailFunctions/BookingInProgress.js";
+import { BookingCompletedEmail } from "../middlewares/EmailFunctions/BookingCompleted.js";
 
 export const getAllBookings = async (req, res) => {
   const userId = req.id; // Assuming userId is passed as a URL parameter
@@ -14,18 +15,15 @@ export const getAllBookings = async (req, res) => {
     console.log("User ID:", userId); // Debugging
     const bookings = await Booking.find({ user: userId })
       .populate({
-        path: "service", // Populates the `service` field in Booking
-        select: "serviceName price created_by location", // Include these fields from `majorListing`
-        populate: { // Nested population for `created_by`
+        path: "service", 
+        select: "serviceName price created_by location", 
+        populate: { 
           path: "created_by",
-          select: "profile fullName" // The field in `majorListing` referencing `user`
+          select: "profile fullName" 
         },
       })
-      .populate("user", "fullName email") // Populates the `user` field in Booking
-      .sort({ createdAt: -1 }); // Sort by latest booking
-
-    console.log("Fetched bookings:", bookings); // Log the bookings
-    console.log("Service provider ID from the first booking:", bookings[0]?.service?.created_by);
+      .populate("user", "fullName email")
+      .sort({ createdAt: -1 }); 
 
     // If no bookings found
     if (!bookings.length) {
@@ -38,6 +36,41 @@ export const getAllBookings = async (req, res) => {
     });
   } catch (error) {
     console.error("Error fetching bookings:", error);
+    res.status(500).json({ message: "An error occurred while fetching bookings.", error });
+  }
+};
+
+//Get all service provider bookings
+export const getAllBookingsForServiceProvider = async (req, res) => {
+
+  const serviceProviderId = req.id;
+  try {
+
+    // Step 1: Find all services (majorListings) created by the service provider
+    const services = await serviceListings.find({ created_by: serviceProviderId }).select("_id");
+    const serviceIds = services.map(service => service._id); // Extract service IDs
+
+    // Step 2: Find bookings for those services
+    const bookings = await Booking.find({ service: { $in: serviceIds } })
+      .populate({
+        path: "service",
+        select: "serviceName price location", 
+      })
+      .populate("user", "fullName email phoneNumber") // Populate the user who made the booking
+      .sort({ createdAt: -1 }); // Sort by latest booking
+
+    // If no bookings found
+    if (!bookings.length) {
+      return res.status(404).json({ message: "No bookings found for this service provider." });
+    }
+
+    // Return the bookings
+    res.status(200).json({
+      success: true,
+      bookings,
+    });
+  } catch (error) {
+    console.error("Error fetching bookings for service provider:", error);
     res.status(500).json({ message: "An error occurred while fetching bookings.", error });
   }
 };
@@ -268,44 +301,43 @@ export const getBooking = async (req, res) => {
 
 export const updateBookingStatus = async (req, res) => {
   const { bookingId } = req.params;
-  const { status } = req.body;
+  const { status, elapsedTime, completedTime } = req.body; // Accept elapsedTime and completedTime from frontend
 
   try {
     let updateData = { status, updatedAt: Date.now() };
 
-    // If the booking status is being updated to "Confirmed" (Accepted), generate an order number
     if (status === "Confirmed") {
-      const orderNumber = `HFM-${Math.floor(1000 + Math.random() * 9000)}`; // HFM-xxxx format
+      const orderNumber = `HFM-${Math.floor(1000 + Math.random() * 9000)}`;
       updateData = { ...updateData, orderNumber };
     }
 
-    // If the booking status is being updated to "In-Progress", set the startTime BEFORE updating
     if (status === "In-Progress") {
-      updateData = { ...updateData, startTime: new Date().toISOString() }; // Use ISO format for consistency
+      updateData = { ...updateData, startTime: new Date().toISOString() };
     }
 
+    // When booking is completed, store completedTime and elapsedTime
+    if (status === "Completed" && completedTime) {
+      updateData = { ...updateData, completedTime, elapsedTime };
+    }
 
-    // Find and update the booking, populating necessary fields
     const booking = await Booking.findByIdAndUpdate(
       bookingId,
-      updateData, // Now includes startTime for "In-Progress"
+      updateData,
       { new: true }
     )
       .populate({
         path: "service",
-        populate: { path: "created_by", model: "user" } // Fetch the provider inside service using `created_by`
+        populate: { path: "created_by", model: "user" }
       })
-      .populate("user"); // Fetch the user who made the booking
+      .populate("user");
 
     if (!booking) {
       return res.status(404).json({ message: "Booking not found." });
     }
 
-    // Extract user and provider details
-    const serviceUser = booking.user;  // The user who booked the service
-    const serviceProvider = booking.service.created_by;  // The provider of the service
+    const serviceUser = booking.user;
+    const serviceProvider = booking.service.created_by;
 
-    // Send email notifications if booking is confirmed
     if (status === "Confirmed") {
       await BookingAcceptedEmail(serviceUser, serviceProvider, booking);
     }
@@ -315,9 +347,13 @@ export const updateBookingStatus = async (req, res) => {
     }
 
     if (status === "In-Progress") {
-      console.log("Sending In-Progress email..."); // Debugging
       await BookingInProgressEmail(serviceUser, serviceProvider, booking);
     }
+
+    if (status === "Completed") {
+      await BookingCompletedEmail(serviceUser, serviceProvider, booking);
+    }
+
 
     res.status(200).json({
       success: true,
@@ -329,3 +365,37 @@ export const updateBookingStatus = async (req, res) => {
     res.status(500).json({ message: "An error occurred while updating the booking status.", error });
   }
 };
+
+// export const updateBookingStatus = async (req, res) => {
+//   const { bookingId } = req.params;
+//   const {  } = req.body; // Accept both
+
+//   try {
+//     let updateData = { status, updatedAt: Date.now() };
+
+//     if (status === "Completed") {
+//       updateData = {
+//         ...updateData,
+//         completedTime, // Store actual completion time
+//         completedDuration: elapsedTime, // Store HH:mm:ss format duration
+//       };
+//     }
+
+//     const booking = await Booking.findByIdAndUpdate(bookingId, updateData, { new: true });
+
+//     if (!booking) {
+//       return res.status(404).json({ message: "Booking not found." });
+//     }
+
+//     res.status(200).json({
+//       success: true,
+//       message: `Booking status updated to ${status}.`,
+//       booking,
+//     });
+//   } catch (error) {
+//     console.error("Error updating booking status:", error);
+//     res.status(500).json({ message: "An error occurred while updating the booking status.", error });
+//   }
+// };
+
+

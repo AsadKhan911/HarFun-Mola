@@ -3,7 +3,7 @@ import React from 'react'
 
 const CompletedOrderDetailed = () => {
   return (
-    <View>
+    <View style={{backgroundColor:'white'}}>
       <Text>CompletedOrderDetailed</Text>
     </View>
   )

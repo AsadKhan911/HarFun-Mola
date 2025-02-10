@@ -7,7 +7,7 @@ const bookingSchema = new mongoose.Schema(
       ref: "majorListing",
       required: true,
     },
-    user: {
+    user: { //user who made the booking
       type: mongoose.Schema.Types.ObjectId,
       ref: "user",
       required: true,
@@ -43,6 +43,10 @@ const bookingSchema = new mongoose.Schema(
     },
     completedTime: {
       type: Date,
+      default: null,
+    },
+    elapsedTime: { // New field to store total time taken
+      type: String,
       default: null,
     },
   },

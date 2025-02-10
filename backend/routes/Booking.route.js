@@ -1,6 +1,6 @@
 import express from 'express'
 
-import { BookServiceListingByListingId , getAllBookings, getBookedSlots, 
+import { BookServiceListingByListingId , getAllBookings, getAllBookingsForServiceProvider, getBookedSlots, 
     getBooking, 
     getServiceProviderBookings, 
     updateBookingStatus} from '../controllers/majorCategoryBooking.controller.js'
@@ -11,6 +11,7 @@ const router = express.Router()
 
 //Add is authenticated after checking in route parameter
 router.route('/get').get( isAuthenticated , getAllBookings)
+router.route('/getserviceprovider').get( isAuthenticated , getAllBookingsForServiceProvider)
 router.route('/post/:serviceListingId').post(isAuthenticated , BookServiceListingByListingId)
 router.route('/getproviderbookings').get(isAuthenticated , getServiceProviderBookings)
 router.route('/bookings/:serviceId/:date').get(isAuthenticated , getBookedSlots)

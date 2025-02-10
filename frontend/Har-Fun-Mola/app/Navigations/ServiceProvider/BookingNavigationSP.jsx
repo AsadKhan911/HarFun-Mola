@@ -4,7 +4,6 @@ import PendingDetailedPage from "../../Screens/ServiceProvider/ServiceBookings/D
 import ActiveDetailsBookingPage from '../../Screens/ServiceProvider/ServiceBookings/ActiveDetailsBookingPage.jsx';
 import InProgressDetailsBooking from '../../Screens/ServiceProvider/ServiceBookings/InProgressDetailedBookingPage.jsx';
 import CompletedDetailsBookingPage from '../../Screens/ServiceProvider/ServiceBookings/CompletedDetailsBookingPage.jsx';
-import CancelledDetailsBookingPage from '../../Screens/ServiceProvider/ServiceBookings/CancelledDetailsBookingPage.jsx';
 // import Home from '../../Screens/HomeScreen/HomeScreen.jsx'
 import Home from '../../Navigations/ServiceProvider/HomeNavigationSP.jsx'
 import Profile from '../../Screens/ProfileScreen/Profile.jsx';
@@ -22,8 +21,6 @@ const BookingNavigationSP = () => {
       <Stack.Screen name='active-detail-booking-page' component={ActiveDetailsBookingPage}/>
       <Stack.Screen name='inprogress-detail-booking-page' component={InProgressDetailsBooking}/>
       <Stack.Screen name='completed-detail-booking-page' component={CompletedDetailsBookingPage}/>
-      <Stack.Screen name='cancelled-detail-booking-page' component={CancelledDetailsBookingPage}/>
-      <Stack.Screen name='home' component={Home}/>
       <Stack.Screen name='final-page' component={Profile}/>
     </Stack.Navigator>
   );

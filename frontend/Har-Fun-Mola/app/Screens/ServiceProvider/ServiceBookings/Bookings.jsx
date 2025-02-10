@@ -67,9 +67,7 @@ const ServiceProviderBookings = () => {
     //     bookingId: item?._id,
     //   });
     } else if (selectedTab === "Cancelled") {
-      navigation.push("cancelled-detail-booking-page", {
-        bookingId: item?._id,
-      });
+      return null
     }
   };
 

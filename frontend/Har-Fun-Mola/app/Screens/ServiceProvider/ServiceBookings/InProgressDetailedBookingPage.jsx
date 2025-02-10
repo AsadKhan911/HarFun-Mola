@@ -19,7 +19,7 @@ const InProgressDetailBookingPage = ({ route }) => {
   const [startTime, setStartTime] = useState(null);
   const [completedTime, setCompletedTime] = useState(null);
   const [loading, setLoading] = useState(true);
-  const [isCompleted , setIsCompleted] = useState(false)
+  const [isCompleted, setIsCompleted] = useState(false)
   let intervalRef = null; // Store interval reference
 
   useGetFetchBookingDetails(bookingId);
@@ -87,31 +87,55 @@ const InProgressDetailBookingPage = ({ route }) => {
 
   const completeService = async () => {
     try {
-      setIsCompleted(true)
-      const now = new Date().toISOString();
+      setIsCompleted(true);
+  
+      const now = new Date(); // Current time
+      const elapsedSeconds = Math.floor((now - new Date(startTime)) / 1000); // Total time in seconds
+  
+      // Convert elapsed time into HH:mm:ss format
+      const hours = Math.floor(elapsedSeconds / 3600).toString().padStart(2, '0');
+      const minutes = Math.floor((elapsedSeconds % 3600) / 60).toString().padStart(2, '0');
+      const seconds = (elapsedSeconds % 60).toString().padStart(2, '0');
+      const elapsedTime = `${hours}:${minutes}:${seconds}`; // Formatted duration
+  
+      const completedTime = now.toISOString(); // Store full completion time
+  
+      // Immediately update state for UI responsiveness
+      setCompletedTime(completedTime);
+      clearInterval(intervalRef); // Stop timer
+  
+      // Send both elapsedTime and completedTime to the backend
       const response = await axios.patch(`${BookingBaseUrl}/updateBooking/${bookingId}`, {
         status: "Completed",
-        completedTime: now,
+        elapsedTime, // Send formatted duration
+        completedTime, // Send exact timestamp
       });
-
+  
       if (response.status === 200) {
-        setCompletedTime(now);
-        clearInterval(intervalRef); // Stop timer
-
         Alert.alert(
           "Service Completed",
-          "The service has been marked as completed.",
-          [{ text: "OK", onPress: () => navigation.navigate('home') }]
+          `The service has been marked as completed after ${elapsedTime}.`,
+          [
+            {
+              text: "OK",
+              onPress: () => navigation.getParent()?.jumpTo('home'), // Switch to home tab
+            }
+          ]
         );
       }
     } catch (error) {
       console.error("Error completing service:", error);
       Alert.alert("Error", "Failed to complete the service. Please try again.");
-    }
-    finally{
-      setIsCompleted(false)
+  
+      // Rollback completed time if API fails
+      setCompletedTime(null);
+      startElapsedTime(); // Restart timer if API fails
+    } finally {
+      setIsCompleted(false);
     }
   };
+
+
 
   if (!bookingDetails || !serviceUser) {
     return (
@@ -156,7 +180,7 @@ const InProgressDetailBookingPage = ({ route }) => {
       </View>
 
       <TouchableOpacity style={styles.completeButton} onPress={handleCompleteService}>
-        <Text style={styles.completeButtonText}>{isCompleted ? <ActivityIndicator/> : "Complete Service"}</Text>
+        <Text style={styles.completeButtonText}>{isCompleted ? <ActivityIndicator /> : "Complete Service"}</Text>
       </TouchableOpacity>
     </ScrollView>
   );
@@ -244,11 +268,11 @@ const styles = StyleSheet.create({
     fontFamily: 'outfit-bold',
   },
   fieldName: {
-      fontSize: 16,
-      marginBottom: 10,
-      color: Colors.DARK_GRAY,
-      fontFamily: 'outfit-bold',
-    },
+    fontSize: 16,
+    marginBottom: 10,
+    color: Colors.DARK_GRAY,
+    fontFamily: 'outfit-bold',
+  },
   center: {
     flex: 1,
     justifyContent: 'center',
@@ -260,34 +284,34 @@ const styles = StyleSheet.create({
     fontFamily: 'outfit-medium',
   },
   fieldValue: {
-      fontSize: 16,
-      color: Colors.DARK_GRAY,
-      fontFamily: 'outfit-medium',
-    },
-    card: {
-        backgroundColor: Colors.WHITE,
-        borderRadius: 12,
-        padding: 20,
-        marginBottom: 20,
-        shadowColor: Colors.BLACK,
-        shadowOffset: { width: 0, height: 4 },
-        shadowOpacity: 0.1,
-        shadowRadius: 6,
-        elevation: 5,
-      },
-     profileSection: {
-        flexDirection: 'row',
-        alignItems: 'center',
-        marginBottom: 10,
-      },
-      profilePic: {
-        width: 50,
-        height: 50,
-        borderRadius: 25, // Makes the image circular
-        marginRight: 15,
-        borderWidth: 2,
-        borderColor: Colors.PRIMARY,
-      },  
+    fontSize: 16,
+    color: Colors.DARK_GRAY,
+    fontFamily: 'outfit-medium',
+  },
+  card: {
+    backgroundColor: Colors.WHITE,
+    borderRadius: 12,
+    padding: 20,
+    marginBottom: 20,
+    shadowColor: Colors.BLACK,
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.1,
+    shadowRadius: 6,
+    elevation: 5,
+  },
+  profileSection: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginBottom: 10,
+  },
+  profilePic: {
+    width: 50,
+    height: 50,
+    borderRadius: 25, // Makes the image circular
+    marginRight: 15,
+    borderWidth: 2,
+    borderColor: Colors.PRIMARY,
+  },
 });
 
 export default InProgressDetailBookingPage;
