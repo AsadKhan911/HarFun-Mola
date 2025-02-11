@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { View, Text, Button, TextInput, TouchableOpacity, StyleSheet, Image, ScrollView, Alert, KeyboardAvoidingView, Platform } from 'react-native';
+import { View, Text, TextInput, TouchableOpacity, StyleSheet, Image, ScrollView, Alert, KeyboardAvoidingView, Platform } from 'react-native';
 import * as ImagePicker from 'expo-image-picker'; // Import Image Picker
 import { useNavigation } from '@react-navigation/native';
 import axios from 'axios';
@@ -8,6 +8,8 @@ import { userBaseUrl } from '../../URL/userBaseUrl.js';
 import { useDispatch } from 'react-redux';
 import { setUser } from '../../redux/authSlice.js';
 import { ActivityIndicator } from 'react-native-paper';
+import { createUserWithEmailAndPassword } from 'firebase/auth';
+import { auth } from '../../../src/firebase/firebaseConfig.js';
 
 const Signup = () => {
     const navigation = useNavigation();
@@ -21,7 +23,7 @@ const Signup = () => {
     const [city, setCity] = useState('Rawalpindi');
     const [area, setArea] = useState('');
     const [selectedImage, setSelectedImage] = useState(null);
-    const [loading , setLoading] = useState(false)
+    const [loading, setLoading] = useState(false)
 
     const pickImage = async () => {
         const permissionResult = await ImagePicker.requestMediaLibraryPermissionsAsync();
@@ -44,11 +46,27 @@ const Signup = () => {
 
     const handleSignup = async () => {
         try {
+
+            console.log("Auth object before signup:", auth);
+
+            if (!auth) {
+                console.error("Firebase Auth is not initialized!");
+                return;
+            }
+
             if (!fullName || !email || !phoneNumber || !password || !area) {
                 Alert.alert('Error', 'All fields are required');
                 return;
             }
 
+            setLoading(true);
+
+            // Step 1: Create user in Firebase Authentication
+            const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+            const user = userCredential.user;
+            console.log("User registered in Firebase:", user.uid);
+
+            // Step 2: Prepare form data for your backend
             const formData = new FormData();
             formData.append('fullName', fullName);
             formData.append('email', email);
@@ -57,6 +75,7 @@ const Signup = () => {
             formData.append('role', role);
             formData.append('city', city);
             formData.append('area', area);
+            formData.append('firebaseUID', user.uid); // Use the Firebase UID from the created user
 
             if (selectedImage) {
                 const fileName = selectedImage.split('/').pop();
@@ -69,7 +88,7 @@ const Signup = () => {
                 });
             }
 
-            setLoading(true)
+            // Step 3: Send data to your backend
             const response = await axios.post(`${userBaseUrl}/register`, formData, {
                 headers: {
                     'Content-Type': 'multipart/form-data',
@@ -85,14 +104,19 @@ const Signup = () => {
             }
         } catch (error) {
             console.error('Signup Error:', error);
-            if (error.response && error.response.data) {
-                Alert.alert('Error', error.response.data.message || 'An error occurred while signing up');
+
+            // Handle Firebase-specific errors
+            if (error.code === 'auth/email-already-in-use') {
+                Alert.alert('Error', 'This email is already in use.');
+            } else if (error.code === 'auth/invalid-email') {
+                Alert.alert('Error', 'Invalid email address.');
+            } else if (error.code === 'auth/weak-password') {
+                Alert.alert('Error', 'Password should be at least 6 characters.');
             } else {
-                Alert.alert('Error', 'An unknown error occurred');
+                Alert.alert('Error', 'An unknown error occurred.');
             }
-        }
-        finally{
-            setLoading(false)
+        } finally {
+            setLoading(false);
         }
     };
 

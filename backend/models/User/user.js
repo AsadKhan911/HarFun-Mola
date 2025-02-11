@@ -38,6 +38,8 @@ const userSchema = mongoose.Schema({
 
   verificationExpiry: { type: Date }, // Expiry date for OTP
 
+  firebaseUID: {type:String},
+
   //   serviceName: { type: String },  Only for Service Providers
 
   serviceArea: { type: String }, // Only for Service Providers

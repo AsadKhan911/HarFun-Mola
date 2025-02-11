@@ -1,11 +1,11 @@
-import { useState, useContext } from 'react';
+import { useState } from 'react';
 import { View, Text, TextInput, TouchableOpacity, StyleSheet, Image, ScrollView, Alert } from 'react-native';
 import Colors from '@/constants/Colors';
 import { useNavigation } from '@react-navigation/native';
 import axios from 'axios';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { userBaseUrl } from '../../URL/userBaseUrl.js'
-import { useDispatch, useSelector } from "react-redux"
+import { useDispatch } from "react-redux"
 import { setUser } from '../../redux/authSlice.js'
 
 const Login = () => {
@@ -28,7 +28,15 @@ const Login = () => {
 
     try {
       setLoading(true)
-      const data = { email, password, role }; //"email" : email , "password" : password
+
+      // Firebase Authentication login
+      const userCredential = await firebase.auth().signInWithEmailAndPassword(email, password);
+      const user = userCredential.user;
+
+      // Get Firebase Token
+      const firebaseToken = await user.getIdToken();
+
+      const data = { email, password, role, firebaseToken  }; //"email" : email , "password" : password
       const response = await axios.post(`${userBaseUrl}/login`, data, {
         headers: {
           "Content-Type": "application/json"
