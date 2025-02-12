@@ -1,17 +1,20 @@
 import React, { useState } from 'react';
 import { View, Text, TouchableOpacity, StyleSheet, ScrollView, Platform, KeyboardAvoidingView, Image, Alert, Modal, ActivityIndicator } from 'react-native';
-import {  useSelector } from 'react-redux';
+import { useSelector } from 'react-redux';
 import Ionicons from '@expo/vector-icons/Ionicons';
 import Colors from '../../../../constants/Colors.ts';
 import { Heading } from '../../../../components/Heading.jsx';
 import useGetFetchBookingDetails from '../../../../customHooks/useGetFetchBookingDetails.jsx';
 import useGetBookingAcceptedToInProgress from '../../../../customHooks/useGetBookingAcceptedToInProgress.jsx'; //custom hook
 import { useNavigation } from '@react-navigation/native';
+import { startLocationUpdates } from '../../../../utils/getLocation.js'; // Import tracking functions
+import { requestLocationPermission } from '../../../../utils/locationPermission.js';  // Update the path if necessary
 
 const ActiveDetailsBookingPage = ({ route, handleCloseModal }) => {
   const { bookingId } = route.params;
   const bookingDetails = useSelector((state) => state.bookings.singleBooking);
   const serviceUser = useSelector((state) => state.bookings.singleBooking?.user);
+  const providerId = useSelector((state) => state.bookings.singleBooking?.service?.created_by?.firebaseUID)
 
   const [isLoading, setIsLoading] = useState(false); // For loading spinner
   // const [isServiceStarted, setIsServiceStarted] = useState(false); // For loading spinner
@@ -43,14 +46,33 @@ const ActiveDetailsBookingPage = ({ route, handleCloseModal }) => {
     }
 
     const { success, message } = await updateBookingStatus(bookingId, 'In-Progress');
+
     if (success) {
       Alert.alert("Service Started", "Service has been started. Wish you the best of luck!");
+
+      // **Start Location Tracking**
+      console.log(providerId)
+      startLocationUpdates(providerId);
+
+      // useEffect(() => {
+      //   const checkPermission = async () => {
+      //     const permissionGranted = await requestLocationPermission();
+      //     if (permissionGranted) {
+      //       // Proceed with location updates
+      //       startLocationUpdates(providerId);
+      //     }
+      //   };
+      //   checkPermission();
+      // }, []);
+
       navigation.push('inprogress-detail-booking-page', { bookingId: bookingId });
     } else {
       alert(message);
     }
+
     setIsLoading(false);
   };
+
 
   const handleConfirmation = () => {
     if (bookingDetails.status === 'In-Progress') {
@@ -137,13 +159,13 @@ const ActiveDetailsBookingPage = ({ route, handleCloseModal }) => {
 
         {/* Disclaimer */}
         {
-          bookingDetails.status === 'Confirmed' ? 
-        <View style={styles.disclaimerContainer}>
-          <Ionicons name="information-circle-outline" size={20} color={Colors.PRIMARY} />
-          <Text style={styles.disclaimerText}>
-            The service can be started up to two hours before the scheduled time slot. For example, if the time slot is 9:00 AM, you can start the service at 7:00 AM, but not before that.
-          </Text>
-        </View> : null
+          bookingDetails.status === 'Confirmed' ?
+            <View style={styles.disclaimerContainer}>
+              <Ionicons name="information-circle-outline" size={20} color={Colors.PRIMARY} />
+              <Text style={styles.disclaimerText}>
+                The service can be started up to two hours before the scheduled time slot. For example, if the time slot is 9:00 AM, you can start the service at 7:00 AM, but not before that.
+              </Text>
+            </View> : null
         }
       </ScrollView>
 

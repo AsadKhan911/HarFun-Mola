@@ -7,6 +7,7 @@ import useGetFetchBookingDetails from '../../../../customHooks/useGetFetchBookin
 import { BookingBaseUrl } from '../../../URL/userBaseUrl.js';
 import Colors from '../../../../constants/Colors.ts';
 import { Heading } from '../../../../components/Heading.jsx';
+import { stopLocationUpdates } from '../../../../utils/getLocation.js';
 
 const InProgressDetailBookingPage = ({ route }) => {
   const { bookingId } = route.params;
@@ -104,6 +105,9 @@ const InProgressDetailBookingPage = ({ route }) => {
       setCompletedTime(completedTime);
       clearInterval(intervalRef); // Stop timer
   
+      // Call stopLocationUpdates to stop location tracking when the service is completed
+      stopLocationUpdates();
+  
       // Send both elapsedTime and completedTime to the backend
       const response = await axios.patch(`${BookingBaseUrl}/updateBooking/${bookingId}`, {
         status: "Completed",
@@ -134,8 +138,7 @@ const InProgressDetailBookingPage = ({ route }) => {
       setIsCompleted(false);
     }
   };
-
-
+  
 
   if (!bookingDetails || !serviceUser) {
     return (
@@ -315,3 +318,45 @@ const styles = StyleSheet.create({
 });
 
 export default InProgressDetailBookingPage;
+
+// import React, {  useEffect  } from 'react';
+// import { StyleSheet } from 'react-native';
+// // import { useSelector } from 'react-redux';
+// // import { requestLocationPermission } from '../../../../src/utils/locationPermission.js'; // Adjust the import path if needed
+// // import {  startLocationUpdates, stopLocationUpdates } from '../r../../../src/utils/getLocation.js'; // Adjust the import path if needed
+
+// const InProgressDetailBookingPage = ({ route }) => {
+
+//   // const ProviderId = useSelector((state) => state.auth.user.firebaseUID)
+//   // let intervalRef = null; // Store interval refe
+
+//   // useEffect(() => {
+//   //   const initializeLocation = async () => {
+//   //     const hasPermission = await requestLocationPermission();
+//   //     if (hasPermission) {
+//   //       updateProviderLocation(ProviderId); // Start location updates if permission is granted
+//   //     }
+//   //   };
+  
+//   //   initializeLocation();
+  
+//   //   // Cleanup on unmount
+//   //   return () => stopLocationUpdates();
+//   // }, [ProviderId]);
+  
+// return (
+//     <ScrollView style={styles.container}>
+//       <Text>MAP</Text>
+//     </ScrollView>
+//   );
+// };
+
+// const styles = StyleSheet.create({
+//   container: {
+//     flex: 1,
+//     backgroundColor: 'white',
+//     padding: 20,
+//   }
+// });
+
+// export default InProgressDetailBookingPage;

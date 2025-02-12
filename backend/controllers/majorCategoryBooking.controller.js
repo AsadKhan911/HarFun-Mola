@@ -225,10 +225,10 @@ export const getBooking = async (req, res) => {
         select: "serviceName price created_by location",
         populate: {
           path: "created_by",
-          select: "fullName profile",
+          select: "fullName profile firebaseUID",
         },
       })
-      .populate("user", "fullName email phoneNumber area city profile");
+      .populate("user", "fullName email phoneNumber area city profile firebaseUID");
 
     if (!booking) {
       return res.status(404).json({ message: "Booking not found." });

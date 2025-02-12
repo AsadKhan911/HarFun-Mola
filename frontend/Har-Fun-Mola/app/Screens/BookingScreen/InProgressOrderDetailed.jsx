@@ -5,6 +5,7 @@ import Colors from "../../../constants/Colors.ts";
 import { FontAwesome6, Ionicons } from "@expo/vector-icons";
 import useGetCancelOrder from "../../../customHooks/ServiceUser/useGetCancelOrder.jsx";
 import { LinearGradient } from "expo-linear-gradient";
+import ServiceProviderLiveLocation from "../Maps/ServiceProviderLiveLocation.jsx";
 
 const InProgressOrderDetailed = () => {
   const navigation = useNavigation();
@@ -68,12 +69,7 @@ const InProgressOrderDetailed = () => {
       </View>
 
       {/* Service Provider Location Section */}
-      <View style={styles.mapContainer}>
-        <Text style={styles.sectionTitle}>Service Provider Location</Text>
-        <View style={styles.mapPlaceholder}>
-          <Text style={styles.mapText}>📍 Map View</Text>
-        </View>
-      </View>
+      <ServiceProviderLiveLocation />
 
       <View style={styles.buttonContainer}>
         <View style={styles.rowButtons}>
@@ -243,31 +239,7 @@ const styles = StyleSheet.create({
   ON: {
     fontFamily: 'outfit-Bold'
   },
-  mapContainer: {
-    backgroundColor: Colors.WHITE,
-    padding: 16,
-    borderRadius: 16,
-    shadowColor: Colors.BLACK,
-    shadowOpacity: 0.1,
-    shadowOffset: { width: 0, height: 4 },
-    shadowRadius: 8,
-    elevation: 5,
-    marginBottom: 20,
-    alignItems: "center",
-  },
-  mapPlaceholder: {
-    width: "100%",
-    height: 150,
-    backgroundColor: Colors.LIGHT_GRAY,
-    borderRadius: 12,
-    justifyContent: "center",
-    alignItems: "center",
-  },
-  mapText: {
-    fontSize: 16,
-    fontFamily: "outfit-Bold",
-    color: Colors.DARK_GRAY,
-  },
+ 
 });
 
 export default InProgressOrderDetailed;
