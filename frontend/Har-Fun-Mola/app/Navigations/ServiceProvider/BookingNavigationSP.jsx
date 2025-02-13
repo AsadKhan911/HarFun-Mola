@@ -7,6 +7,7 @@ import CompletedDetailsBookingPage from '../../Screens/ServiceProvider/ServiceBo
 // import Home from '../../Screens/HomeScreen/HomeScreen.jsx'
 import Home from '../../Navigations/ServiceProvider/HomeNavigationSP.jsx'
 import Profile from '../../Screens/ProfileScreen/Profile.jsx';
+import ServiceProviderMapView from '../../Screens/Maps/ServiceProviderMapView.jsx';
 
 const Stack = createStackNavigator();
 
@@ -21,6 +22,7 @@ const BookingNavigationSP = () => {
       <Stack.Screen name='active-detail-booking-page' component={ActiveDetailsBookingPage}/>
       <Stack.Screen name='inprogress-detail-booking-page' component={InProgressDetailsBooking}/>
       <Stack.Screen name='completed-detail-booking-page' component={CompletedDetailsBookingPage}/>
+      <Stack.Screen name='user-pin-location' component={ServiceProviderMapView}/>
       <Stack.Screen name='final-page' component={Profile}/>
     </Stack.Navigator>
   );

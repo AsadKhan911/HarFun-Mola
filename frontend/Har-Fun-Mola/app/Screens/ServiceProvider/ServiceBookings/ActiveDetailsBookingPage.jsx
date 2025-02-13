@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useId, useState } from 'react';
 import { View, Text, TouchableOpacity, StyleSheet, ScrollView, Platform, KeyboardAvoidingView, Image, Alert, Modal, ActivityIndicator } from 'react-native';
 import { useSelector } from 'react-redux';
 import Ionicons from '@expo/vector-icons/Ionicons';
@@ -8,13 +8,17 @@ import useGetFetchBookingDetails from '../../../../customHooks/useGetFetchBookin
 import useGetBookingAcceptedToInProgress from '../../../../customHooks/useGetBookingAcceptedToInProgress.jsx'; //custom hook
 import { useNavigation } from '@react-navigation/native';
 import { startLocationUpdates } from '../../../../utils/getLocation.js'; // Import tracking functions
+import startUserLocationUpdates from '../../../../utils/getUserLocation.js'; // Import tracking functions
 import { requestLocationPermission } from '../../../../utils/locationPermission.js';  // Update the path if necessary
 
 const ActiveDetailsBookingPage = ({ route, handleCloseModal }) => {
   const { bookingId } = route.params;
-  const bookingDetails = useSelector((state) => state.bookings.singleBooking);
-  const serviceUser = useSelector((state) => state.bookings.singleBooking?.user);
-  const providerId = useSelector((state) => state.bookings.singleBooking?.service?.created_by?.firebaseUID)
+  const bookingDetails = useSelector((store) => store.bookings.singleBooking);
+  const serviceUser = useSelector((store) => store.bookings.singleBooking?.user);
+  const providerId = useSelector((store) => store.bookings.singleBooking?.service?.created_by?.firebaseUID)
+  const userId = useSelector((store)=> store.bookings.singleBooking?.user?.firebaseUID)
+  console.log("UserId ", userId)
+  console.log("ProviderId ", providerId)
 
   const [isLoading, setIsLoading] = useState(false); // For loading spinner
   // const [isServiceStarted, setIsServiceStarted] = useState(false); // For loading spinner
@@ -53,6 +57,7 @@ const ActiveDetailsBookingPage = ({ route, handleCloseModal }) => {
       // **Start Location Tracking**
       console.log(providerId)
       startLocationUpdates(providerId);
+      startUserLocationUpdates(userId)
 
       // useEffect(() => {
       //   const checkPermission = async () => {

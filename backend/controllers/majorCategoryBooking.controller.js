@@ -19,10 +19,10 @@ export const getAllBookings = async (req, res) => {
         select: "serviceName price created_by location", 
         populate: { 
           path: "created_by",
-          select: "profile fullName" 
+          select: "profile fullName firebaseUID" 
         },
       })
-      .populate("user", "fullName email")
+      .populate("user", "fullName email firebaseUID")
       .sort({ createdAt: -1 }); 
 
     // If no bookings found
@@ -162,7 +162,7 @@ export const getServiceProviderBookings = async (req, res) => {
         select: "serviceName location price", // Service details like name, location, price
         populate: {
           path: "created_by", // Populate the provider who posted the service
-          select: "fullName profile"
+          select: "fullName profile firebaseUID"
         },
       })
       .populate({

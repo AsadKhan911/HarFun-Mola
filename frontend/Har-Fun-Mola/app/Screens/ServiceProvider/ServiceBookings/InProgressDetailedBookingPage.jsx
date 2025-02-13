@@ -3,6 +3,7 @@ import { View, Text, StyleSheet, ScrollView, TouchableOpacity, Alert, ActivityIn
 import { useSelector } from 'react-redux';
 import { useNavigation } from '@react-navigation/native'; // Import navigation
 import axios from 'axios';
+import Icon from 'react-native-vector-icons/MaterialIcons'; // Import icon library
 import useGetFetchBookingDetails from '../../../../customHooks/useGetFetchBookingDetails.jsx';
 import { BookingBaseUrl } from '../../../URL/userBaseUrl.js';
 import Colors from '../../../../constants/Colors.ts';
@@ -15,12 +16,16 @@ const InProgressDetailBookingPage = ({ route }) => {
 
   const bookingDetails = useSelector((state) => state.bookings.singleBooking);
   const serviceUser = useSelector((state) => state.bookings.singleBooking?.user);
+  const userUid = useSelector((state) => state.bookings.singleBooking?.user?.firebaseUID);
+  const providerUid = useSelector((state) => state.bookings.singleBooking?.service?.created_by?.firebaseUID);
+  const provider = useSelector((state) => state.bookings.singleBooking?.service?.created_by);
+console.log(provider)
 
   const [elapsedTime, setElapsedTime] = useState(0);
   const [startTime, setStartTime] = useState(null);
   const [completedTime, setCompletedTime] = useState(null);
   const [loading, setLoading] = useState(true);
-  const [isCompleted, setIsCompleted] = useState(false)
+  const [isCompleted, setIsCompleted] = useState(false);
   let intervalRef = null; // Store interval reference
 
   useGetFetchBookingDetails(bookingId);
@@ -89,32 +94,32 @@ const InProgressDetailBookingPage = ({ route }) => {
   const completeService = async () => {
     try {
       setIsCompleted(true);
-  
+
       const now = new Date(); // Current time
       const elapsedSeconds = Math.floor((now - new Date(startTime)) / 1000); // Total time in seconds
-  
+
       // Convert elapsed time into HH:mm:ss format
       const hours = Math.floor(elapsedSeconds / 3600).toString().padStart(2, '0');
       const minutes = Math.floor((elapsedSeconds % 3600) / 60).toString().padStart(2, '0');
       const seconds = (elapsedSeconds % 60).toString().padStart(2, '0');
       const elapsedTime = `${hours}:${minutes}:${seconds}`; // Formatted duration
-  
+
       const completedTime = now.toISOString(); // Store full completion time
-  
+
       // Immediately update state for UI responsiveness
       setCompletedTime(completedTime);
       clearInterval(intervalRef); // Stop timer
-  
+
       // Call stopLocationUpdates to stop location tracking when the service is completed
       stopLocationUpdates();
-  
+
       // Send both elapsedTime and completedTime to the backend
       const response = await axios.patch(`${BookingBaseUrl}/updateBooking/${bookingId}`, {
         status: "Completed",
         elapsedTime, // Send formatted duration
         completedTime, // Send exact timestamp
       });
-  
+
       if (response.status === 200) {
         Alert.alert(
           "Service Completed",
@@ -130,7 +135,7 @@ const InProgressDetailBookingPage = ({ route }) => {
     } catch (error) {
       console.error("Error completing service:", error);
       Alert.alert("Error", "Failed to complete the service. Please try again.");
-  
+
       // Rollback completed time if API fails
       setCompletedTime(null);
       startElapsedTime(); // Restart timer if API fails
@@ -138,7 +143,13 @@ const InProgressDetailBookingPage = ({ route }) => {
       setIsCompleted(false);
     }
   };
-  
+
+  const handleViewLocation = () => {
+    // Navigate to the map screen with the user's location
+    navigation.navigate('user-pin-location', {
+      userUid : userUid, providerUid : providerUid // Pass the user's address or coordinates
+    });
+  };
 
   if (!bookingDetails || !serviceUser) {
     return (
@@ -179,6 +190,12 @@ const InProgressDetailBookingPage = ({ route }) => {
           <Text style={styles.fieldName}>Date: <Text style={styles.fieldValue}>{new Date(bookingDetails.date).toDateString()}, {bookingDetails.timeSlot}</Text></Text>
           <Text style={styles.fieldName}>Address: <Text style={styles.fieldValue}>{bookingDetails.address}</Text></Text>
           <Text style={styles.fieldName}>Instructions: <Text style={styles.fieldValue}>{bookingDetails?.instructions || "No instructions given by user"}</Text></Text>
+
+          {/* Add a button to view user's location on map */}
+          <TouchableOpacity style={styles.locationButton} onPress={handleViewLocation}>
+            <Icon name="location-on" size={24} color={Colors.PRIMARY} />
+            <Text style={styles.locationButtonText}>View Client's Location</Text>
+          </TouchableOpacity>
         </View>
       </View>
 
@@ -231,66 +248,6 @@ const styles = StyleSheet.create({
     shadowRadius: 6,
     elevation: 5,
   },
-  orderDetailsTitle: {
-    fontSize: 20,
-    fontFamily: 'outfit-bold',
-    color: Colors.DARK_GRAY,
-    marginBottom: 10,
-    textAlign: 'center',
-  },
-  detailRow: {
-    flexDirection: 'row',
-    marginBottom: 10,
-  },
-  detailLabel: {
-    fontSize: 16,
-    fontFamily: 'outfit-medium',
-    color: Colors.DARK_GRAY,
-    flex: 1,
-  },
-  detailValue: {
-    fontSize: 16,
-    fontFamily: 'outfit-medium',
-    color: Colors.BLACK,
-    flex: 2,
-  },
-  completeButton: {
-    backgroundColor: Colors.PRIMARY,
-    borderRadius: 12,
-    padding: 15,
-    alignItems: 'center',
-    shadowColor: Colors.BLACK,
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.1,
-    shadowRadius: 6,
-    elevation: 5,
-  },
-  completeButtonText: {
-    color: Colors.WHITE,
-    fontSize: 16,
-    fontFamily: 'outfit-bold',
-  },
-  fieldName: {
-    fontSize: 16,
-    marginBottom: 10,
-    color: Colors.DARK_GRAY,
-    fontFamily: 'outfit-bold',
-  },
-  center: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  noBookingText: {
-    fontSize: 18,
-    color: Colors.GRAY,
-    fontFamily: 'outfit-medium',
-  },
-  fieldValue: {
-    fontSize: 16,
-    color: Colors.DARK_GRAY,
-    fontFamily: 'outfit-medium',
-  },
   card: {
     backgroundColor: Colors.WHITE,
     borderRadius: 12,
@@ -314,6 +271,60 @@ const styles = StyleSheet.create({
     marginRight: 15,
     borderWidth: 2,
     borderColor: Colors.PRIMARY,
+  },
+  fieldName: {
+    fontSize: 16,
+    marginBottom: 10,
+    color: Colors.DARK_GRAY,
+    fontFamily: 'outfit-bold',
+  },
+  fieldValue: {
+    fontSize: 16,
+    color: Colors.DARK_GRAY,
+    fontFamily: 'outfit-medium',
+  },
+  completeButton: {
+    backgroundColor: Colors.PRIMARY,
+    borderRadius: 12,
+    padding: 15,
+    alignItems: 'center',
+    shadowColor: Colors.BLACK,
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.1,
+    shadowRadius: 6,
+    elevation: 5,
+  },
+  completeButtonText: {
+    color: Colors.WHITE,
+    fontSize: 16,
+    fontFamily: 'outfit-bold',
+  },
+  locationButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: Colors.WHITE,
+    borderColor: Colors.PRIMARY,
+    borderWidth: 1,
+    borderRadius: 12,
+    padding: 12,
+    marginTop: 10,
+  },
+  locationButtonText: {
+    fontSize: 16,
+    fontFamily: 'outfit-medium',
+    color: Colors.PRIMARY,
+    marginLeft: 10,
+  },
+  center: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  noBookingText: {
+    fontSize: 18,
+    color: Colors.GRAY,
+    fontFamily: 'outfit-medium',
   },
 });
 

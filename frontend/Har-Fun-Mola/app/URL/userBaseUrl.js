@@ -1,4 +1,4 @@
-export const userBaseUrl = 'http://192.168.1.5:3000/api/v1/user'
-export const CategoryBaseUrl = 'http://192.168.1.5:3000/api/v1/majorcategory'
-export const MajorListingsBaseUrl = 'http://192.168.1.5:3000/api/v1/majorlistings'
-export const BookingBaseUrl = 'http://192.168.1.5:3000/api/v1/booklistings'
+export const userBaseUrl = 'http://192.168.1.4:3000/api/v1/user'
+export const CategoryBaseUrl = 'http://192.168.1.4:3000/api/v1/majorcategory'
+export const MajorListingsBaseUrl = 'http://192.168.1.4:3000/api/v1/majorlistings'
+export const BookingBaseUrl = 'http://192.168.1.4:3000/api/v1/booklistings'
