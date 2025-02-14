@@ -26,19 +26,19 @@ const userSchema = mongoose.Schema({
 
   role: { type: String, enum: ['Service User', 'Service Provider'], required: true },
 
-  city: { type: String, enum: ['Rawalpindi' , 'Lahore' , 'Karachi'] },
+  city: { type: String, enum: ['Rawalpindi', 'Lahore', 'Karachi'] },
 
-  area : {type:String , required:true},
+  area: { type: String, required: true },
 
   isEmailVerified: { type: Boolean, default: false }, // Email verification status
 
-  isDocVerified : {type: Boolean , default: false},
+  isDocVerified: { type: Boolean, default: false },
 
   verificationCode: { type: String }, // OTP for email verification
 
   verificationExpiry: { type: Date }, // Expiry date for OTP
 
-  firebaseUID: {type:String},
+  firebaseUID: { type: String },
 
   //   serviceName: { type: String },  Only for Service Providers
 
@@ -52,6 +52,36 @@ const userSchema = mongoose.Schema({
       default: ""
     }
   },
+  experience: {
+    type: Number, default: 0
+  },
+  certifications: [{
+    type: String
+  }],
+
+  availability: { type: String, enum: ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'] },
+
+  govtID: { type: String },
+
+  backgroundCheckStatus: { type: String, enum: ['Pending', 'Verified', 'Rejected'], default: 'Pending' },
+
+  policeVerification: { type: Boolean, default: false },
+
+  averageRating: { type: Number, default: 0 },
+
+  addressProof: {
+    type: String,
+    enum: ['Utility Bill', 'Bank Statement', 'Lease Agreement', 'Driver’s License'],
+    required: false
+  },
+  addressProofDocument: { type: String }, // URL to uploaded document
+  addressVerificationStatus: {
+    type: String,
+    enum: ['Pending', 'Verified', 'Rejected'],
+    default: 'Pending'
+  },
+
+  reviews: [{ userId: { type: mongoose.Schema.Types.ObjectId, ref: 'user' }, rating: Number, comment: String, createdAt: Date }],
 
   // feedbacks: [{ type: Schema.Types.ObjectId, ref: 'feedback' }], // Reference to feedbacks submitted
 
