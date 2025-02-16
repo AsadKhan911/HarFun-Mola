@@ -147,7 +147,7 @@ export const register = async (req, res) => {
 
                 // Upload the image to Cloudinary
                 const cloudResponse = await cloudinary.uploader.upload(fileUri.content, {
-                    folder: 'userprofilepic', // Specify the folder
+                    folder: 'HFM/userprofilepic', // Specify the folder
                 });
 
                 // Save the Cloudinary URL for the profile picture
@@ -198,6 +198,73 @@ export const register = async (req, res) => {
         console.error("Registration error:", error); // Log the error for debugging
         return res.status(500).json({
             message: "An error occurred while creating the account",
+            success: false,
+        });
+    }
+};
+
+//upload documents
+export const uploadDocuments = async (req, res) => {
+    try {
+        const { userId } = req.body;
+
+        if (!userId) {
+            return res.status(400).json({
+                message: "User ID is required",
+                success: false,
+            });
+        }
+
+        const user = await User.findById(userId);
+        if (!user) {
+            return res.status(404).json({
+                message: "User not found",
+                success: false,
+            });
+        }
+
+        let addressDocumentUrl = null;
+        let cnicDocumentUrl = null;
+        let policeDocumentUrl = null;
+
+        if (req.files.addressDocument) {
+            const addressDocumentUri = getDataUri(req.files.addressDocument[0]);
+            const cloudResponse = await cloudinary.uploader.upload(addressDocumentUri.content, {
+                folder: 'HFM/userAddressDocuments',
+            });
+            addressDocumentUrl = cloudResponse.secure_url;
+        }
+
+        if (req.files.cnicDocument) {
+            const cnicDocumentUri = getDataUri(req.files.cnicDocument[0]);
+            const cloudResponse = await cloudinary.uploader.upload(cnicDocumentUri.content, {
+                folder: 'HFM/userCnicDocuments',
+            });
+            cnicDocumentUrl = cloudResponse.secure_url;
+        }
+
+        if (req.files.policeDocument) {
+            const policeDocumentUri = getDataUri(req.files.policeDocument[0]);
+            const cloudResponse = await cloudinary.uploader.upload(policeDocumentUri.content, {
+                folder: 'HFM/userPoliceCertificates',
+            });
+            policeDocumentUrl = cloudResponse.secure_url;
+        }
+
+        user.addressProofDocument = addressDocumentUrl;
+        user.CNIC = cnicDocumentUrl;
+        user.policeDocument = policeDocumentUrl;
+
+        await user.save();
+
+        return res.status(200).json({
+            message: "Documents uploaded successfully",
+            success: true,
+        });
+    } catch (error) {
+        console.error("Error uploading documents:", error);
+        return res.status(500).json({
+            message: "An error occurred while uploading documents",
             success: false,
         });
     }

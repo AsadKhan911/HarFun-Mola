@@ -46,65 +46,80 @@ const Signup = () => {
 
     const handleSignup = async () => {
         try {
-
             console.log("Auth object before signup:", auth);
-
+    
             if (!auth) {
                 console.error("Firebase Auth is not initialized!");
                 return;
             }
-
-            if (!fullName || !email || !phoneNumber || !password || !area) {
+    
+            if (!fullName || !email || !phoneNumber || !password || !area || !role) {
                 Alert.alert('Error', 'All fields are required');
                 return;
             }
-
+    
             setLoading(true);
-
-            // Step 1: Create user in Firebase Authentication
-            const userCredential = await createUserWithEmailAndPassword(auth, email, password);
-            const user = userCredential.user;
-            console.log("User registered in Firebase:", user.uid);
-
-            // Step 2: Prepare form data for your backend
-            const formData = new FormData();
-            formData.append('fullName', fullName);
-            formData.append('email', email);
-            formData.append('phoneNumber', phoneNumber);
-            formData.append('password', password);
-            formData.append('role', role);
-            formData.append('city', city);
-            formData.append('area', area);
-            formData.append('firebaseUID', user.uid); // Use the Firebase UID from the created user
-
-            if (selectedImage) {
-                const fileName = selectedImage.split('/').pop();
-                const fileType = fileName.split('.').pop();
-
-                formData.append('file', {
-                    uri: selectedImage,
-                    name: fileName,
-                    type: `image/${fileType}`,
+    
+            if (role === "Service User") {
+                // Step 1: Create user in Firebase Authentication
+                const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+                const user = userCredential.user;
+                console.log("User registered in Firebase:", user.uid);
+    
+                // Step 2: Prepare form data for your backend
+                const formData = new FormData();
+                formData.append('fullName', fullName);
+                formData.append('email', email);
+                formData.append('phoneNumber', phoneNumber);
+                formData.append('password', password);
+                formData.append('role', role);
+                formData.append('city', city);
+                formData.append('area', area);
+                formData.append('firebaseUID', user.uid); // Use the Firebase UID from the created user
+    
+                if (selectedImage) {
+                    const fileName = selectedImage.split('/').pop();
+                    const fileType = fileName.split('.').pop();
+    
+                    formData.append('file', {
+                        uri: selectedImage,
+                        name: fileName,
+                        type: `image/${fileType}`,
+                    });
+                }
+    
+                // Step 3: Send data to your backend
+                const response = await axios.post(`${userBaseUrl}/register`, formData, {
+                    headers: {
+                        'Content-Type': 'multipart/form-data',
+                    },
                 });
-            }
-
-            // Step 3: Send data to your backend
-            const response = await axios.post(`${userBaseUrl}/register`, formData, {
-                headers: {
-                    'Content-Type': 'multipart/form-data',
-                },
-            });
-
-            if (response.data.success) {
-                Alert.alert(response.data.message, 'Verify your email');
-                dispatch(setUser(response.data.newUser));
-                navigation.push('EmailOTPScreen');
-            } else {
-                Alert.alert('Signup Failed', response.data.message);
+    
+                if (response.data.success) {
+                    Alert.alert(response.data.message, 'Verify your email');
+                    dispatch(setUser(response.data.newUser));
+                    navigation.push('EmailOTPScreen');
+                } else {
+                    Alert.alert('Signup Failed', response.data.message);
+                }
+            } else if (role === "Service Provider") {
+                // For Service Provider, navigate to service-provider-signup-details-1 with entered details
+                navigation.navigate('service-provider-signup-details-1', {
+                    userData: {
+                        fullName,
+                        email,
+                        phoneNumber,
+                        password,
+                        role,
+                        city,
+                        area,
+                        selectedImage, // Pass the selected image URI
+                    },
+                });
             }
         } catch (error) {
             console.error('Signup Error:', error);
-
+    
             // Handle Firebase-specific errors
             if (error.code === 'auth/email-already-in-use') {
                 Alert.alert('Error', 'This email is already in use.');

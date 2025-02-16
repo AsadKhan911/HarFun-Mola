@@ -32,8 +32,6 @@ const userSchema = mongoose.Schema({
 
   isEmailVerified: { type: Boolean, default: false }, // Email verification status
 
-  isDocVerified: { type: Boolean, default: false },
-
   verificationCode: { type: String }, // OTP for email verification
 
   verificationExpiry: { type: Date }, // Expiry date for OTP
@@ -42,7 +40,7 @@ const userSchema = mongoose.Schema({
 
   //   serviceName: { type: String },  Only for Service Providers
 
-  serviceArea: { type: String }, // Only for Service Providers
+  // Only for Service Providers
 
   profile: {
     bio: { type: String },
@@ -52,9 +50,13 @@ const userSchema = mongoose.Schema({
       default: ""
     }
   },
-  experience: {
-    type: Number, default: 0
-  },
+
+  // feedbacks: [{ type: Schema.Types.ObjectId, ref: 'feedback' }], // Reference to feedbacks submitted
+
+  //For service providers
+
+  fullAddress: { type: String },
+
   certifications: [{
     type: String
   }],
@@ -63,7 +65,8 @@ const userSchema = mongoose.Schema({
 
   govtID: { type: String },
 
-  backgroundCheckStatus: { type: String, enum: ['Pending', 'Verified', 'Rejected'], default: 'Pending' },
+  experience: { type: Number, default: 0 },
+
 
   policeVerification: { type: Boolean, default: false },
 
@@ -71,19 +74,29 @@ const userSchema = mongoose.Schema({
 
   addressProof: {
     type: String,
-    enum: ['Utility Bill', 'Bank Statement', 'Lease Agreement', 'Driver’s License'],
+    enum: ['Utility Bill', 'Bank Statement', 'Driver’s License'],
     required: false
   },
   addressProofDocument: { type: String }, // URL to uploaded document
+
+  policeDocument: { type: String }, // URL to uploaded document
+
+  CNIC: {type: String},
+
+  reviews: [{ userId: { type: mongoose.Schema.Types.ObjectId, ref: 'user' }, rating: Number, comment: String, createdAt: Date }],
+
+  isAddressVerified: { type: Boolean, default: false },
+
+  isPoliceCerVerified: { type: Boolean, default: false },
+
+  backgroundCheckStatus: { type: String, enum: ['Pending', 'Verified', 'Rejected'], default: 'Pending' },
+
   addressVerificationStatus: {
     type: String,
     enum: ['Pending', 'Verified', 'Rejected'],
     default: 'Pending'
   },
 
-  reviews: [{ userId: { type: mongoose.Schema.Types.ObjectId, ref: 'user' }, rating: Number, comment: String, createdAt: Date }],
-
-  // feedbacks: [{ type: Schema.Types.ObjectId, ref: 'feedback' }], // Reference to feedbacks submitted
 
   createdAt: { type: Date, default: Date.now },
 
@@ -92,4 +105,3 @@ const userSchema = mongoose.Schema({
 }, { timestamps: true })
 
 export const User = mongoose.model('user', userSchema)
-

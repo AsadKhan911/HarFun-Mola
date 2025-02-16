@@ -2,10 +2,11 @@ import express from 'express'
 const router = express.Router()
 
 import isAuthenticated from '../middlewares/isAuthenticated.js'
-import { singleUpload } from '../middlewares/multer.js'
-import { register , login  , updateProfile , VerifyEmail, resendOTP } from '../controllers/user.controller.js'
+import { singleUpload , multipleUpload } from '../middlewares/multer.js'
+import { register , login  , updateProfile , VerifyEmail, resendOTP, uploadDocuments } from '../controllers/user.controller.js'
 
 router.route('/register').post(singleUpload , register)
+router.route('/uploaddocs').post(multipleUpload , uploadDocuments)
 router.route('/verifyemail').post(VerifyEmail)
 router.route('/resend').post(resendOTP)
 router.route('/login').post(login)

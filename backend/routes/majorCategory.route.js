@@ -1,7 +1,7 @@
 import express from 'express'
 const router = express.Router()
 
-import { singleUpload } from '../middlewares/multer.js'
+// import { singleUpload } from '../middlewares/multer.js'
 import isAuthenticated from '../middlewares/isAuthenticated.js'
 
 import { addMajorCategories, getMajorCategories } from '../controllers/majorCategory.controller.js'
