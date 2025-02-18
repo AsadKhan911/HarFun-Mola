@@ -56,6 +56,8 @@ const ServiceUserMapView = () => {
     <View style={styles.container}>
       <MapView
         style={styles.map}
+        showsUserLocation={true}
+        followsUserLocation={true}
         region={region} // Now updates dynamically based on both locations
       >
         {/* Show provider's location */}

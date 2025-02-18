@@ -51,6 +51,21 @@ const userSchema = mongoose.Schema({
     }
   },
 
+  reviews: [{
+    userId: {
+      type: mongoose.Schema.Types.ObjectId, ref: 'user'
+    },
+    rating: Number,
+    comment: String,
+    createdAt: Date
+  }],
+
+  pendingReviewBookings: [{ 
+    pendingReview: {type:Boolean , default:false},// Track if user has a pending review
+    bookingId: mongoose.Schema.Types.ObjectId,
+    serviceProviderId: mongoose.Schema.Types.ObjectId, // Service provider ID
+  }], 
+
   // feedbacks: [{ type: Schema.Types.ObjectId, ref: 'feedback' }], // Reference to feedbacks submitted
 
   //For service providers
@@ -81,9 +96,7 @@ const userSchema = mongoose.Schema({
 
   policeDocument: { type: String }, // URL to uploaded document
 
-  CNIC: {type: String},
-
-  reviews: [{ userId: { type: mongoose.Schema.Types.ObjectId, ref: 'user' }, rating: Number, comment: String, createdAt: Date }],
+  CNIC: { type: String },
 
   isAddressVerified: { type: Boolean, default: false },
 

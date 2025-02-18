@@ -6,23 +6,23 @@ import { FontAwesome, Ionicons } from "@expo/vector-icons";
 import { useSelector } from "react-redux";
 import useGetFetchBookingDetails from '../../../../customHooks/useGetFetchBookingDetails.jsx';
 import Colors from "../../../../constants/Colors.ts";
-import { useGetUpdateBookingStatus } from "../../../../customHooks/useGetBookingPendingToAccepted.jsx"; 
+import { useGetUpdateBookingStatus } from "../../../../customHooks/useGetBookingPendingToAccepted.jsx";
 
 const OrderDetailsScreen = () => {
     const navigation = useNavigation();
     const route = useRoute();
     const { bookingId } = route.params;
     const { singleBooking } = useSelector((store) => store.bookings);
-    const { handleAction } = useGetUpdateBookingStatus(bookingId); 
+    const { handleAction } = useGetUpdateBookingStatus(bookingId);
 
-    
+
     const [acceptLoading, setAcceptLoading] = useState(false);
     const [rejectLoading, setRejectLoading] = useState(false);
 
     // Fetch booking details
     useGetFetchBookingDetails(bookingId);
 
-    
+
     const handleBookingAction = async (status) => {
         if (status === "Accept") {
             setAcceptLoading(true);
@@ -31,7 +31,7 @@ const OrderDetailsScreen = () => {
         }
 
         const result = await handleAction(status);
-        
+
         if (result.success) {
             Alert.alert("Success", result.message);
             navigation.goBack();
@@ -61,7 +61,15 @@ const OrderDetailsScreen = () => {
 
             <Card style={styles.card}>
                 <Card.Content>
+                    {/* View Profile Button */}
+                    <View style={styles.profileButtonContainer}>
+                        <TouchableOpacity style={styles.profileButton} onPress={() => navigation.navigate("UserProfile", { userId: singleBooking.user.id })}>
+                            <Text style={styles.profileButtonText}>View Client's Profile</Text>
+                        </TouchableOpacity>
+                    </View>
+
                     <Text style={styles.title}>{singleBooking.service.serviceName}</Text>
+
 
                     <View style={styles.infoRow}>
                         <FontAwesome name="file" size={16} color={Colors.GRAY} />
@@ -194,6 +202,27 @@ const styles = StyleSheet.create({
     buttonText: {
         fontSize: 16,
         color: "white",
+        fontFamily: "outfit-Medium",
+    },
+    profileButtonContainer: {
+        marginTop: 0,
+        marginBottom:20,
+        alignItems: "center",
+    },
+    profileButton: {
+        paddingVertical: 12,
+        paddingHorizontal: 30,
+        borderRadius: 25,
+        backgroundColor: Colors.PRIMARY,
+        shadowColor: Colors.GRAY,
+        shadowOffset: { width: 0, height: 4 },
+        shadowOpacity: 0.3,
+        shadowRadius: 5,
+        elevation: 5,
+    },
+    profileButtonText: {
+        fontSize: 16,
+        color: Colors.WHITE,
         fontFamily: "outfit-Medium",
     },
     goBackContainer: {

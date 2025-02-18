@@ -6,113 +6,6 @@ import { WelcomeEmail } from "../middlewares/EmailFunctions/WelcomeEmail.js";
 import { getDataUri } from '../utils/dataURI.js'
 import cloudinary from "../utils/cloudinary.js";
 
-// export const register = async (req, res) => {
-//     try {
-        
-//         const { fullName, email, city, phoneNumber, password, role, isEmailVerified, area, bio } = req.body;
-
-//         // Validate input fields
-//         if (!fullName || !email || !phoneNumber || !password || !city || !role || !area) {
-//             return res.status(400).json({
-//                 message: "All fields are required",
-//                 success: false,
-//             });
-//         }
-
-//         // Check for duplicate email (case-insensitive)
-//         const existingUser = await User.findOne({ email: email.toLowerCase() });
-//         if (existingUser) {
-//             return res.status(400).json({
-//                 message: "A user with this email already exists",
-//                 success: false,
-//             });
-//         }
-
-//          // **1️⃣ Create User in Firebase Authentication**
-//          const firebaseUser = await admin.auth().createUser({
-//             email: email.toLowerCase(),
-//             password: password,
-//         });
-
-//         // Get Firebase UID
-//         const firebaseUID = firebaseUser.uid;
-
-//         let profilePic = null;
-//         let file = req.file;
-
-//         if (file) {
-//             try {
-//                 // Convert the file to a data URI
-//                 const fileUri = getDataUri(file);
-
-//                 // Upload the image to Cloudinary
-//                 const cloudResponse = await cloudinary.uploader.upload(fileUri.content, {
-//                     folder: 'userprofilepic', // Specify the folder
-//                 });
-
-//                 // Save the Cloudinary URL for the profile picture
-//                 profilePic = cloudResponse.secure_url;
-
-//             } catch (error) {
-//                 console.error('Error uploading profile picture to Cloudinary:', error);
-//                 // Optional: Set a default profile picture or handle this case
-//                 profilePic = null;
-//             }
-//         }
-//         // Update user profile in the database (example logic)
-//         // const user = await User.findByIdAndUpdate(
-//         //     req.user._id,
-//         //     { profilePic },
-//         //     { new: true }
-//         // );
-
-//         // Respond with updated user information
-//         // res.status(200).json({ message: 'Profile updated successfully', user });
-
-
-//         // Hash the password
-//         const hashedPassword = await bcrypt.hash(password, 10);
-
-//         //Verification code
-//         const verificationCode = Math.floor(100000 + Math.random() * 900000).toString()
-
-//         // Create the new user
-//         const newUser = await User.create({
-//             fullName,
-//             email: email.toLowerCase(), // Store email in lowercase
-//             phoneNumber,
-//             city,
-//             password: hashedPassword,
-//             role,
-//             isEmailVerified,
-//             verificationCode,
-//             area,
-//             firebaseUID,
-//             profile: { // Add profile picture if available
-//                 profilePic,
-//                 bio
-//             },
-//         });
-
-//         //Send verification code
-//         sendVerificationCode(newUser?.email, verificationCode, newUser?.fullName)
-
-//         return res.status(201).json({
-//             message: "Account created successfully",
-//             success: true,
-//             newUser,
-//             userId: newUser._id, // Optionally return the user ID
-
-//         });
-//     } catch (error) {
-//         console.error("Registration error:", error); // Log the error for debugging
-//         return res.status(500).json({
-//             message: "An error occurred while creating the account",
-//             success: false,
-//         });
-//     }
-// };
-
 export const register = async (req, res) => {
     try {
         const { fullName, email, city, phoneNumber, password, role, isEmailVerified, area, bio, firebaseUID } = req.body;
@@ -310,77 +203,6 @@ export const VerifyEmail = async (req, res) => {
     }
 }
 
-//Business logic for login
-// export const login = async (req, res) => {
-//     try {
-//         //Checking for empty fields
-//         const { email, password, role, firebaseToken } = req.body;
-//         if (!email || !password || !role || !firebaseToken) {
-//             return res.status(400).json({
-//                 message: "Something is missing",
-//                 success: false
-//             })
-//         }
-
-//         // Step 1: Verify Firebase Token
-//         const decodedToken = await admin.auth().verifyIdToken(firebaseToken);
-//         const firebaseUserId = decodedToken.uid;
-
-//         //If email is not valid while login in.
-//         let user = await User.findOne({ email })
-//         if (!user) {
-//             return res.status(400).json({
-//                 message: "Incorrect email or password",
-//                 success: false
-//             })
-//         }
-//         //Comparing passwords
-//         const isPasswordMatch = await bcrypt.compare(password, user.password) //user.password is the schema value which is stored in the database
-//         if (!isPasswordMatch) {
-//             return res.status(400).json({
-//                 message: "Incorrect email or password",
-//                 success: false
-//             })
-//         }
-//         //Checking role is correct or not , means koi student glti se recruiter ko select kr k agar login krta h and vice versa
-//         if (role !== user.role) {
-//             return res.status(400).json({
-//                 message: "Account doesnot exists with current role",
-//                 success: false
-//             })
-//         }
-//         //Gernerating jwt Token
-//         const tokenData = {
-//             userID: user._id
-//         }
-//         const token = jwt.sign(tokenData, process.env.SECRET_KEY, { expiresIn: '1d' })
-
-//         user = {
-//             _id: user._id,
-//             fullName: user.fullName,
-//             email: user.email,
-//             phoneNumber: user.phoneNumber,
-//             role: user.role,
-//             area: user.area,
-//             city: user.city,
-//             isEmailVerified: user.isEmailVerified,
-//             isDocVerified: user.isDocVerified,
-//             profile: user.profile
-//         }
-//         if (token) {
-//             res.status(200).json({
-//                 message: `Welcome back ${user.fullName}`,
-//                 user,
-//                 token, // Explicitly include token in the response payload
-//                 success: true
-//             });
-//         }
-//     }
-//     catch (error) {
-//         res.send(error)
-//     }
-// }
-
 export const login = async (req, res) => {
     try {
         //Checking for empty fields
@@ -500,6 +322,39 @@ export const updateProfile = async (req, res) => {
         console.error("Error updating profile:", error);
         return res.status(500).json({
             message: "Internal server error",
+            success: false,
+        });
+    }
+};
+
+export const getUser = async (req, res) => {
+    try {
+        const userId = req.params.userId; // Get user ID from request parameters
+
+        // Fetch user data by ID, excluding password, and populate 'userId' inside 'reviews'
+        const user = await User.findById(userId)
+            .select("-password")
+            .populate({
+                path: "reviews.userId", // Populate 'userId' inside 'reviews'
+                select: "fullName profile.profilePic", // Select only necessary fields
+            });
+
+        if (!user) {
+            return res.status(404).json({
+                message: "User not found",
+                success: false,
+            });
+        }
+
+        return res.status(200).json({
+            success: true,
+            user,
+        });
+
+    } catch (error) {
+        console.error("Error fetching user profile:", error);
+        return res.status(500).json({
+            message: "An error occurred while fetching the user profile",
             success: false,
         });
     }

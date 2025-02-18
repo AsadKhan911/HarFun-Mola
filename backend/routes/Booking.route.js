@@ -3,6 +3,7 @@ import express from 'express'
 import { BookServiceListingByListingId , getAllBookings, getAllBookingsForServiceProvider, getBookedSlots, 
     getBooking, 
     getServiceProviderBookings, 
+    submitReview, 
     updateBookingStatus} from '../controllers/majorCategoryBooking.controller.js'
 
 import isAuthenticated from '../middlewares/isAuthenticated.js'
@@ -17,6 +18,7 @@ router.route('/getproviderbookings').get(isAuthenticated , getServiceProviderBoo
 router.route('/bookings/:serviceId/:date').get(isAuthenticated , getBookedSlots)
 router.route('/updateBooking/:bookingId').patch(isAuthenticated, updateBookingStatus);
 router.route('/getBooking/:bookingId').get(isAuthenticated, getBooking);
+router.route('/submitreview').post(isAuthenticated, submitReview);
 
 export default router
 

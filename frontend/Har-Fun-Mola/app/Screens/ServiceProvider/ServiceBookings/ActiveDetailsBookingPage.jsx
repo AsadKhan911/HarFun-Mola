@@ -16,7 +16,7 @@ const ActiveDetailsBookingPage = ({ route, handleCloseModal }) => {
   const bookingDetails = useSelector((store) => store.bookings.singleBooking);
   const serviceUser = useSelector((store) => store.bookings.singleBooking?.user);
   const providerId = useSelector((store) => store.bookings.singleBooking?.service?.created_by?.firebaseUID)
-  const userId = useSelector((store)=> store.bookings.singleBooking?.user?.firebaseUID)
+  const userId = useSelector((store) => store.bookings.singleBooking?.user?.firebaseUID)
   console.log("UserId ", userId)
   console.log("ProviderId ", providerId)
 
@@ -126,10 +126,13 @@ const ActiveDetailsBookingPage = ({ route, handleCloseModal }) => {
 
         {/* Service User Details */}
         <View style={styles.profileSection}>
-          <Image
-            source={{ uri: serviceUser.profile.profilePic || "PROFILE PIC" }}
-            style={styles.profilePic}
-          />
+          <TouchableOpacity onPress={() => navigation.navigate('user-profile-screen', { serviceUser: serviceUser })}>
+            <Image
+              source={{ uri: serviceUser.profile.profilePic || "PROFILE PIC" }}
+              style={styles.profilePic}
+            />
+          </TouchableOpacity>
+
           <Text style={{ fontFamily: 'outfit-Medium', fontSize: 18, marginLeft: -5 }}>Service Client</Text>
         </View>
         <View style={styles.card}>
