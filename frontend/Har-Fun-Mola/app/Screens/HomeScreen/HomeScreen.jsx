@@ -17,12 +17,22 @@ const Home = () => {
   // Update isModalVisible when userData is loaded
   useEffect(() => {
     if (userData?.pendingReviewBookings?.length > 0) {
-      // Get the first booking with pending review
-      const pendingReview = userData.pendingReviewBookings[0];
-      setPendingReviewBooking(pendingReview);
-      setModalVisible(true);
+      // Find the first booking where pendingReview is true
+      const pendingReview = userData.pendingReviewBookings.find(booking => booking.pendingReview === true);
+  
+      if (pendingReview) {
+        setPendingReviewBooking(pendingReview);
+        setModalVisible(true);
+      } else {
+        setPendingReviewBooking(null); // Ensure no incorrect modal display
+        setModalVisible(false);
+      }
+    } else {
+      setPendingReviewBooking(null);
+      setModalVisible(false);
     }
   }, [userData]); // Runs whenever userData changes
+  
 
   const handleReviewSubmit = () => {
     setModalVisible(false);
@@ -71,7 +81,7 @@ const Home = () => {
           visible={isModalVisible}
           onClose={() => setModalVisible(false)}
           onSubmit={handleReviewSubmit}
-          ReviewToWhomId={pendingReviewBooking.serviceProviderId}  // Service provider ID
+          userToReviewId={pendingReviewBooking?.serviceProviderId}  // Service provider ID
           bookingId={pendingReviewBooking.bookingId}  // Booking ID
         />
       )}

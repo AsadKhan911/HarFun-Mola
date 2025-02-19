@@ -3,6 +3,7 @@ import Home from '../../Screens/HomeScreen/HomeScreen.jsx'
 import { createStackNavigator } from '@react-navigation/stack';
 import BusinessListByCategoryScreen from '../../Screens/BusinessListByCategory/BusinessListByCategory.jsx';
 import BusinessDetailsScreen from '../../Screens/BusinessDetailsScreen/BusinessDetailsScreen.jsx'
+
 const Stack = createStackNavigator();
 
 const HomeNavigation = () => {

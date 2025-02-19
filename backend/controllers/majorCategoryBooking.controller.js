@@ -241,25 +241,129 @@ export const getBooking = async (req, res) => {
   }
 };
 
+// export const updateBookingStatus = async (req, res) => {
+//   const { bookingId } = req.params;
+//   const { status, elapsedTime, completedTime } = req.body; // Accept elapsedTime and completedTime from frontend
+
+//   try {
+//     let updateData = { status, updatedAt: Date.now() };
+
+//     if (status === "Confirmed") {
+//       const orderNumber = `HFM-${Math.floor(1000 + Math.random() * 9000)}`;
+//       updateData = { ...updateData, orderNumber };
+//     }
+
+//     if (status === "In-Progress") {
+//       updateData = { ...updateData, startTime: new Date().toISOString() };
+//     }
+
+//     // When booking is completed, store completedTime and elapsedTime
+//     if (status === "Completed" && completedTime) {
+//       updateData = { ...updateData, completedTime, elapsedTime };
+//     }
+
+//     const booking = await Booking.findByIdAndUpdate(
+//       bookingId,
+//       updateData,
+//       { new: true }
+//     )
+//       .populate({
+//         path: "service",
+//         populate: { path: "created_by", model: "user" } // Fetch service provider
+//       })
+//       .populate("user"); // Fetch user who booked the service
+
+//     if (!booking) {
+//       return res.status(404).json({ message: "Booking not found." });
+//     }
+
+//     const serviceUser = booking.user; // The user who booked the service
+//     const serviceProvider = booking.service.created_by; // The service provider
+
+//     // === Handle different booking statuses ===
+//     if (status === "Confirmed") {
+//       await BookingAcceptedEmail(serviceUser, serviceProvider, booking);
+//     }
+
+//     if (status === "Cancelled") {
+//       await BookingRejectedEmail(serviceUser, serviceProvider, booking);
+//     }
+
+//     if (status === "In-Progress") {
+//       await BookingInProgressEmail(serviceUser, serviceProvider, booking);
+//     }
+
+//     if (status === "Completed") {
+//       await BookingCompletedEmail(serviceUser, serviceProvider, booking);
+
+//       // === Check if the user already has a pending review for this booking ===
+//       const user = await User.findById(serviceUser._id);
+//       const existingBooking = user.pendingReviewBookings.find(
+//         (b) => b.bookingId.toString() === booking._id.toString()
+//       );
+
+//       if (existingBooking) {
+//         // If booking exists, update pendingReview to true
+//         await User.findOneAndUpdate(
+//           { _id: serviceUser._id, "pendingReviewBookings.bookingId": booking._id },
+//           { $set: { "pendingReviewBookings.$.pendingReview": true } },
+//           { new: true }
+//         );
+//         console.log(`Updated pendingReview to true for booking: ${booking._id}`);
+//       } else {
+//         // If no existing entry, add a new pending review entry
+//         await User.findByIdAndUpdate(
+//           serviceUser._id,
+//           {
+//             $push: {
+//               pendingReviewBookings: {
+//                 pendingReview: true,
+//                 bookingId: booking._id,
+//                 serviceProviderId: serviceProvider._id
+//               }
+//             }
+//           },
+//           { new: true }
+//         );
+//         console.log(`Added new pending review for booking: ${booking._id}`);
+//       }
+//     }
+
+//     // Verify the update
+//     const updatedUser = await User.findById(serviceUser._id);
+//     console.log("Updated User Data:", JSON.stringify(updatedUser.pendingReviewBookings, null, 2));
+
+    
+//     res.status(200).json({
+//       success: true,
+//       message: `Booking status updated to ${status}.`,
+//       booking,
+//     });
+//   } catch (error) {
+//     console.error("Error updating booking status:", error);
+//     res.status(500).json({ message: "An error occurred while updating the booking status.", error });
+//   }
+// };
+
 export const updateBookingStatus = async (req, res) => {
   const { bookingId } = req.params;
-  const { status, elapsedTime, completedTime } = req.body; // Accept elapsedTime and completedTime from frontend
+  const { status, elapsedTime, completedTime } = req.body;
 
   try {
     let updateData = { status, updatedAt: Date.now() };
 
     if (status === "Confirmed") {
       const orderNumber = `HFM-${Math.floor(1000 + Math.random() * 9000)}`;
-      updateData = { ...updateData, orderNumber };
+      updateData.orderNumber = orderNumber;
     }
 
     if (status === "In-Progress") {
-      updateData = { ...updateData, startTime: new Date().toISOString() };
+      updateData.startTime = new Date().toISOString();
     }
 
-    // When booking is completed, store completedTime and elapsedTime
     if (status === "Completed" && completedTime) {
-      updateData = { ...updateData, completedTime, elapsedTime };
+      updateData.completedTime = completedTime;
+      updateData.elapsedTime = elapsedTime;
     }
 
     const booking = await Booking.findByIdAndUpdate(
@@ -269,55 +373,56 @@ export const updateBookingStatus = async (req, res) => {
     )
       .populate({
         path: "service",
-        populate: { path: "created_by", model: "user" } // Fetch service provider
+        populate: { path: "created_by", model: "user" }
       })
-      .populate("user"); // Fetch user who booked the service
+      .populate("user");
 
     if (!booking) {
       return res.status(404).json({ message: "Booking not found." });
     }
 
-    const serviceUser = booking.user; // The user who booked the service
-    const serviceProvider = booking.service.created_by; // The service provider
+    const serviceUser = booking.user;
+    const serviceProvider = booking.service.created_by;
 
     // === Handle different booking statuses ===
-    if (status === "Confirmed") {
-      await User.findByIdAndUpdate(serviceUser._id, { pendingReview: true });
-      await BookingAcceptedEmail(serviceUser, serviceProvider, booking);
-    }
-
-    if (status === "Cancelled") {
-      await BookingRejectedEmail(serviceUser, serviceProvider, booking);
-    }
-
-    if (status === "In-Progress") {
-      await BookingInProgressEmail(serviceUser, serviceProvider, booking);
-    }
-
+    if (status === "Confirmed") await BookingAcceptedEmail(serviceUser, serviceProvider, booking);
+    if (status === "Cancelled") await BookingRejectedEmail(serviceUser, serviceProvider, booking);
+    if (status === "In-Progress") await BookingInProgressEmail(serviceUser, serviceProvider, booking);
     if (status === "Completed") {
       await BookingCompletedEmail(serviceUser, serviceProvider, booking);
 
-      // === Update pendingReviewBookings for serviceUser with pendingReview = true ===
+      // **Ensure pendingReview is updated correctly**
       await User.findByIdAndUpdate(
         serviceUser._id,
         {
-          $addToSet: {
+          $pull: { pendingReviewBookings: { bookingId: booking._id } } // Remove existing entry if exists
+        },
+        { new: true }
+      );
+
+      await User.findByIdAndUpdate(
+        serviceUser._id,
+        {
+          $push: {
             pendingReviewBookings: {
-              pendingReview: true, // Set pendingReview to true
+              pendingReview: true, // Ensure this is explicitly set
               bookingId: booking._id,
-              serviceProviderId: serviceProvider._id,
-            },
-          },
+              serviceProviderId: serviceProvider._id
+            }
+          }
         },
         { new: true }
       );
     }
+
+    const updatedUser = await User.findById(serviceUser._id);
 
     res.status(200).json({
       success: true,
       message: `Booking status updated to ${status}.`,
       booking,
     });
+
   } catch (error) {
     console.error("Error updating booking status:", error);
     res.status(500).json({ message: "An error occurred while updating the booking status.", error });
@@ -326,18 +431,22 @@ export const updateBookingStatus = async (req, res) => {
 
 export const submitReview = async (req, res) => {
   try {
-    const { userId, bookingId, rating, comment } = req.body;
+    const { userToReviewId, bookingId, rating, comment } = req.body;
+    console.log(userToReviewId, bookingId, rating, comment);
 
-    // Find the user to be reviewed
-    const user = await User.findById(userId).populate('reviews.userId', 'fullName profile.profilePic');
+    // Find the user being reviewed
+    const user = await User.findById(userToReviewId).populate(
+      "reviews.userId",
+      "fullName profile.profilePic"
+    );
 
     if (!user) {
-      return res.status(404).json({ message: 'User not found', success: false });
+      return res.status(404).json({ message: "User not found", success: false });
     }
 
     // Create a new review object
     const newReview = {
-      userId: req.id, // The reviewer's ID (service provider)
+      userId: req.id, // ID of the user submitting the review
       rating,
       comment,
       createdAt: new Date(),
@@ -352,16 +461,33 @@ export const submitReview = async (req, res) => {
 
     await user.save();
 
-    // Populate the updated user with reviews
-    const updatedUser = await User.findById(userId).populate('reviews.userId', 'fullName profile.profilePic');
+    //Set `pendingReview` to `false` in the service user's `pendingReviewBookings`
+    const serviceUser = await User.findOneAndUpdate(
+      { "pendingReviewBookings.bookingId": bookingId }, // Find the user who booked the service
+      {
+        $set: { "pendingReviewBookings.$.pendingReview": false }, // Update `pendingReview` to false
+      },
+      { new: true } // Return the updated document
+    );
+
+    if (!serviceUser) {
+      return res.status(404).json({ message: "Service user not found", success: false });
+    }
+
+    // Populate updated user data before sending the response
+    const updatedUser = await User.findById(userToReviewId).populate(
+      "reviews.userId",
+      "fullName profile.profilePic"
+    );
 
     return res.status(200).json({
-      message: 'Review submitted successfully',
+      message: "Review submitted successfully",
       success: true,
-      user: updatedUser, // Sending updated user data
+      user: updatedUser, // Send updated user data
     });
   } catch (error) {
-    console.error('Error submitting review:', error);
-    return res.status(500).json({ message: 'Internal server error', success: false });
+    console.error("Error submitting review:", error);
+    return res.status(500).json({ message: "Internal server error", success: false });
   }
 };
+

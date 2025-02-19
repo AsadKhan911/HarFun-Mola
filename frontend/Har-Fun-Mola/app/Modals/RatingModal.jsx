@@ -7,7 +7,7 @@ import Colors from '../../constants/Colors.ts';
 import { useDispatch } from 'react-redux';
 import { setUser } from '../redux/authSlice.js';
 
-const RatingModal = ({ visible, onClose, onSubmit, ReviewToWhomId, bookingId }) => {
+const RatingModal = ({ visible, onClose, onSubmit, userToReviewId, bookingId }) => {
   const [rating, setRating] = useState(0);
   const [comment, setComment] = useState('');
   const dispatch = useDispatch();
@@ -20,14 +20,13 @@ const RatingModal = ({ visible, onClose, onSubmit, ReviewToWhomId, bookingId }) 
 
     try {
       const response = await axios.post(`${BookingBaseUrl}/submitreview`, {
-        userId: ReviewToWhomId,
+        userToReviewId,
         bookingId,
         rating,
         comment,
       });
 
       if (response.status === 200 && response.data.success) {
-        dispatch(setUser(response.data.user)); // Update Redux store with new user data including reviews
         onSubmit();
         onClose();
       }

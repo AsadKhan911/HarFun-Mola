@@ -530,7 +530,7 @@ console.log(provider)
         visible={showRatingModal}
         onClose={() => setShowRatingModal(false)}
         onSubmit={() => navigation.getParent()?.jumpTo('home')}
-        ReviewToWhomId={serviceUser._id}
+        userToReviewId={serviceUser._id}
         bookingId={bookingId}
       />
     </ScrollView>

@@ -64,6 +64,7 @@ const userSchema = mongoose.Schema({
     pendingReview: {type:Boolean , default:false},// Track if user has a pending review
     bookingId: mongoose.Schema.Types.ObjectId,
     serviceProviderId: mongoose.Schema.Types.ObjectId, // Service provider ID
+    _id: false
   }], 
 
   // feedbacks: [{ type: Schema.Types.ObjectId, ref: 'feedback' }], // Reference to feedbacks submitted
