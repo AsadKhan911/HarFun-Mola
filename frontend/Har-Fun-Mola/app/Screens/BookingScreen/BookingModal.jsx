@@ -7,7 +7,8 @@ import axios from "axios";
 import Colors from "../../../constants/Colors.ts";
 import { Heading } from "../../../components/Heading.jsx";
 import { FlatList, TextInput } from "react-native-gesture-handler";
-import { BookingBaseUrl } from '../../URL/userBaseUrl.js';
+import { BookingBaseUrl, PaymentBaseUrl } from '../../URL/userBaseUrl.js';
+import { StripeProvider, useStripe } from "@stripe/stripe-react-native";
 
 const BookingModal = ({ business, handleCloseModal }) => {
   const [timeList, setTimeList] = useState([]);
@@ -17,7 +18,9 @@ const BookingModal = ({ business, handleCloseModal }) => {
   const [address, setAddress] = useState("");
   const [loading, setLoading] = useState(false);
   const [bookedTimeSlots, setBookedTimeSlots] = useState([]);
-
+  const [paymentMethod, setPaymentMethod] = useState("COD"); // Default is COD
+  const [paymentIntentId, setPaymentIntentId] = useState(null);
+  const { initPaymentSheet, presentPaymentSheet } = useStripe();
   const { _id } = useSelector(state => state?.auth?.user || {});
 
   useEffect(() => {
@@ -27,6 +30,54 @@ const BookingModal = ({ business, handleCloseModal }) => {
       console.log("No valid time slots found.");
     }
   }, [business]);
+  const createPaymentIntent = async () => {
+   
+    const amountInPaisa = business?.price * 100;
+
+    try {
+      console.log("PaymentBaseUrl:",  business?.price);
+      const response = await axios.post(
+        `${PaymentBaseUrl}/create-payment-intent`,
+        {
+          amount: amountInPaisa, // Replace with actual service price
+          currency: "pkr",
+          userId: _id,
+        }
+      );
+  
+      if (response.status === 200) {
+        setPaymentIntentId(response.data.paymentIntentId);
+  
+        const { error } = await initPaymentSheet({
+          paymentIntentClientSecret: response.data.clientSecret,
+          returnURL: "myapp://stripe-redirect",
+        });
+  
+        if (error) {
+          console.error("Error initializing payment sheet:", error.message);
+          Alert.alert("Payment Error", error.message);
+        }
+      }
+    } catch (error) {
+      console.error("Error creating payment intent:", error);
+      if (error.response) {
+        console.error("📡 Server Response Data:", error.response.data);
+        console.error("📡 Server Response Status:", error.response.status);
+        console.error("📡 Server Response Headers:", error.response.headers);
+      } else if (error.request) {
+        console.error("❌ No Response Received:", error.request);
+      } else {
+        console.error("❌ Other Error:", error.message);
+      }
+    }
+  };
+  
+
+  useEffect(() => {
+    if (paymentMethod === "CARD") {
+      createPaymentIntent();
+    }
+  }, [paymentMethod]);
 
   const handleDateChange = async (date) => {
     if (!date) {
@@ -60,18 +111,36 @@ const BookingModal = ({ business, handleCloseModal }) => {
       return;
     }
 
-    const formattedDate = new Date(selectedDate).toISOString();
-
-    const bookingDetails = {
-      date: formattedDate,
-      timeSlot: selectedTime,
-      address,
-      instructions: note,
-      userId: _id,
-    };
-
+    setLoading(true);
     try {
-      setLoading(true);
+      if (paymentMethod === "CARD") {
+        if (!paymentIntentId) {
+          Alert.alert("Payment Error", "Payment has not been initialized.");
+          setLoading(false);
+          return;
+        }
+
+        const { error } = await presentPaymentSheet();
+        if (error) {
+          Alert.alert("Payment Failed", error.message);
+          console.log(error.message)
+          setLoading(false);
+          return;
+        }
+      }
+
+      const formattedDate = new Date(selectedDate).toISOString();
+
+      const bookingDetails = {
+        date: formattedDate,
+        timeSlot: selectedTime,
+        address,
+        instructions: note,
+        userId: _id,
+        paymentMethod,
+        paymentIntentId: paymentMethod === "CARD" ? paymentIntentId : null,
+        paymentStatus: paymentMethod === "CARD" ? "Pending" : "Completed",
+      };
 
       if (!business?._id) {
         Alert.alert("Error", "Invalid service listing ID.");
@@ -79,110 +148,152 @@ const BookingModal = ({ business, handleCloseModal }) => {
         return;
       }
 
-      const response = await axios.post(`${BookingBaseUrl}/post/${business._id}`, bookingDetails);
+      try {
+        const response = await axios.post(`${BookingBaseUrl}/post/${business._id}`, bookingDetails);
+        console.log("Booking Response:", response.data); // Log response
 
-      if (response.status === 201) {
-        Alert.alert("Success", "Your booking has been added. You can check your booking status in the booking tab.");
-        handleCloseModal();
-      } else {
-        Alert.alert("Error", "Failed to book. Please try again later.");
+        if (response.status === 201) {
+          Alert.alert("Success", "Your booking has been added. You can check your booking status in the booking tab.");
+          handleCloseModal();
+        } else {
+          Alert.alert("Error", "Failed to book. Please try again later.");
+        }
+      } catch (error) {
+        console.error("Booking Error:", error);
+        if (error.response) {
+          console.error("📡 Server Response Data:", error.response.data);
+          console.error("📡 Server Response Status:", error.response.status);
+          console.error("📡 Server Response Headers:", error.response.headers);
+        } else if (error.request) {
+          console.error("❌ No Response Received:", error.request);
+        } else {
+          console.error("❌ Other Error:", error.message);
+        }
       }
-    } catch (error) {
-      Alert.alert("Error", "An error occurred while booking. Please try again.");
+    } catch (error) {  // Added missing catch block
+      Alert.alert("Error", "An unexpected error occurred.");
     } finally {
       setLoading(false);
     }
   };
 
+
   return (
-    <KeyboardAvoidingView behavior={Platform.OS === "ios" ? "padding" : "height"} style={{ flex: 1 }}>
-      <ScrollView style={{ padding: 20, paddingTop: 60 }}>
-        <TouchableOpacity style={styles.backButton} onPress={handleCloseModal}>
-          <Ionicons name="arrow-back-outline" size={30} color="black" />
-          <Text style={styles.headerText}>Booking</Text>
-        </TouchableOpacity>
+    <StripeProvider publishableKey="pk_test_51QugNP4ar1n4jNltsbhPR9kEV43YDjI4RDrhltYb5YgjHo3WQGevNAPuKPeY8yoNqNgrEir6JfQLsIrPxs12gmAX00hDxdInIS">
+      <KeyboardAvoidingView behavior={Platform.OS === "ios" ? "padding" : "height"} style={{ flex: 1 }}>
+        <ScrollView style={{ padding: 20, paddingTop: 60 }}>
+          <TouchableOpacity style={styles.backButton} onPress={handleCloseModal}>
+            <Ionicons name="arrow-back-outline" size={30} color="black" />
+            <Text style={styles.headerText}>Booking</Text>
+          </TouchableOpacity>
 
-        {/* Calendar Section */}
-        <Heading text={"Select Date"} />
-        <View style={styles.calendarContainer}>
-          <CalendarPicker
-            onDateChange={handleDateChange}
-            width={340}
-            minDate={new Date()}
-            todayBackgroundColor={Colors.BLACK}
-            todayTextStyle={{ color: Colors.WHITE }}
-            selectedDayColor={Colors.PRIMARY}
-            selectedDayTextColor={Colors.WHITE}
-          />
-        </View>
+          {/* Calendar Section */}
+          <Heading text={"Select Date"} />
+          <View style={styles.calendarContainer}>
+            <CalendarPicker
+              onDateChange={handleDateChange}
+              width={340}
+              minDate={new Date()}
+              todayBackgroundColor={Colors.BLACK}
+              todayTextStyle={{ color: Colors.WHITE }}
+              selectedDayColor={Colors.PRIMARY}
+              selectedDayTextColor={Colors.WHITE}
+            />
+          </View>
 
-        {/* Time select section */}
-        <View style={styles.section}>
-          <Heading text={"Select Time Slot"} />
-          <FlatList
-            data={timeList}
-            horizontal
-            showsHorizontalScrollIndicator={false}
-            keyExtractor={(item, index) => index.toString()}
-            renderItem={({ item }) => (
-              <TouchableOpacity
-                style={[
-                  styles.timeSlot,
-                  selectedTime === item && styles.selectedTimeSlot,
-                  bookedTimeSlots.includes(item) && styles.disabledTimeSlot // Apply disabled styles
-                ]}
-                onPress={() => !bookedTimeSlots.includes(item) && setSelectedTime(item)}
-                disabled={bookedTimeSlots.includes(item)} // Prevent selection
-              >
-                <Text
+          {/* Time select section */}
+          <View style={styles.section}>
+            <Heading text={"Select Time Slot"} />
+            <FlatList
+              data={timeList}
+              horizontal
+              showsHorizontalScrollIndicator={false}
+              keyExtractor={(item, index) => index.toString()}
+              renderItem={({ item }) => (
+                <TouchableOpacity
                   style={[
-                    selectedTime === item ? styles.selectedTime : styles.unSelectedTime,
-                    bookedTimeSlots.includes(item) && styles.disabledTimeText // Apply disabled text styles
+                    styles.timeSlot,
+                    selectedTime === item && styles.selectedTimeSlot,
+                    bookedTimeSlots.includes(item) && styles.disabledTimeSlot // Apply disabled styles
                   ]}
+                  onPress={() => !bookedTimeSlots.includes(item) && setSelectedTime(item)}
+                  disabled={bookedTimeSlots.includes(item)} // Prevent selection
                 >
-                  {item}
+                  <Text
+                    style={[
+                      selectedTime === item ? styles.selectedTime : styles.unSelectedTime,
+                      bookedTimeSlots.includes(item) && styles.disabledTimeText // Apply disabled text styles
+                    ]}
+                  >
+                    {item}
+                  </Text>
+                </TouchableOpacity>
+              )}
+            />
+          </View>
+
+          {/* Address section */}
+          <View style={styles.section}>
+            <Heading text={"Enter Address"} />
+            <TextInput
+              placeholder="Enter your address"
+              placeholderTextColor="gray"
+              style={styles.addressInput}
+              onChangeText={setAddress}
+              value={address}
+            />
+          </View>
+
+          {/* User Note section */}
+          <View style={styles.section}>
+            <Heading text={"Any Suggestion Note"} />
+            <TextInput
+              placeholder="Enter your note"
+              placeholderTextColor="gray"
+              numberOfLines={4}
+              multiline
+              style={styles.noteInput}
+              onChangeText={setNote}
+              value={note}
+            />
+          </View>
+
+          {/* ✅ Payment Selection */}
+          <View style={styles.paymentContainer}>
+            <Heading text={"Select Payment Method"} />
+            <View style={styles.paymentOptions}>
+              <TouchableOpacity
+                style={[styles.paymentButton, paymentMethod === "COD" && styles.selectedPaymentButton]}
+                onPress={() => setPaymentMethod("COD")}
+              >
+                <Text style={[styles.paymentText, paymentMethod === "COD" && styles.selectedPaymentText]}>
+                  Cash on Delivery
                 </Text>
               </TouchableOpacity>
-            )}
-          />
-        </View>
 
-        {/* Address section */}
-        <View style={styles.section}>
-          <Heading text={"Enter Address"} />
-          <TextInput
-            placeholder="Enter your address"
-            placeholderTextColor="gray"
-            style={styles.addressInput}
-            onChangeText={setAddress}
-            value={address}
-          />
-        </View>
+              <TouchableOpacity
+                style={[styles.paymentButton, paymentMethod === "CARD" && styles.selectedPaymentButton]}
+                onPress={() => setPaymentMethod("CARD")}
+              >
+                <Text style={[styles.paymentText, paymentMethod === "CARD" && styles.selectedPaymentText]}>
+                  Card Payment
+                </Text>
+              </TouchableOpacity>
+            </View>
+          </View>
 
-        {/* User Note section */}
-        <View style={styles.section}>
-          <Heading text={"Any Suggestion Note"} />
-          <TextInput
-            placeholder="Enter your note"
-            placeholderTextColor="gray"
-            numberOfLines={4}
-            multiline
-            style={styles.noteInput}
-            onChangeText={setNote}
-            value={note}
-          />
-        </View>
 
-        {/* Confirm Button */}
-        <TouchableOpacity
-          style={[styles.confirmButton, loading && { backgroundColor: Colors.GRAY }]}
-          onPress={confirmBooking}
-          disabled={loading}
-        >
-          <Text style={styles.confirmButtonText}>{loading ? "Booking..." : "Confirm & Book"}</Text>
-        </TouchableOpacity>
-      </ScrollView>
-    </KeyboardAvoidingView>
+          {/* Confirm Button */}
+          <TouchableOpacity
+            style={[styles.confirmButton, loading && { backgroundColor: Colors.GRAY }]}
+            onPress={confirmBooking}
+            disabled={loading}
+          >
+            <Text style={styles.confirmButtonText}>{loading ? "Booking..." : "Confirm & Book"}</Text>
+          </TouchableOpacity>
+        </ScrollView>
+      </KeyboardAvoidingView>
+    </StripeProvider>
   );
 };
 
@@ -267,6 +378,40 @@ const styles = StyleSheet.create({
     fontFamily: "outfit-medium",
     fontSize: 18,
     color: Colors.WHITE,
+  },
+  paymentContainer: {
+    marginTop: 20,
+    paddingVertical: 15,
+    backgroundColor: Colors.PRIMARY_LIGHT,
+    borderRadius: 12,
+    paddingHorizontal: 15,
+  },
+  paymentOptions: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    marginTop: 10,
+  },
+  paymentButton: {
+    flex: 1,
+    paddingVertical: 12,
+    borderWidth: 1,
+    borderColor: Colors.PRIMARY,
+    borderRadius: 8,
+    alignItems: "center",
+    justifyContent: "center",
+    marginHorizontal: 5,
+  },
+  selectedPaymentButton: {
+    backgroundColor: Colors.PRIMARY,
+  },
+  paymentText: {
+    fontSize: 16,
+    fontFamily: "outfit-medium",
+    color: Colors.PRIMARY,
+  },
+  selectedPaymentText: {
+    color: Colors.WHITE,
+    fontWeight: "bold",
   },
 });
 

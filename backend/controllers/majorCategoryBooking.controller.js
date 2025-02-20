@@ -79,7 +79,13 @@ export const getAllBookingsForServiceProvider = async (req, res) => {
 export const BookServiceListingByListingId = async (req, res) => {
   try {
     const { serviceListingId } = req.params;
-    const { date, timeSlot, address, instructions, userId } = req.body;
+    const { date, timeSlot, address, instructions, userId, paymentMethod, paymentIntentId, paymentStatus } = req.body;
+
+    console.log("📥 Booking Request Received:", req.body);
+
+    if (!date || !timeSlot || !address || !userId || !paymentMethod) {
+      return res.status(400).json({ message: "Missing required fields" });
+    }
 
     const formattedDate = new Date(date).toISOString().split("T")[0];
 
@@ -106,6 +112,9 @@ export const BookServiceListingByListingId = async (req, res) => {
       address,
       instructions,
       created_by: service?.created_by,
+      paymentMethod,
+      paymentIntentId: paymentMethod === "CARD" ? paymentIntentId : null,
+      paymentStatus: paymentMethod === "CARD" ? "Pending" : "Completed", // COD is auto "Completed"
     });
 
     await newBooking.save();
@@ -133,6 +142,9 @@ export const BookServiceListingByListingId = async (req, res) => {
         userEmail: user.email,
         instructions: newBooking.instructions,
         status: newBooking.status,
+        paymentMethod: newBooking.paymentMethod,
+        paymentStatus: newBooking.paymentStatus,
+        paymentIntentId: newBooking.paymentIntentId,
       },
     });
 

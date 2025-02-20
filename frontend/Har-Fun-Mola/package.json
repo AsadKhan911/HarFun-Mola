@@ -74,7 +74,8 @@
     "redux": "^5.0.1",
     "redux-devtools-extension": "^2.13.9",
     "redux-persist": "^6.0.0",
-    "redux-thunk": "^3.1.0"
+    "redux-thunk": "^3.1.0",
+    "@stripe/stripe-react-native": "0.38.6"
   },
   "devDependencies": {
     "@babel/core": "^7.25.2",

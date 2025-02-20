@@ -49,6 +49,18 @@ const bookingSchema = new mongoose.Schema(
       type: String,
       default: null,
     },
+    // Payment Fields
+  paymentMethod: { 
+    
+    type: String, enum: ["COD", "CARD"], required: true 
+  },
+  paymentIntentId: { 
+    
+    type: String, default: null
+   },
+  paymentStatus: {
+    type: String, enum: ["Pending", "Completed"], default: "Pending" 
+  },
   },
   { timestamps: true }
 );

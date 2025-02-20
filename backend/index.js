@@ -15,6 +15,7 @@ import userRoute from './routes/user.route.js'
 import majorServiceListings from './routes/majorServiceListing.route.js'
 import majorCategory from './routes/majorCategory.route.js'
 import bookService from './routes/Booking.route.js'
+import payments from './routes/payment.route.js'
 
 //Middlewares
 app.use(express.json()) 
@@ -27,6 +28,7 @@ app.use('/api/v1/user' , userRoute)
 app.use('/api/v1/majorlistings' , majorServiceListings)
 app.use('/api/v1/majorcategory' , majorCategory)
 app.use('/api/v1/booklistings' , bookService)
+app.use('/api/v1/bookingpayment' , payments)
 
 app.listen(port , '0.0.0.0' , ()=>{
     console.log(`Server running at port ${port}`)
