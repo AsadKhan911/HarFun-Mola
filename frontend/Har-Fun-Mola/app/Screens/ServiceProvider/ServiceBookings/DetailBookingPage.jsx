@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { View, Text, TouchableOpacity, Alert, ActivityIndicator, StyleSheet } from "react-native";
 import { useNavigation, useRoute } from "@react-navigation/native";
 import { Card } from "react-native-paper";
@@ -7,6 +7,8 @@ import { useSelector } from "react-redux";
 import useGetFetchBookingDetails from '../../../../customHooks/useGetFetchBookingDetails.jsx';
 import Colors from "../../../../constants/Colors.ts";
 import { useGetUpdateBookingStatus } from "../../../../customHooks/useGetBookingPendingToAccepted.jsx";
+import { PaymentBaseUrl } from "../../../URL/userBaseUrl.js";
+import axios from "axios";
 
 const OrderDetailsScreen = () => {
     const navigation = useNavigation();
@@ -14,7 +16,6 @@ const OrderDetailsScreen = () => {
     const { bookingId } = route.params;
     const { singleBooking } = useSelector((store) => store.bookings);
     const { handleAction } = useGetUpdateBookingStatus(bookingId);
-
 
     const [acceptLoading, setAcceptLoading] = useState(false);
     const [rejectLoading, setRejectLoading] = useState(false);
@@ -24,25 +25,50 @@ const OrderDetailsScreen = () => {
 
 
     const handleBookingAction = async (status) => {
+        console.log("🟢 handleBookingAction triggered with status:", status);
+    
+        if (!singleBooking) {
+            console.error("❌ No booking data found. Exiting function.");
+            return;
+        }
+    
         if (status === "Accept") {
             setAcceptLoading(true);
-        } else {
-            setRejectLoading(true);
+        } 
+    
+        // Payment unauthorization when rejecting the booking
+        if (status === "Reject") {
+            try {
+                setRejectLoading(true)    
+
+                const response = await axios.post(`${PaymentBaseUrl}/cancel-payment`, {
+                    paymentIntentId: singleBooking.paymentIntentId,
+                });
+    
+            } catch (error) {
+                Alert.alert("Payment Cancellation Failed", error.response?.data?.error || error.message);
+                console.log("Payment Cancellation Failed", error.response?.data?.error || error.message);
+                setRejectLoading(false);
+                return;
+            }
         }
-
+        
         const result = await handleAction(status);
-
+    
         if (result.success) {
+            console.log("Booking action successful.");
             Alert.alert("Success", result.message);
             navigation.goBack();
         } else {
+            console.error("Booking action failed!");
             Alert.alert("Error", result.message);
         }
-
+    
         // Reset loading state after the action is completed
         setAcceptLoading(false);
         setRejectLoading(false);
     };
+    
 
     if (!singleBooking) {
         return (

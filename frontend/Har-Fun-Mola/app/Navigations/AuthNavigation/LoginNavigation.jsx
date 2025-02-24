@@ -7,6 +7,7 @@ import TabNavigation from '../ServiceUser/TabNavigation.jsx';
 import { useSelector } from 'react-redux';
 import serviceProviderDetails1 from '../../Screens/SignupScreen/SignupScreenSP1.jsx'
 import serviceProviderDetails2 from '../../Screens/SignupScreen/SignupScreenSP2.jsx'
+import stripeOnboardLink from '../../Screens/LoginScreen/StripeLinkScreen.jsx'
 // import Home from '../Screens/HomeScreen/HomeScreen.jsx';
 
 const Stack = createNativeStackNavigator();
@@ -24,6 +25,7 @@ export default function LoginNavigation() {
                 <Stack.Screen name="home-tab" component={TabNavigation} />
                 <Stack.Screen name="service-provider-signup-details-1" component={serviceProviderDetails1} />
                 <Stack.Screen name="service-provider-signup-details-2" component={serviceProviderDetails2} /> 
+                <Stack.Screen name="stripe-onboarding-link" component={stripeOnboardLink} /> 
             </Stack.Navigator>
            
     );

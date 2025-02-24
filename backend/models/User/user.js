@@ -38,6 +38,10 @@ const userSchema = mongoose.Schema({
 
   firebaseUID: { type: String },
 
+  stripeAccountId: {type:String},
+
+  onboardingLink:{type:String},
+
   //   serviceName: { type: String },  Only for Service Providers
 
   // Only for Service Providers

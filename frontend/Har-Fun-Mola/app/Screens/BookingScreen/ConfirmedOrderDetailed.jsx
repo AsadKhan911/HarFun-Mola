@@ -5,6 +5,8 @@ import Colors from "../../../constants/Colors.ts";
 import { FontAwesome6, Ionicons } from "@expo/vector-icons";
 import useGetCancelOrder from "../../../customHooks/ServiceUser/useGetCancelOrder.jsx"; // Import custom hook
 import { LinearGradient } from "expo-linear-gradient"; // For gradient buttons
+import { PaymentBaseUrl } from "../../URL/userBaseUrl.js";
+import axios from "axios";
 
 const ConfirmedOrderDetailed = () => {
   const navigation = useNavigation();
@@ -13,11 +15,27 @@ const ConfirmedOrderDetailed = () => {
   const { handleAction, loading } = useGetCancelOrder(booking?._id);  // Use custom hook
 
   const handleCancelOrder = async () => {
+    try {
     const response = await handleAction("Reject");
-    if (response.success) {
-      alert(response.message);
-      navigation.goBack(); // Navigate back after canceling
+
+    if (!response.success) {
+      alert("Failed to cancel the order. Please try again.");
+      return;
+  }
+
+    // Step 2: Unauthorize the payment
+    await axios.post(`${PaymentBaseUrl}/cancel-payment`, { paymentIntentId: booking?.paymentIntentId });
+
+    // Step 3: Alert success after both actions are done
+    alert("Order has been canceled and payment is reversed successfully.");
+        
+    // Step 4: Navigate back
+    navigation.goBack();
     }
+    catch (error) {
+      console.error("Error canceling order:", error);
+      alert(error.response?.data?.error || "Something went wrong while canceling the order.");
+  }
   };
 
   const handleViewProfile = () => {

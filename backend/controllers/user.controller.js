@@ -5,12 +5,16 @@ import { sendVerificationCode } from "../middlewares/EmailFunctions/EmailVerific
 import { WelcomeEmail } from "../middlewares/EmailFunctions/WelcomeEmail.js";
 import { getDataUri } from '../utils/dataURI.js'
 import cloudinary from "../utils/cloudinary.js";
+import Stripe from "stripe";
+import dotenv from "dotenv";
+dotenv.config(); 
+const stripe = new Stripe(process.env.STRIPE_SECRET_KEY); 
 
 export const register = async (req, res) => {
     try {
         const { fullName, email, city, phoneNumber, password, role, isEmailVerified, area, bio, firebaseUID } = req.body;
 
-        console.log("firebase uid ",firebaseUID)
+        console.log("firebase uid ", firebaseUID);
 
         // Validate input fields
         if (!fullName || !email || !phoneNumber || !password || !city || !role || !area || !firebaseUID) {
@@ -19,9 +23,8 @@ export const register = async (req, res) => {
                 success: false,
             });
         }
-        
 
-        // Check for duplicate email (case-insensitive)
+        // Check for duplicate email
         const existingUser = await User.findOne({ email: email.toLowerCase() });
         if (existingUser) {
             return res.status(400).json({
@@ -35,20 +38,13 @@ export const register = async (req, res) => {
 
         if (file) {
             try {
-                // Convert the file to a data URI
                 const fileUri = getDataUri(file);
-
-                // Upload the image to Cloudinary
                 const cloudResponse = await cloudinary.uploader.upload(fileUri.content, {
-                    folder: 'HFM/userprofilepic', // Specify the folder
+                    folder: 'HFM/userprofilepic',
                 });
-
-                // Save the Cloudinary URL for the profile picture
                 profilePic = cloudResponse.secure_url;
-
             } catch (error) {
                 console.error('Error uploading profile picture to Cloudinary:', error);
-                // Optional: Set a default profile picture or handle this case
                 profilePic = null;
             }
         }
@@ -56,13 +52,13 @@ export const register = async (req, res) => {
         // Hash the password
         const hashedPassword = await bcrypt.hash(password, 10);
 
-        //Verification code
-        const verificationCode = Math.floor(100000 + Math.random() * 900000).toString()
+        // Verification code
+        const verificationCode = Math.floor(100000 + Math.random() * 900000).toString();
 
         // Create the new user
         const newUser = await User.create({
             fullName,
-            email: email.toLowerCase(), // Store email in lowercase
+            email: email.toLowerCase(),
             phoneNumber,
             city,
             password: hashedPassword,
@@ -71,24 +67,71 @@ export const register = async (req, res) => {
             verificationCode,
             area,
             firebaseUID,
-            profile: { // Add profile picture if available
+            profile: {
                 profilePic,
                 bio
             },
         });
 
-        //Send verification code
-        sendVerificationCode(newUser?.email, verificationCode, newUser?.fullName)
+        // Send verification code
+        sendVerificationCode(newUser?.email, verificationCode, newUser?.fullName);
+
+        // Stripe account creation (Only for Service Providers)
+        let stripeAccountId = null;
+        if (role === "Service Provider") {
+            try {
+                const account = await stripe.accounts.create({
+                    type: 'express',
+                    country: 'US',
+                    email: email,
+                    capabilities: {
+                        card_payments: { requested: true },
+                        transfers: { requested: true },
+                    },
+                });
+
+                console.log("Stripe Connected Account ID:", account.id);
+                stripeAccountId = account.id;
+
+                // Update user with Stripe account ID
+                newUser.stripeAccountId = stripeAccountId;
+                await newUser.save();
+
+                // Onboarding link for Stripe
+                const accountLink = await stripe.accountLinks.create({
+                    account: stripeAccountId,
+                    refresh_url: "https://yourwebsite.com/reauth",
+                    return_url: "https://yourwebsite.com/dashboard",
+                    type: "account_onboarding",
+                });
+
+                newUser.onboardingLink = accountLink.url;
+                await newUser.save();
+
+                console.log("Stripe Onboarding Link:", accountLink.url);
+
+                return res.status(201).json({
+                    message: "Account created successfully",
+                    success: true,
+                    newUser,
+                    userId: newUser._id,
+                    stripeAccountId,
+                    onboardingLink: accountLink.url
+                });
+            } catch (error) {
+                console.error("Stripe Account Creation Failed:", error);
+            }
+        }
 
         return res.status(201).json({
             message: "Account created successfully",
             success: true,
             newUser,
-            userId: newUser._id, // Optionally return the user ID
-
+            userId: newUser._id
         });
+
     } catch (error) {
-        console.error("Registration error:", error); // Log the error for debugging
+        console.error("Registration error:", error);
         return res.status(500).json({
             message: "An error occurred while creating the account",
             success: false,

@@ -6,6 +6,8 @@ import { FontAwesome6, Ionicons } from "@expo/vector-icons";
 import useGetCancelOrder from "../../../customHooks/ServiceUser/useGetCancelOrder.jsx";
 import { LinearGradient } from "expo-linear-gradient";
 import { useSelector } from "react-redux";
+import { PaymentBaseUrl } from "../../URL/userBaseUrl.js";
+import axios from "axios";
 // import MapView, { Marker } from "react-native-maps";
 
 const InProgressOrderDetailed = () => {
@@ -18,15 +20,33 @@ const InProgressOrderDetailed = () => {
   const userUid = booking?.user?.firebaseUID;
 
   console.log(userUid)
-  
+    
 
-  const handleCancelOrder = async () => {
-    const response = await handleAction("Reject");
-    if (response.success) {
-      alert(response.message);
-      navigation.goBack();
+const handleCancelOrder = async () => {
+    try {
+        // Step 1: Update order status to "Rejected"
+        const response = await handleAction("Reject");
+
+        if (!response.success) {
+            alert("Failed to cancel the order. Please try again.");
+            return;
+        }
+
+        // Step 2: Unauthorize the payment
+        await axios.post(`${PaymentBaseUrl}/cancel-payment`, { paymentIntentId: booking?.paymentIntentId });
+
+        // Step 3: Alert success after both actions are done
+        alert("Order has been canceled and payment is reversed successfully.");
+        
+        // Step 4: Navigate back
+        navigation.goBack();
+        
+    } catch (error) {
+        console.error("Error canceling order:", error);
+        alert(error.response?.data?.error || "Something went wrong while canceling the order.");
     }
-  };
+};
+
 
   const handleViewProfile = () => {
     navigation.navigate("ProviderProfile", { providerId: booking?.service?.created_by?._id });

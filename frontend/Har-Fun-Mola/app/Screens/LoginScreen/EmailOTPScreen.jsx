@@ -10,6 +10,7 @@ const EmailOTPScreen = () => {
     //Getting email and name from redux
     const email = useSelector(state => state.auth.user?.email); // Get the email from Redux
     const fullName = useSelector(state => state.auth.user?.fullName); // Get fullName from Redux
+    const role = useSelector(state => state.auth.user?.role); // Get fullName from Redux
 
     const [code, setCode] = useState("");
     const [loading, setLoading] = useState(false);
@@ -50,8 +51,14 @@ const EmailOTPScreen = () => {
 
             if (response.data.success) {
                 Alert.alert('Success', response.data.message);
-                navigation.navigate('Login'); // Redirect to Login screen
-            } else {
+                    
+                    if (role === "Service Provider") {
+                        navigation.replace('stripe-onboarding-link'); // Use replace instead of navigate
+                    } else {
+                        navigation.replace('Login'); 
+                    }
+                }
+             else {
                 Alert.alert('Incorrect OTP', response.data.message);
             }
         } catch (error) {

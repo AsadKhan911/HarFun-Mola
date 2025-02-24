@@ -4,6 +4,8 @@ import { useNavigation, useRoute } from "@react-navigation/native";
 import Colors from "@/constants/Colors";
 import { FontAwesome6, Ionicons } from "@expo/vector-icons";
 import useGetCancelOrder from "../../../customHooks/ServiceUser/useGetCancelOrder.jsx"; // Import custom hook
+import axios from "axios";
+import { PaymentBaseUrl } from "../../URL/userBaseUrl.js";
 
 const PendingOrderDetailed = () => {
   const navigation = useNavigation();
@@ -12,12 +14,35 @@ const PendingOrderDetailed = () => {
   const { handleAction, loading } = useGetCancelOrder(booking?._id);  // Use custom hook
 
   const handleCancelOrder = async () => {
-    const response = await handleAction("Reject");
-    if (response.success) {
-      alert(response.message);
-      navigation.goBack(); // Navigate back after canceling
+    try {
+        if (booking.paymentIntentId) {
+            console.log("⏳ Initiating payment cancellation...");
+            console.log("📌 Payment Intent ID:", booking.paymentIntentId);
+
+            const paymentResponse = await axios.post(`${PaymentBaseUrl}/cancel-payment`, {
+                paymentIntentId: booking.paymentIntentId,
+            });
+
+            console.log("✅ Payment cancellation successful:", paymentResponse.data);
+        } else {
+            console.log("⚠ No Payment Intent ID found, skipping payment cancellation.");
+        }
+
+        // Proceed with rejecting the order after payment cancellation
+        const response = await handleAction("Reject");
+
+        if (response.success) {
+            alert(response.message);
+            navigation.goBack(); // Navigate back after canceling
+        } else {
+            alert("❌ Order cancellation failed!");
+        }
+    } catch (error) {
+        console.error("❌ Error during cancellation:", error.response?.data?.error || error.message);
+        alert("Payment or order cancellation failed. Please try again.");
     }
-  };
+};
+
 
   return (
     <ScrollView contentContainerStyle={styles.container}>
