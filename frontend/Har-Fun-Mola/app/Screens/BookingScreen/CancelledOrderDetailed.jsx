@@ -50,6 +50,12 @@ const CancelledOrderDetailed = () => {
           <Text style={styles.detailText}>{booking?.timeSlot}</Text>
         </View>
 
+        <View style={styles.detailRow}>
+          <FontAwesome6 name="credit-card" size={16} color={Colors.PRIMARY} />
+          <Text style={{ fontFamily: 'outfit-Medium' }}>   Payment Status: </Text>
+          <Text style={styles.detailText}>{booking?.paymentStatus}</Text>
+        </View>
+
         {/* Status Badge */}
         <View style={[styles.statusBadge, { backgroundColor: 'red' }]} >
           <Text style={styles.statusText}>{booking?.status}</Text>

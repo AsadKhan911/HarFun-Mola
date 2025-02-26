@@ -9,6 +9,14 @@ import { Heading } from "../../../components/Heading.jsx";
 import { FlatList, TextInput } from "react-native-gesture-handler";
 import { BookingBaseUrl, PaymentBaseUrl } from '../../URL/userBaseUrl.js';
 import { StripeProvider, useStripe } from "@stripe/stripe-react-native";
+import 'react-native-get-random-values';
+import { v4 as uuidv4 } from 'uuid';
+import { GooglePlacesAutocomplete } from "react-native-google-places-autocomplete";
+import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
+
+const generateUUID = () => uuidv4();
+
+const GOOGLE_API_KEY = 'AIzaSyBt8hQFcT_LFuwCYQKs-pHE_MqUXJeZgpk';
 
 const BookingModal = ({ business, handleCloseModal }) => {
   const [timeList, setTimeList] = useState([]);
@@ -16,6 +24,8 @@ const BookingModal = ({ business, handleCloseModal }) => {
   const [selectedDate, setSelectedDate] = useState(null);
   const [note, setNote] = useState("");
   const [address, setAddress] = useState("");
+  const [latitude, setLatitude] = useState(null);
+  const [longitude, setLongitude] = useState(null);
   const [loading, setLoading] = useState(false);
   const [bookedTimeSlots, setBookedTimeSlots] = useState([]);
   const [paymentMethod, setPaymentMethod] = useState("COD"); // Default is COD
@@ -31,11 +41,11 @@ const BookingModal = ({ business, handleCloseModal }) => {
     }
   }, [business]);
   const createPaymentIntent = async () => {
-   
+
     const amountInPaisa = business?.price * 100;
 
     try {
-      console.log("PaymentBaseUrl:",  business?.price);
+      console.log("PaymentBaseUrl:", business?.price);
       const response = await axios.post(
         `${PaymentBaseUrl}/create-payment-intent`,
         {
@@ -44,15 +54,15 @@ const BookingModal = ({ business, handleCloseModal }) => {
           userId: _id,
         }
       );
-  
+
       if (response.status === 200) {
         setPaymentIntentId(response.data.paymentIntentId);
-  
+
         const { error } = await initPaymentSheet({
           paymentIntentClientSecret: response.data.clientSecret,
           returnURL: "myapp://stripe-redirect",
         });
-  
+
         if (error) {
           console.error("Error initializing payment sheet:", error.message);
           Alert.alert("Payment Error", error.message);
@@ -61,17 +71,17 @@ const BookingModal = ({ business, handleCloseModal }) => {
     } catch (error) {
       console.error("Error creating payment intent:", error);
       if (error.response) {
-        console.error("📡 Server Response Data:", error.response.data);
-        console.error("📡 Server Response Status:", error.response.status);
-        console.error("📡 Server Response Headers:", error.response.headers);
+        console.error("Server Response Data:", error.response.data);
+        console.error("Server Response Status:", error.response.status);
+        console.error("Server Response Headers:", error.response.headers);
       } else if (error.request) {
-        console.error("❌ No Response Received:", error.request);
+        console.error("No Response Received:", error.request);
       } else {
-        console.error("❌ Other Error:", error.message);
+        console.error("Other Error:", error.message);
       }
     }
   };
-  
+
 
   useEffect(() => {
     if (paymentMethod === "CARD") {
@@ -106,7 +116,7 @@ const BookingModal = ({ business, handleCloseModal }) => {
   };
 
   const confirmBooking = async () => {
-    if (!selectedDate || !selectedTime || !address) {
+    if (!selectedDate || !selectedTime || !address || !latitude || !longitude) {
       Alert.alert("Please fill all fields", "Please select a date, time, and enter your address.");
       return;
     }
@@ -134,6 +144,8 @@ const BookingModal = ({ business, handleCloseModal }) => {
       const bookingDetails = {
         date: formattedDate,
         timeSlot: selectedTime,
+        latitude,
+        longitude,
         address,
         instructions: note,
         userId: _id,
@@ -161,13 +173,13 @@ const BookingModal = ({ business, handleCloseModal }) => {
       } catch (error) {
         console.error("Booking Error:", error);
         if (error.response) {
-          console.error("📡 Server Response Data:", error.response.data);
-          console.error("📡 Server Response Status:", error.response.status);
-          console.error("📡 Server Response Headers:", error.response.headers);
+          console.error("Server Response Data:", error.response.data);
+          console.error("Server Response Status:", error.response.status);
+          console.error("Server Response Headers:", error.response.headers);
         } else if (error.request) {
-          console.error("❌ No Response Received:", error.request);
+          console.error("No Response Received:", error.request);
         } else {
-          console.error("❌ Other Error:", error.message);
+          console.error("Other Error:", error.message);
         }
       }
     } catch (error) {  // Added missing catch block
@@ -181,7 +193,11 @@ const BookingModal = ({ business, handleCloseModal }) => {
   return (
     <StripeProvider publishableKey="pk_test_51QugNP4ar1n4jNltsbhPR9kEV43YDjI4RDrhltYb5YgjHo3WQGevNAPuKPeY8yoNqNgrEir6JfQLsIrPxs12gmAX00hDxdInIS">
       <KeyboardAvoidingView behavior={Platform.OS === "ios" ? "padding" : "height"} style={{ flex: 1 }}>
-        <ScrollView style={{ padding: 20, paddingTop: 60 }}>
+        <KeyboardAwareScrollView
+          keyboardShouldPersistTaps="handled"
+          contentContainerStyle={{ flexGrow: 1, paddingBottom: 20 }}
+          style={{ padding: 20, paddingTop: 60, backgroundColor: Colors.WHITE }}
+        >
           <TouchableOpacity style={styles.backButton} onPress={handleCloseModal}>
             <Ionicons name="arrow-back-outline" size={30} color="black" />
             <Text style={styles.headerText}>Booking</Text>
@@ -233,7 +249,7 @@ const BookingModal = ({ business, handleCloseModal }) => {
           </View>
 
           {/* Address section */}
-          <View style={styles.section}>
+          {/* <View style={styles.section}>
             <Heading text={"Enter Address"} />
             <TextInput
               placeholder="Enter your address"
@@ -242,6 +258,31 @@ const BookingModal = ({ business, handleCloseModal }) => {
               onChangeText={setAddress}
               value={address}
             />
+          </View> */}
+
+          {/* Address section  */}
+          <View style={styles.section}>
+            <Heading text={"Enter Address"} />
+            <GooglePlacesAutocomplete
+              placeholder="Search Address"
+              minLength={2}
+              fetchDetails={true}
+              onPress={(data, details = null) => {
+                setAddress(details?.formatted_address || data.description);
+                setLatitude(details?.geometry?.location?.lat);
+                setLongitude(details?.geometry?.location?.lng);
+              }}
+              query={{
+                key: GOOGLE_API_KEY,
+                language: "en",
+                components: "country:pk",
+              }}
+              styles={{
+                textInput: styles.addressInput,
+                listView: { backgroundColor: "white" },
+              }}
+            />
+
           </View>
 
           {/* User Note section */}
@@ -258,7 +299,7 @@ const BookingModal = ({ business, handleCloseModal }) => {
             />
           </View>
 
-          {/* ✅ Payment Selection */}
+          {/* Payment Selection */}
           <View style={styles.paymentContainer}>
             <Heading text={"Select Payment Method"} />
             <View style={styles.paymentOptions}>
@@ -291,9 +332,10 @@ const BookingModal = ({ business, handleCloseModal }) => {
           >
             <Text style={styles.confirmButtonText}>{loading ? "Booking..." : "Confirm & Book"}</Text>
           </TouchableOpacity>
-        </ScrollView>
+
+        </KeyboardAwareScrollView>
       </KeyboardAvoidingView>
-    </StripeProvider>
+    </StripeProvider >
   );
 };
 
@@ -382,7 +424,8 @@ const styles = StyleSheet.create({
   paymentContainer: {
     marginTop: 20,
     paddingVertical: 15,
-    backgroundColor: Colors.PRIMARY_LIGHT,
+    borderWidth: 1,
+    borderColor: Colors.PRIMARY,
     borderRadius: 12,
     paddingHorizontal: 15,
   },
@@ -416,4 +459,3 @@ const styles = StyleSheet.create({
 });
 
 export default BookingModal;
-

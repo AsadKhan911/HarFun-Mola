@@ -142,6 +142,9 @@ const ServiceProviderBookings = () => {
                     <FontAwesome name="dollar" size={14} color={Colors.GRAY} /> {item.service.price}
                   </Text>
                   <Text style={styles.detail}>
+                    <FontAwesome name="credit-card" size={14} color={Colors.GRAY} /> {item.paymentMethod}
+                  </Text>
+                  <Text style={styles.detail}>
                     <FontAwesome name="calendar" size={14} color={Colors.GRAY} /> {new Date(item.date).toDateString()} | {item.timeSlot}
                   </Text>
 

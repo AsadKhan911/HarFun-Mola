@@ -118,6 +118,11 @@ const OrderDetailsScreen = () => {
                     </View>
 
                     <View style={styles.infoRow}>
+                        <FontAwesome name="credit-card" size={16} color={Colors.GRAY} />
+                        <Text style={styles.detail}>{singleBooking.paymentMethod}</Text>
+                    </View>
+
+                    <View style={styles.infoRow}>
                         <FontAwesome name="money" size={16} color={Colors.GRAY} />
                         <Text style={styles.detail}> {singleBooking.service.price} Pkr</Text>
                     </View>

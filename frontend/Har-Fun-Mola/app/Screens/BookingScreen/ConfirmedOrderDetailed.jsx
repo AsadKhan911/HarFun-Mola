@@ -86,6 +86,12 @@ const ConfirmedOrderDetailed = () => {
           <Text style={styles.detailText}>{booking?.timeSlot}</Text>
         </View>
 
+        <View style={styles.detailRow}>
+          <FontAwesome6 name="credit-card" size={16} color={Colors.PRIMARY} />
+          <Text style={styles.detailLabel}>Payment Type: </Text>
+          <Text style={styles.detailText}>{booking?.paymentMethod}</Text>
+        </View>
+
         {/* Status Badge */}
         <View style={[styles.statusBadge, { backgroundColor: booking?.status === "Confirmed" ? "green" : "#FFA000" }]}>
           <Text style={styles.statusText}>{booking?.status}</Text>

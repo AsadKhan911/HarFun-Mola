@@ -282,14 +282,13 @@ const styles = StyleSheet.create({
     },
     socialContainer: {
       flexDirection: 'row',
-      justifyContent: 'space-between',
       width: '100%',
       marginBottom: 20, // Reduced bottom margin
     },
     socialButton: {
       flexDirection: 'row',
-      alignItems: 'center',
       backgroundColor: '#FFFFFF',
+      justifyContent: 'center', 
       borderRadius: 10,
       paddingVertical: 10, // Reduced padding
       paddingHorizontal: 15,

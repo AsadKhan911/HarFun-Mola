@@ -138,6 +138,11 @@ const CompletedDetailsBookingPage = () => {
                   {item.user.area}, {item.user.city}
                 </Text>
 
+                <Text style={styles.detail}>
+                  <Text style={styles.label}>Payment Type: </Text>
+                  {item.paymentMethod}
+                </Text>
+
                 {/* Service Price */}
                 <Text style={styles.detail}>
                   <Text style={styles.label}>Price: </Text>

@@ -16,14 +16,14 @@ const PendingOrderDetailed = () => {
   const handleCancelOrder = async () => {
     try {
         if (booking.paymentIntentId) {
-            console.log("⏳ Initiating payment cancellation...");
-            console.log("📌 Payment Intent ID:", booking.paymentIntentId);
+            console.log("Initiating payment cancellation...");
+            console.log("Payment Intent ID:", booking.paymentIntentId);
 
             const paymentResponse = await axios.post(`${PaymentBaseUrl}/cancel-payment`, {
                 paymentIntentId: booking.paymentIntentId,
             });
 
-            console.log("✅ Payment cancellation successful:", paymentResponse.data);
+            console.log("Payment cancellation successful:", paymentResponse.data);
         } else {
             console.log("⚠ No Payment Intent ID found, skipping payment cancellation.");
         }
@@ -35,10 +35,10 @@ const PendingOrderDetailed = () => {
             alert(response.message);
             navigation.goBack(); // Navigate back after canceling
         } else {
-            alert("❌ Order cancellation failed!");
+            alert("Order cancellation failed!");
         }
     } catch (error) {
-        console.error("❌ Error during cancellation:", error.response?.data?.error || error.message);
+        console.error(" Error during cancellation:", error.response?.data?.error || error.message);
         alert("Payment or order cancellation failed. Please try again.");
     }
 };
@@ -79,6 +79,12 @@ const PendingOrderDetailed = () => {
           <FontAwesome6 name="clock" size={16} color={Colors.PRIMARY} />
           <Text style={{ fontFamily: 'outfit-Medium' }}>  Time Slot: </Text>
           <Text style={styles.detailText}>{booking?.timeSlot}</Text>
+        </View>
+
+        <View style={styles.detailRow}>
+          <FontAwesome6 name="credit-card" size={16} color={Colors.PRIMARY} />
+          <Text style={{ fontFamily: 'outfit-Medium' }}>  Payment Type: </Text>
+          <Text style={styles.detailText}>{booking?.paymentMethod}</Text>
         </View>
 
         {/* Status Badge */}

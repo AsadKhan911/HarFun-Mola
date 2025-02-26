@@ -8,44 +8,48 @@ import { LinearGradient } from "expo-linear-gradient";
 import { useSelector } from "react-redux";
 import { PaymentBaseUrl } from "../../URL/userBaseUrl.js";
 import axios from "axios";
-// import MapView, { Marker } from "react-native-maps";
+
+const GOOGLE_MAPS_API_KEY = "AIzaSyBt8hQFcT_LFuwCYQKs-pHE_MqUXJeZgpk";
 
 const InProgressOrderDetailed = () => {
   const navigation = useNavigation();
   const route = useRoute();
   const { booking } = route.params;
   const { handleAction, loading } = useGetCancelOrder(booking?._id);
+  const longitude = booking?.longitude
+  const latitude = booking?.latitude
+
 
   const providerUid = booking?.service?.created_by?.firebaseUID;
   const userUid = booking?.user?.firebaseUID;
 
   console.log(userUid)
-    
 
-const handleCancelOrder = async () => {
+
+  const handleCancelOrder = async () => {
     try {
-        // Step 1: Update order status to "Rejected"
-        const response = await handleAction("Reject");
+      // Step 1: Update order status to "Rejected"
+      const response = await handleAction("Reject");
 
-        if (!response.success) {
-            alert("Failed to cancel the order. Please try again.");
-            return;
-        }
+      if (!response.success) {
+        alert("Failed to cancel the order. Please try again.");
+        return;
+      }
 
-        // Step 2: Unauthorize the payment
-        await axios.post(`${PaymentBaseUrl}/cancel-payment`, { paymentIntentId: booking?.paymentIntentId });
+      // Step 2: Unauthorize the payment
+      await axios.post(`${PaymentBaseUrl}/cancel-payment`, { paymentIntentId: booking?.paymentIntentId });
 
-        // Step 3: Alert success after both actions are done
-        alert("Order has been canceled and payment is reversed successfully.");
-        
-        // Step 4: Navigate back
-        navigation.goBack();
-        
+      // Step 3: Alert success after both actions are done
+      alert("Order has been canceled and payment is reversed successfully.");
+
+      // Step 4: Navigate back
+      navigation.goBack();
+
     } catch (error) {
-        console.error("Error canceling order:", error);
-        alert(error.response?.data?.error || "Something went wrong while canceling the order.");
+      console.error("Error canceling order:", error);
+      alert(error.response?.data?.error || "Something went wrong while canceling the order.");
     }
-};
+  };
 
 
   const handleViewProfile = () => {
@@ -59,7 +63,7 @@ const handleCancelOrder = async () => {
   return (
     <ScrollView contentContainerStyle={styles.container}>
       <TouchableOpacity style={styles.goBackContainer} onPress={() => navigation.goBack()}>
-        <Ionicons name="arrow-back" size={24} color={Colors.BLACK} />
+        <Ionicons name="arrow-back" size={26} color={Colors.BLACK} />
       </TouchableOpacity>
 
       {/* <View style={styles.imageContainer}>
@@ -75,7 +79,11 @@ const handleCancelOrder = async () => {
         <View style={styles.detailRow}>
           <FontAwesome6 name="location-dot" size={16} color={Colors.PRIMARY} />
           <Text style={styles.detailLabel}>Your Address: </Text>
-          <Text style={styles.detailText}>{booking?.address}</Text>
+          <View style={styles.addressContainer}>
+            <Text style={[styles.detailText, { color: Colors.GRAY }]}>
+              {booking?.address}
+            </Text>
+          </View>
         </View>
 
         <View style={styles.detailRow}>
@@ -90,17 +98,28 @@ const handleCancelOrder = async () => {
           <Text style={styles.detailText}>{booking?.timeSlot}</Text>
         </View>
 
+        <View style={styles.detailRow}>
+          <FontAwesome6 name="credit-card" size={16} color={Colors.PRIMARY} />
+          <Text style={styles.detailLabel}>Payment Type:</Text>
+          <Text style={styles.detailText}>{booking?.paymentMethod}</Text>
+        </View>
+
         <View style={[styles.statusBadge, { backgroundColor: booking?.status === "In-Progress" ? "blue" : "#FFA000" }]}>
           <Text style={styles.statusText}>{booking?.status}</Text>
         </View>
       </View>
 
       {/* Service Provider Location Section */}
-      <TouchableOpacity onPress={() => navigation.push('map-view-screen', { providerUid: providerUid , userUid : userUid })}>
+      <TouchableOpacity onPress={() => navigation.push('map-view-screen', { providerUid: providerUid, userUid: userUid, longitude, latitude })}>
         <View style={styles.mapContainer}>
-          <Text style={styles.sectionTitle}>Service Provider Location</Text>
+          <Text style={styles.sectionTitle}>View Service Provider's Live Location</Text>
           <View style={styles.mapPlaceholder}>
-            <Text style={styles.mapText}>📍 Map View</Text>
+            <Image
+              source={require('../../../assets/images/googlemaps.jpg')}
+              alt="📍 View Provider on map"
+              style={{ width: "100%", height: 150, borderRadius: 10 }}
+              resizeMode="cover"
+            />
           </View>
         </View>
       </TouchableOpacity>
@@ -196,20 +215,30 @@ const styles = StyleSheet.create({
   },
   detailRow: {
     flexDirection: "row",
-    alignItems: "center",
-    marginBottom: 12,
+    alignItems: "flex-start", // Aligns text properly when wrapped
+    flexWrap: "wrap",
+    width: "100%",
+  },
+  addressContainer: {
+    flex: 1, // Ensures the address takes full width
   },
   detailLabel: {
     fontFamily: 'outfit-Medium',
     fontSize: 14,
     color: Colors.DARK_GRAY,
     marginLeft: 8,
+    fontWeight: "bold",
+    flexShrink: 1,
+    marginTop: 10,
+    marginBottom: 10
   },
   detailText: {
     fontSize: 14,
     fontFamily: "outfit",
     color: Colors.GRAY,
     marginLeft: 5,
+    flex:'wrap',
+    lineHeight: 22,
   },
   statusBadge: {
     borderRadius: 10,
@@ -271,6 +300,7 @@ const styles = StyleSheet.create({
     top: 20,
     left: 18,
     zIndex: 1,
+    padding:10
   },
   ON: {
     fontFamily: 'outfit-Bold'
@@ -300,6 +330,7 @@ const styles = StyleSheet.create({
     fontFamily: "outfit-Bold",
     color: Colors.DARK_GRAY,
   },
+
 });
 
 export default InProgressOrderDetailed;

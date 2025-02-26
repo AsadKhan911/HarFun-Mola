@@ -10,7 +10,22 @@ import { setUser } from '../../redux/authSlice.js';
 import { ActivityIndicator } from 'react-native-paper';
 import { createUserWithEmailAndPassword } from 'firebase/auth';
 import { auth } from '../../../src/firebase/firebaseConfig.js';
+import { GooglePlacesAutocomplete } from 'react-native-google-places-autocomplete';
+import 'react-native-get-random-values';
+import { v4 as uuidv4 } from 'uuid';
 
+const generateUUID = () => uuidv4();
+
+const getCityCoordinates = (city) => {
+    const cityCoordinates = {
+        Rawalpindi: "33.6844,73.0479",
+        Lahore: "31.5204,74.3587",
+        Karachi: "24.8607,67.0011",
+    };
+    return cityCoordinates[city] || "31.5204,74.3587"; // Default to Lahore
+};
+
+const GOOGLE_API_KEY = 'AIzaSyBt8hQFcT_LFuwCYQKs-pHE_MqUXJeZgpk';
 const Signup = () => {
     const navigation = useNavigation();
     const dispatch = useDispatch();
@@ -47,25 +62,25 @@ const Signup = () => {
     const handleSignup = async () => {
         try {
             console.log("Auth object before signup:", auth);
-    
+
             if (!auth) {
                 console.error("Firebase Auth is not initialized!");
                 return;
             }
-    
+
             if (!fullName || !email || !phoneNumber || !password || !area || !role) {
                 Alert.alert('Error', 'All fields are required');
                 return;
             }
-    
+
             setLoading(true);
-    
+
             if (role === "Service User") {
                 // Step 1: Create user in Firebase Authentication
                 const userCredential = await createUserWithEmailAndPassword(auth, email, password);
                 const user = userCredential.user;
                 console.log("User registered in Firebase:", user.uid);
-    
+
                 // Step 2: Prepare form data for your backend
                 const formData = new FormData();
                 formData.append('fullName', fullName);
@@ -76,25 +91,25 @@ const Signup = () => {
                 formData.append('city', city);
                 formData.append('area', area);
                 formData.append('firebaseUID', user.uid); // Use the Firebase UID from the created user
-    
+
                 if (selectedImage) {
                     const fileName = selectedImage.split('/').pop();
                     const fileType = fileName.split('.').pop();
-    
+
                     formData.append('file', {
                         uri: selectedImage,
                         name: fileName,
                         type: `image/${fileType}`,
                     });
                 }
-    
+
                 // Step 3: Send data to your backend
                 const response = await axios.post(`${userBaseUrl}/register`, formData, {
                     headers: {
                         'Content-Type': 'multipart/form-data',
                     },
                 });
-    
+
                 if (response.data.success) {
                     Alert.alert(response.data.message, 'Verify your email');
                     dispatch(setUser(response.data.newUser));
@@ -119,7 +134,7 @@ const Signup = () => {
             }
         } catch (error) {
             console.error('Signup Error:', error);
-    
+
             // Handle Firebase-specific errors
             if (error.code === 'auth/email-already-in-use') {
                 Alert.alert('Error', 'This email is already in use.');
@@ -180,13 +195,6 @@ const Signup = () => {
                             value={password}
                             onChangeText={(text) => setPassword(text)}
                         />
-                        <TextInput
-                            placeholder="Area"
-                            style={styles.input}
-                            placeholderTextColor="#aaa"
-                            value={area}
-                            onChangeText={(text) => setArea(text)}
-                        />
 
                         <View style={styles.radioButtons}>
                             <Text style={styles.inputLabel}>Role</Text>
@@ -235,6 +243,23 @@ const Signup = () => {
                                 </Text>
                             </TouchableOpacity>
                         </View>
+
+                        <Text style={styles.inputLabel}>Area</Text>
+                        <GooglePlacesAutocomplete
+                            placeholder="Search Area"
+                            minLength={2}
+                            fetchDetails={true}
+                            onPress={(data, details = null) => setArea(data.description)}
+                            query={{
+                                key: GOOGLE_API_KEY,
+                                language: 'en',
+                                components: 'country:pk',
+                                location: getCityCoordinates(city), // Ensure city is selected
+                                radius: 10000, // 10km radius
+                            }}
+                            styles={{ textInput: styles.input }}
+                        />;
+
 
                         <TouchableOpacity style={styles.imagePickerButton} onPress={pickImage}>
                             <Text style={styles.imagePickerText}>

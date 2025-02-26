@@ -29,6 +29,7 @@ const InProgressDetailBookingPage = ({ route }) => {
   const [loading, setLoading] = useState(true);
   const [isCompleted, setIsCompleted] = useState(false);
   const [showRatingModal, setShowRatingModal] = useState(false);
+  const [userLocation , setUserLocation] = useState(null)
   let intervalRef = null; // Store interval reference
 
   useGetFetchBookingDetails(bookingId);
@@ -41,7 +42,7 @@ const InProgressDetailBookingPage = ({ route }) => {
   const fetchBookingStartTime = async () => {
     try {
       const response = await axios.get(`${BookingBaseUrl}/getBooking/${bookingId}`);
-      const { startTime, completedTime } = response.data.booking;
+      const { startTime, completedTime, latitude, longitude } = response.data.booking;
 
       if (completedTime) {
         setCompletedTime(completedTime);
@@ -52,6 +53,10 @@ const InProgressDetailBookingPage = ({ route }) => {
         setStartTime(new Date(startTime));
         setElapsedTime(0);
         startElapsedTime();
+      }
+
+      if(latitude && longitude){
+        setUserLocation({ latitude, longitude });
       }
     } catch (error) {
       console.error('Error fetching booking details:', error);
@@ -185,7 +190,7 @@ const InProgressDetailBookingPage = ({ route }) => {
   const handleViewLocation = () => {
     // Navigate to the map screen with the user's location
     navigation.navigate('user-pin-location', {
-      userUid: userUid, providerUid: providerUid // Pass the user's address or coordinates
+      userLocation, providerUid: providerUid // Pass the user's address or coordinates
     });
   };
 

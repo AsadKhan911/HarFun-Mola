@@ -119,6 +119,7 @@ const ActiveDetailsBookingPage = ({ route, handleCloseModal }) => {
           <Text style={styles.fieldName}>Order No: <Text style={styles.fieldValue}>{bookingDetails.orderNumber}</Text></Text>
           <Text style={styles.fieldName}>Date: <Text style={styles.fieldValue}>{new Date(bookingDetails.date).toDateString()}</Text></Text>
           <Text style={styles.fieldName}>Time Slot: <Text style={styles.fieldValue}>{bookingDetails.timeSlot}</Text></Text>
+          <Text style={styles.fieldName}>Payment Type: <Text style={styles.fieldValue}>{bookingDetails.paymentMethod}</Text></Text>
           <Text style={styles.fieldName}>Address: <Text style={styles.fieldValue}>{bookingDetails.address}</Text></Text>
           <Text style={styles.fieldName}>Status: <Text style={styles.fieldValue}>{bookingDetails.status}</Text></Text>
           <Text style={styles.fieldName}>Instructions: <Text style={styles.fieldValue}>{bookingDetails?.instructions || "No instructions given by user"}</Text></Text>
