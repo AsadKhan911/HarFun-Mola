@@ -16,7 +16,7 @@ export const Slider = () => {
   ];
 
   return (
-    <View>
+    <View style={{marginTop:-20}}>
       <Heading text="Offer For You" />
       <FlatList
         horizontal={true}
@@ -46,8 +46,8 @@ const styles = StyleSheet.create({
       marginBottom:20,
   },
   sliderImage:{
-      width:250,
-      height:150,
+      width:290,
+      height:200,
       borderRadius:20,
       resizeMode:'stretch'
   }

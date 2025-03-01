@@ -73,10 +73,11 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: Colors.WHITE, // White background
     padding: 20,
+    paddingTop: 50
   },
   heading: {
     fontSize: 24,
-    fontFamily:'outfit-Medium',
+    fontFamily: 'outfit-Medium',
     textAlign: 'center',
     marginBottom: 25,
     color: Colors.BLACK,
@@ -112,7 +113,7 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontWeight: '600',
     textAlign: 'center',
-    fontFamily:'outfit',
+    fontFamily: 'outfit',
     color: Colors.DARK_GRAY,
   },
 });

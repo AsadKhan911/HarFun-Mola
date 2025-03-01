@@ -10,9 +10,17 @@ import { Provider, useSelector } from 'react-redux';
 import { store, persistor } from '../redux/store.js'; // Make sure the path to your store is correct
 import { PersistGate } from 'redux-persist/integration/react';
 import { requestLocationPermission } from '../../utils/locationPermission.js';  // Update the path if necessary
+import { useNavigation } from 'expo-router';
 
 
 const Index = () => {
+
+  const navigation = useNavigation();
+
+  useEffect(() => {
+    navigation.setOptions({ headerShown: false });
+  }, [navigation]);
+
 
   const [isLoggedIn, setIsLoggedIn] = useState(false)
   const getData = async () => {

@@ -8,7 +8,7 @@ import { ScrollView } from 'react-native-gesture-handler';
 
 const Home = () => {
   return (
-    <ScrollView style={{ flex: 1, backgroundColor: 'white' }}>
+    <ScrollView style={{ flex: 1, backgroundColor: 'white'  }}>
 
       {/* Header */}
       <Header />
@@ -17,7 +17,7 @@ const Home = () => {
       <Items />
 
       {/* Slider */}
-      <View style={{ padding: 20 , marginTop: -40 }}>
+      <View style={{ padding: 20 , marginTop: 0 }}>
         <Slider />
 
         {/* Business List */}

@@ -79,11 +79,11 @@ export const getAllBookingsForServiceProvider = async (req, res) => {
 export const BookServiceListingByListingId = async (req, res) => {
   try {
     const { serviceListingId } = req.params;
-    const { date, timeSlot, address, instructions, userId, paymentMethod, paymentIntentId, paymentStatus } = req.body;
+    const { date, timeSlot, address, latitude, longitude, instructions, userId, paymentMethod, paymentIntentId, paymentStatus } = req.body;
 
     console.log("📥 Booking Request Received:", req.body);
 
-    if (!date || !timeSlot || !address || !userId || !paymentMethod) {
+    if (!date || !timeSlot || !address || !latitude || !longitude || !userId || !paymentMethod) {
       return res.status(400).json({ message: "Missing required fields" });
     }
 
@@ -110,6 +110,8 @@ export const BookServiceListingByListingId = async (req, res) => {
       date: formattedDate,
       timeSlot,
       address,
+      latitude,
+      longitude,
       instructions,
       created_by: service?.created_by,
       paymentMethod,
@@ -137,6 +139,8 @@ export const BookServiceListingByListingId = async (req, res) => {
         date: newBooking.date,
         timeSlot: newBooking.timeSlot,
         address: newBooking.address,
+        latitude: newBooking.latitude,
+        longitude: newBooking.longitude,
         userName: user.fullName,
         userPhone: user.phoneNumber,
         userEmail: user.email,

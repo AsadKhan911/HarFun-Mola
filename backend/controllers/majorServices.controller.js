@@ -8,11 +8,11 @@ import { User } from '../models/User/user.js';
 export const postListing = async (req, res) => {
     try {
         // Destructure the required fields from req.body
-        const { serviceName, description, price, city, location, categoryId, unavailableDates, timeSlots } = req.body;
+        const { serviceName, description, pricingOptions, city, location, categoryId, unavailableDates, timeSlots } = req.body;
         const userID = req.id;
 
         // Check for missing fields
-        if (!serviceName || !description || !price || !city || !location || !categoryId || !timeSlots) {
+        if (!serviceName || !description || !pricingOptions  || !city || !location || !categoryId || !timeSlots) {
             return res.status(400).json({
                 message: "All fields are required, including categoryId and timeSlots.",
                 success: false
@@ -28,11 +28,16 @@ export const postListing = async (req, res) => {
             });
         }
 
+         // Validate Pricing Options
+         if (!Array.isArray(pricingOptions) || pricingOptions.length === 0) {
+            return res.status(400).json({ message: "At least one pricing option is required.", success: false });
+        }
+
         // Create a new service listing
         const listing = await serviceListings.create({
             serviceName,
             description,
-            price,
+            pricingOptions,
             city,
             location,
             category: categoryId,  // Associate the listing with the category
@@ -56,6 +61,38 @@ export const postListing = async (req, res) => {
     }
 };
 
+// export const getListingsByCategory = async (req, res) => {
+//     const { categoryId } = req.params; // Get category ID from request parameters
+//     const userID = req.id;
+
+//     try {
+//         // Check if the category exists
+//         const categoryExists = await majorCategory.findById(categoryId);
+//         if (!categoryExists) {
+//             return res.status(404).json({ message: 'Category not found' });
+//         }
+
+//         // Fetch listings for the specific category
+//         const listings = await serviceListings
+//             .find({ category: categoryId })
+//             .populate('category', 'name') // Populate category name
+//             .populate('created_by', 'fullName email profile') // Populate user details
+//             .exec();
+
+//         // Return the listings
+//         return res.status(200).json({ 
+//             message: 'Listings fetched successfully', 
+//             listings
+//         });
+//     } catch (error) {
+//         console.error('Error fetching listings by category:', error);
+//         return res.status(500).json({ 
+//             message: 'An error occurred while fetching listings', 
+//             error: error.message 
+//         });
+//     }
+// };
+
 export const getListingsByCategory = async (req, res) => {
     const { categoryId } = req.params; // Get category ID from request parameters
     const userID = req.id;
@@ -70,14 +107,15 @@ export const getListingsByCategory = async (req, res) => {
         // Fetch listings for the specific category
         const listings = await serviceListings
             .find({ category: categoryId })
-            .populate('category', 'name') // Populate category name
+            .populate('category', 'name predefinedServices') // Populate category name and predefined services
             .populate('created_by', 'fullName email profile') // Populate user details
             .exec();
 
-        // Return the listings
+        // Return the listings and predefined services
         return res.status(200).json({ 
             message: 'Listings fetched successfully', 
-            listings
+            listings,
+            predefinedServices: categoryExists.predefinedServices
         });
     } catch (error) {
         console.error('Error fetching listings by category:', error);

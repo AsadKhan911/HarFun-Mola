@@ -12,22 +12,24 @@ import { MajorListingsBaseUrl } from '../../../URL/userBaseUrl.js';
 import Colors from '../../../../constants/Colors.ts';
 import { useSelector } from 'react-redux';
 import Icon from 'react-native-vector-icons/MaterialIcons'; // For delete icon
+import { GooglePlacesAutocomplete } from 'react-native-google-places-autocomplete';
+
+
 
 const PostMajorListings = () => {
-    const [serviceName, setServiceName] = useState('');
+    const [selectedService, setSelectedService] = useState("");
+    const [pricingOptions, setPricingOptions] = useState([]);
+    const [predefinedServices, setPredefinedServices] = useState({});
     const [description, setDescription] = useState('');
     const [price, setPrice] = useState('');
     const [location, setLocation] = useState('');
     const [city, setCity] = useState('');
-    // const [selectedCity, setSelectedCity] = useState('');
-    const [areas, setAreas] = useState([]);
-    const [filteredAreas, setFilteredAreas] = useState([]);
     const [isLoading, setIsLoading] = useState(false);
-    // const [loadingAreas, setLoadingAreas] = useState(false);
-    const [showSuggestions, setShowSuggestions] = useState(false);
     const [unavailableDates, setUnavailableDates] = useState([]); // Dates unavailable for work
     const [timeSlots, setTimeSlots] = useState([]); // Available time slots
     const [timeList, setTimeList] = useState([]); // Predefined time slots
+
+    const GOOGLE_PLACES_API_KEY = 'AIzaSyBt8hQFcT_LFuwCYQKs-pHE_MqUXJeZgpk'; // Replace with your API key
 
     const { user } = useSelector(store => store.auth);
     const navigation = useNavigation();
@@ -37,99 +39,92 @@ const PostMajorListings = () => {
     // Generate predefined time slots
     const generateTimeSlots = () => {
         const times = [];
-        
+
         for (let i = 8; i <= 20; i += 2) { // Increment by 2 to create a 2-hour gap
             const hour = i > 12 ? i - 12 : i; // Convert 24-hour format to 12-hour
             const period = i >= 12 ? "PM" : "AM"; // Determine AM/PM
-    
+
             times.push({ time: `${hour}:00 ${period}` });
         }
-    
+
         setTimeList(times);
     };
-    
+
+    //fetch predefined services
+    const fetchPredefinedServices = async () => {
+        try {
+            const response = await axios.get(`${MajorListingsBaseUrl}/getlisting/${categoryId}`);
+            if (response.data.predefinedServices) {
+                const services = {};
+                response.data.predefinedServices.forEach(service => {
+                    services[service.serviceName] = service.pricingOptions;
+                });
+                setPredefinedServices(services);
+            }
+        } catch (error) {
+            console.error('Error fetching predefined services:', error);
+        }
+    };
 
     useEffect(() => {
         generateTimeSlots();
+        fetchPredefinedServices();
     }, []);
-
-    // Fetch areas from GeoNames API
-    const fetchAreas = async (cityName) => {
-        setLoadingAreas(true);
-        try {
-            const response = await axios.get('http://api.geonames.org/searchJSON', {
-                params: {
-                    q: cityName,
-                    fcode: 'PPLX',
-                    maxRows: 600,
-                    countryCode: 'PK',
-                    username: 'Asadkhan911',
-                },
-            });
-
-            if (response.data.geonames && response.data.geonames.length > 0) {
-                const areaNames = response.data.geonames.map(area => area.toponymName || area.name);
-                setAreas(areaNames);
-                setFilteredAreas(areaNames);
-            } else {
-                setAreas([]);
-                setFilteredAreas([]);
-                Alert.alert('No Areas Found', `No areas found for ${cityName}.`);
-            }
-        } catch (error) {
-            console.error('Error fetching areas:', error);
-            Alert.alert('Error', 'Failed to fetch areas.');
-        } finally {
-            setLoadingAreas(false);
-        }
-    };
 
     // Handle city selection and fetch areas
     const handleCitySelect = (index, city) => {
         setCity(city);
-        fetchAreas(city);
+        setLocation('')
     };
 
-    // Handle area search with dropdown
-    const handleAreaChange = (query) => {
-        setLocation(query);
-
-        if (query.length > 1) {
-            const filtered = areas.filter(area =>
-                area.toLowerCase().startsWith(query.toLowerCase())
-            );
-            setFilteredAreas(filtered);
-            setShowSuggestions(filtered.length > 0);
-        } else {
-            setShowSuggestions(false);
-        }
-    };
-
-    // Handle area selection
-    const handleAreaSelect = (area) => {
-        setLocation(area);
-        setShowSuggestions(false);
-    };
 
     // Handle form submission
     const handlePostListing = async () => {
-        if (!serviceName || !description || !price || !city || !location || timeSlots.length === 0) {
-            Alert.alert('Error', 'Please fill all the fields and add at least one time slot.');
+        console.log("Posting listing..."); // Debug log
+        console.log("Selected City in State:", city); // Debug log
+
+        // Check each field and show an alert if missing
+        if (!selectedService) {
+            Alert.alert('Missing Field', 'Please select a service.');
+            return;
+        }
+        if (!description) {
+            Alert.alert('Missing Field', 'Please enter a description.');
+            return;
+        }
+        if (pricingOptions.length === 0) {
+            Alert.alert('Missing Field', 'Please add at least one pricing option.');
+            return;
+        }
+        if (!city) {
+            Alert.alert('Missing Field', 'Please select a city.');
+            return;
+        }
+        if (!location) {
+            Alert.alert('Missing Field', 'Please enter a location.');
+            return;
+        }
+        if (timeSlots.length === 0) {
+            Alert.alert('Missing Field', 'Please select at least one available time slot.');
             return;
         }
 
-        setIsLoading(true);
-
         try {
+            setIsLoading(true);
+            const formattedPricingOptions = pricingOptions.map(option => ({
+                label: option.label,
+                price: Number(option.price) // Ensure price is stored as a number
+            }));
+
             const response = await axios.post(`${MajorListingsBaseUrl}/post`, {
-                serviceName,
+                serviceName: selectedService,
                 description,
-                price: Number(price),
+                pricingOptions: formattedPricingOptions,
                 city,
                 location,
                 categoryId,
-                unavailableDates, // Send unavailable dates
-                timeSlots // Send available time slots
+                unavailableDates,
+                timeSlots
             }, {
                 headers: { 'Content-Type': 'application/json' }
             });
@@ -148,6 +143,7 @@ const PostMajorListings = () => {
         }
     };
 
+
     return (
         <KeyboardAvoidingView
             behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
@@ -159,16 +155,22 @@ const PostMajorListings = () => {
                     keyboardShouldPersistTaps="handled"
                 >
                     <View style={styles.container}>
-                        <Text style={styles.title}>Post in {categoryName}</Text>
+                        <Text style={styles.title}>Post your listing in {categoryName}</Text>
 
                         <View style={styles.card}>
-                            <TextInput
-                                style={styles.input}
-                                placeholder="Service Name"
-                                value={serviceName}
-                                onChangeText={setServiceName}
-                                placeholderTextColor={Colors.GRAY}
+                            <ModalDropdown
+                                options={Object.keys(predefinedServices)}
+                                defaultValue="Select Service"
+                                onSelect={(index, value) => {
+                                    console.log("Selected Service:", value);
+                                    setSelectedService(value);
+                                    setPricingOptions(predefinedServices[value]);
+                                }}
+                                style={styles.inputDropdown}
+                                textStyle={styles.dropdownText}
+                                dropdownStyle={styles.dropdownStyle}
                             />
+
 
                             <TextInput
                                 style={[styles.input, styles.textArea]}
@@ -179,19 +181,34 @@ const PostMajorListings = () => {
                                 placeholderTextColor={Colors.GRAY}
                             />
 
-                            <TextInput
-                                style={styles.input}
-                                placeholder="Price"
-                                value={price}
-                                onChangeText={setPrice}
-                                keyboardType="numeric"
-                                placeholderTextColor={Colors.GRAY}
-                            />
+                            {pricingOptions.length > 0 && (
+                                <View>
+                                    <Text style={styles.sectionTitle}>Set Your Prices</Text>
+                                    {pricingOptions.map((option, index) => (
+                                        <View key={index} style={styles.priceRow}>
+                                            <Text style={styles.priceLabel}>{option.label}:</Text>
+                                            <TextInput
+                                                style={styles.input}
+                                                placeholder="Enter price"
+                                                keyboardType="numeric"
+                                                value={pricingOptions[index].price}
+                                                onChangeText={(text) => {
+                                                    const updatedPrices = [...pricingOptions];
+                                                    updatedPrices[index].price = text;
+                                                    setPricingOptions(updatedPrices);
+                                                }}
+                                            />
+                                        </View>
+                                    ))}
+                                </View>
+                            )}
+
 
                             {/* City Selection */}
+                            
                             <ModalDropdown
                                 options={['Rawalpindi', 'Lahore', 'Karachi']}
-                                defaultValue={user?.city || 'Select City'}
+                                defaultValue={'Select City'}
                                 onSelect={handleCitySelect}
                                 style={styles.inputDropdown}
                                 textStyle={styles.dropdownText}
@@ -199,28 +216,26 @@ const PostMajorListings = () => {
                             />
 
                             {/* Searchable Area Input */}
-                            <TextInput
-                                style={styles.input}
-                                placeholder="Area"
-                                value={location}
-                                onChangeText={handleAreaChange}
-                                placeholderTextColor={Colors.GRAY}
-                            />
-
-                            {/* Custom Dropdown for Area Suggestions */}
-                            {showSuggestions && (
-                                <FlatList
-                                    data={filteredAreas}
-                                    keyExtractor={(item, index) => index.toString()}
-                                    style={styles.suggestionsBox}
-                                    keyboardShouldPersistTaps="handled"
-                                    renderItem={({ item }) => (
-                                        <TouchableOpacity style={styles.suggestionItem} onPress={() => handleAreaSelect(item)}>
-                                            <Text>{item}</Text>
-                                        </TouchableOpacity>
-                                    )}
+                            <View style={styles.inputContainer}>
+                                <GooglePlacesAutocomplete
+                                    placeholder="Search Area"
+                                    minLength={2}
+                                    fetchDetails={true}
+                                    onPress={(data, details) => {
+                                        setLocation(data.description); // Set selected area
+                                    }}
+                                    query={{
+                                        key: GOOGLE_PLACES_API_KEY,
+                                        language: 'en',
+                                        types: 'geocode', // Fetch places related to location
+                                        components: `country:PK`, // Restrict search to Pakistan
+                                    }}
+                                    styles={{
+                                        textInput: styles.input,
+                                        listView: styles.suggestionsBox,
+                                    }}
                                 />
-                            )}
+                            </View>
 
                             <Text style={styles.sectionTitle}>Select Unavailable Dates</Text>
 
@@ -321,9 +336,9 @@ const PostMajorListings = () => {
 }
 
 const styles = StyleSheet.create({
-    scrollContainer: { flexGrow: 1, backgroundColor: Colors.WHITE, paddingBottom: 20 },
+    scrollContainer: { flexGrow: 1, backgroundColor: Colors.WHITE, paddingBottom: 0, paddingTop: -60 },
     container: { marginTop: '25%', flex: 1, padding: 20 },
-    title: { fontSize: 24, fontWeight: 'bold', textAlign: 'center', marginBottom: 20 },
+    title: { fontSize: 24, fontFamily: 'outfit-Bold', textAlign: 'center', marginBottom: 20 },
     card: { backgroundColor: Colors.WHITE, padding: 20, borderRadius: 12, elevation: 5 },
     input: { backgroundColor: Colors.LIGHT_GRAY, padding: 14, borderRadius: 10, fontSize: 16, marginBottom: 10 },
     textArea: { height: 100, textAlignVertical: 'top' },

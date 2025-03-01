@@ -78,32 +78,55 @@ export const cancelPayment = async (req, res) => {
 };
 
 //Transfer payout to service provider
-export const transferToServiceProvider = async (req, res) => {
-  try {
-    const { amount, serviceProviderStripeId } = req.body;
 
-    if (!amount || !serviceProviderStripeId) {
-      return res.status(400).json({
-        error: "Amount and service provider's Stripe ID are required",
+export const transferFunds = async (req, res) => {
+  try {
+      const { amount, serviceProviderStripeId } = req.body;
+
+      const transfer = await stripe.transfers.create({
+          amount, // Amount in cents (e.g., 1000 for £10)
+          currency: "gbp",
+          destination: serviceProviderStripeId, // Connected account ID
       });
+
+      res.json({ success: true, transfer });
+  } catch (error) {
+      console.error("❌ Stripe Transfer Error:", error);
+      res.status(500).json({ error: error.message });
+  }
+};
+
+export const deleteConnectedAccount = async (req, res) => {
+  try {
+    const { stripeAccountId } = req.body;
+
+    if (!stripeAccountId) {
+      return res.status(400).json({ error: "Account ID is required" });
     }
 
-    // Transfer the funds to the service provider
-    const transfer = await stripe.transfers.create({
-      amount: amount, // Amount to transfer (in cents)
-      currency: "pkr", // Adjust the currency if needed
-      destination: serviceProviderStripeId, // Service provider's Stripe account ID
-    });
+    // Delete the connected account
+    await stripe.accounts.del(stripeAccountId);
 
     res.status(200).json({
       success: true,
-      message: "Payment transferred successfully",
-      transfer,
+      message: "Connected account deleted successfully",
     });
 
-    console.log("Payment transferred successfully:", transfer);
+    console.log("Connected account deleted successfully");
   } catch (error) {
-    console.error("Stripe Transfer Error:", error);
+    console.error("Stripe Account Deletion Error:", error);
     res.status(500).json({ error: error.message });
+  }
+};
+
+export const checkBalance = async (req, res) => {
+  try {
+      const balance = await stripe.balance.retrieve();
+      res.json({
+          available: balance.available,
+          pending: balance.pending
+      });
+  } catch (error) {
+      res.status(500).json({ error: error.message });
   }
 };

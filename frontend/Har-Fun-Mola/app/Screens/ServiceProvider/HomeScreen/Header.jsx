@@ -182,6 +182,7 @@ const styles = StyleSheet.create({
     backgroundColor: Colors.PRIMARY,
     borderBottomLeftRadius: 25,
     borderBottomRightRadius: 25,
+    paddingTop:50
   },
   profileContainer: {
     flexDirection: 'row',
@@ -274,7 +275,7 @@ const styles = StyleSheet.create({
   statBox: {
     backgroundColor: Colors.WHITE,
     borderRadius: 15,
-    padding: 15,
+    padding: 25,
     width: '48%',
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 2 },

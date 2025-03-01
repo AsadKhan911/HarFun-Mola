@@ -81,8 +81,8 @@ export const register = async (req, res) => {
         if (role === "Service Provider") {
             try {
                 const account = await stripe.accounts.create({
-                    type: 'express',
-                    country: 'US',
+                    type: 'standard',
+                    country: 'GB',
                     email: email,
                     capabilities: {
                         card_payments: { requested: true },

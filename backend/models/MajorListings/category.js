@@ -2,10 +2,14 @@ import mongoose from "mongoose";
 
 const category = new mongoose.Schema({
     name: { type: String, required: true },
-
     icon: { type: String },
-    
-}, { timestamps: true })
+    predefinedServices: [{
+        serviceName: { type: String, required: true },
+        pricingOptions: [{
+            label: { type: String, required: true },
+        }]
+    }]
+}, { timestamps: true });
 
-export const majorCategory = mongoose.model('category', category)
+export const majorCategory = mongoose.model('category', category);
 

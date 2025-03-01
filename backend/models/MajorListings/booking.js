@@ -24,6 +24,14 @@ const bookingSchema = new mongoose.Schema(
       type: String,
       required: true,
     },
+    latitude: {
+      type: Number,
+      required: true,
+    },
+    longitude: {
+      type: Number,
+      required: true,
+    },
     status: {
       type: String,
       enum: ["Pending", "Confirmed", "In-Progress", "Cancelled", "Completed"],
@@ -59,7 +67,7 @@ const bookingSchema = new mongoose.Schema(
     type: String, default: null
    },
   paymentStatus: {
-    type: String, enum: ["Pending", "Completed"], default: "Pending" 
+    type: String, enum: ["Pending", "Completed" , "Cancelled"], default: "Pending" 
   },
   },
   { timestamps: true }
