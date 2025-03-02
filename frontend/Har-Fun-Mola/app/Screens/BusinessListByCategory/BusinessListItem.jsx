@@ -2,37 +2,75 @@ import { View, Text, Image, StyleSheet, TouchableOpacity } from 'react-native';
 import React from 'react';
 import Colors from '@/constants/Colors';
 import FontAwesome6 from '@expo/vector-icons/FontAwesome6';
-import Ionicons from '@expo/vector-icons/Ionicons'; // Import Ionicons
+import Ionicons from '@expo/vector-icons/Ionicons';
 import { useNavigation } from 'expo-router';
 
 const BusinessListItem = ({ business }) => {
   const navigation = useNavigation();
 
+  // Get Image (Either Listing Image or Profile Pic)
+  const imageSource = business?.Listingpicture
+    ? { uri: business.Listingpicture }
+    : { uri: business?.created_by?.profile?.profilePic };
+
+  // Find the minimum price from pricingOptions
+  const minPrice = business?.pricingOptions?.length > 0
+    ? Math.min(...business.pricingOptions.map(option => option.price))
+    : 'N/A';
+
+
   return (
     <TouchableOpacity
       style={styles.container}
-      onPress={() => navigation.push('business-details', { business: business })} // Sending business data
+      onPress={() => navigation.push('business-details', { business: business })}
     >
-      <Image source={{ uri: business?.created_by?.profile?.profilePic }} style={styles.image} />
+      <Image source={imageSource} style={styles.image} />
 
       <View style={styles.subContainer}>
-        {/* Contact Person */}
-        <Text style={{ fontFamily: 'outfit', color: Colors.GRAY }}>{business?.contactPerson}</Text>
-
         {/* Service Name */}
-        <Text style={{ fontFamily: 'outfit-bold', fontSize: 19 }}>{business?.serviceName}</Text>
+        <View style={styles.locationContainer}>
+          <Ionicons name="construct-outline" size={20} color={Colors.PRIMARY} />
+          <Text style={{ fontFamily: 'outfit-Bold', fontSize: 21 }}>   {business?.serviceName}</Text>            
+        </View>
+        
 
         {/* Price */}
         <View style={styles.priceContainer}>
-          <Ionicons name="pricetag-outline" size={18} color={Colors.PRIMARY} style={styles.priceIcon} />
-          <Text style={{ fontFamily: 'outfit-Medium', fontSize: 19 }}>{`${business?.price} Pkr`}</Text>
+          <Ionicons name="pricetag-outline" size={20} color={Colors.PRIMARY} />
+          <Text style={{ fontFamily: 'outfit', fontSize: 16, marginLeft: 5 }}>
+            {minPrice !== 'N/A' ? (
+              <>
+                Starting from <Text style={{ fontFamily: 'outfit-Bold', color: Colors.GRAY }}>{minPrice}</Text> PKR
+              </>
+            ) : (
+              'Price not available'
+            )}
+          </Text>
+        </View>
+
+        {/* Available Time Slots */}
+        <View style={styles.timeContainer}>
+          <Ionicons name="time-outline" size={20} color={Colors.PRIMARY} />
+          <Text style={{ fontFamily: 'outfit', fontSize: 14, marginLeft: 5 }}>
+            {business?.timeSlots?.length > 0 ? (
+              <>
+                Available from <Text style={{ fontFamily: 'outfit-Bold', color: Colors.GRAY }}>{business.timeSlots[0]}</Text> till{' '}
+                <Text style={{ fontFamily: 'outfit-Bold', color: Colors.GRAY }}>{business.timeSlots[business.timeSlots.length - 1]}</Text>
+              </>
+            ) : (
+              'Not specified'
+            )}
+          </Text>
         </View>
 
         {/* Location */}
-        <Text style={{ fontFamily: 'outfit', color: Colors.GRAY, fontSize: 16 }}>
+        <View style={styles.locationContainer}>
           <FontAwesome6 name="location-dot" size={20} color={Colors.PRIMARY} />
-             {business?.city}, {business?.location}
-        </Text>
+          <Text style={{ fontFamily: 'outfit', fontSize: 14, marginLeft: 5 }}>
+            {business?.location}
+          </Text>
+        </View>
+
       </View>
     </TouchableOpacity>
   );
@@ -40,35 +78,41 @@ const BusinessListItem = ({ business }) => {
 
 const styles = StyleSheet.create({
   container: {
-    flexDirection: 'row', // Align items in a row
-    alignItems: 'center', // Align items vertically centered
+    flexDirection: 'row',
+    alignItems: 'center',
     padding: 10,
     backgroundColor: Colors.WHITE,
     borderRadius: 15,
     marginBottom: 15,
-    shadowColor: '#000', // Add a slight shadow for better separation
+    shadowColor: '#000',
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.1,
     shadowRadius: 5,
-    elevation: 3, // For Android shadow
+    elevation: 3,
   },
   subContainer: {
-    flex: 1, // Allow text to take up remaining space
-    marginLeft: 15, // Space between image and text
-    marginBottom: 20,
+    flex: 1,
+    marginLeft: 15,
   },
   image: {
-    width: 100,
-    height: 100,
+    width: 90,
+    height: 90,
     borderRadius: 15,
   },
   priceContainer: {
     flexDirection: 'row',
     alignItems: 'center',
-    marginVertical: 2,
+    marginVertical: 4,
   },
-  priceIcon: {
-    marginRight: 8, // Space between icon and price text
+  locationContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginVertical: 4,
+  },
+  timeContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginVertical: 4,
   },
 });
 

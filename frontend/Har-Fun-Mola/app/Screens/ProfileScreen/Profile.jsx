@@ -127,7 +127,7 @@ export default Profile;
 
 const styles = StyleSheet.create({
   headerContainer: {
-    padding: 20,
+    paddingBottom:30, 
     paddingTop: 30,
     alignItems: 'center',
     justifyContent: 'center',
@@ -137,6 +137,7 @@ const styles = StyleSheet.create({
   },
   headerText: {
     fontSize: 33,
+    paddingTop:20,
     fontFamily: 'outfit-bold',
     color: Colors.WHITE,
     textAlign: 'center',
@@ -145,7 +146,7 @@ const styles = StyleSheet.create({
     display: 'flex',
     justifyContent: 'center',
     alignItems: 'center',
-    padding: 20,
+    padding: 35,
   },
   imgStyle: {
     width: 90,

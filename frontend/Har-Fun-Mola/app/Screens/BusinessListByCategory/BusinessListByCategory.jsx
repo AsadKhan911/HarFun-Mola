@@ -61,7 +61,7 @@ const styles = StyleSheet.create({
   screenContainer: {
     flex: 1, // Ensures the view takes up the full screen
     padding: 20,
-    paddingTop: 30,
+    paddingTop: 60,
     backgroundColor: Colors.LIGHT_GRAY, // Make sure this is the desired color
   },
   backButton: {

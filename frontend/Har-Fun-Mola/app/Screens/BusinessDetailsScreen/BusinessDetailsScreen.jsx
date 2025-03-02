@@ -64,22 +64,41 @@ const BusinessDetailsScreen = () => {
                 {business?.category?.name || 'Category'}
               </Text>
             </View>
-            <Text style={{ fontFamily: 'outfit-Medium', fontSize: 20 }}>
-              {`${business?.price}Pkr`}
-            </Text>
+
+            {/* Pricing Section */}
+            <View style={styles.priceContainer}>
+              <Ionicons name="pricetag-outline" size={20} color={Colors.PRIMARY} />
+              <Text style={{ fontFamily: 'outfit-bold', fontSize: 25, marginLeft: 5 }}>Pricing:</Text>
+            </View>
+
+            {/* Pricing Options List */}
+            <View style={styles.pricingList}>
+              {business?.pricingOptions?.length > 0 ? (
+                business.pricingOptions.map((option, index) => (
+                  <View key={index} style={styles.priceItem}>
+                    <Text style={styles.priceLabel}>{option.label}:</Text>
+                    <Text style={styles.priceValue}> {option.price} PKR</Text>
+                  </View>
+                ))
+              ) : (
+                <Text style={styles.noPricing}>Pricing not available</Text>
+              )}
+            </View>
+
+
             <Text style={styles.address}>
               <FontAwesome6
                 name="location-dot"
-                size={25}
+                size={20}
                 color={Colors.PRIMARY}
               />{' '}
-              {business?.location && business?.city ? `${business.location}, ${business.city}` : 'Business Address'}
+              {business?.location && business?.city ? `${business.location}` : 'Business Address'}
             </Text>
 
             <View style={styles.horizontalLine}></View>
 
             <View>
-              <Heading text="About Me" />
+              <Heading text="About this service" />
               <Text
                 style={styles.aboutText}
                 numberOfLines={readMore ? 200 : 5}
@@ -133,10 +152,12 @@ const styles = StyleSheet.create({
     position: 'absolute',
     zIndex: 10,
     padding: 20,
+    paddingTop:40
   },
   businessImage: {
     width: '100%',
     height: 300,
+    objectFit:'cover'
   },
   infoContainer: {
     padding: 20,
@@ -164,10 +185,42 @@ const styles = StyleSheet.create({
     borderRadius: 5,
     fontSize: 14,
   },
+  priceContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginVertical: 8,
+  },
+  pricingList: {
+    marginTop: -12,
+    padding: 10,
+    borderRadius: 10,
+  },
+  priceItem: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    paddingVertical: 4,
+  },
+  priceLabel: {
+    fontFamily: 'outfit-medium',
+    fontSize: 16,
+    color: Colors.DARK_GRAY,
+  },
+  priceValue: {
+    fontFamily: 'outfit-bold',
+    fontSize: 16,
+    color: Colors.PRIMARY,
+  },
+  noPricing: {
+    fontFamily: 'outfit',
+    fontSize: 14,
+    color: Colors.GRAY,
+    textAlign: 'center',
+  },  
   address: {
     fontSize: 17,
     fontFamily: 'outfit',
     color: Colors.GRAY,
+    marginVertical:10
   },
   horizontalLine: {
     borderWidth: 1.5,

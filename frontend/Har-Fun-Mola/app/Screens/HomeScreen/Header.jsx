@@ -44,7 +44,8 @@ const styles = StyleSheet.create({
   },
   container: {
     padding: 20,
-    paddintop: 20,
+    paddingBottom:20,
+    paddingTop:50,
     backgroundColor: Colors.PRIMARY,
     borderBottomLeftRadius: 25,
     borderBottomRightRadius: 25

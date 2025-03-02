@@ -68,11 +68,6 @@ const Home = () => {
 
         {/* Business List */}
         <BusinessList />
-
-        {/* Display user info */}
-        <Text style={{ fontSize: 18, fontWeight: "bold" }}>
-          Welcome, {userData?.fullName}!
-        </Text>
       </View>
 
       {/* Show the Rating Modal if pendingReview is true */}
