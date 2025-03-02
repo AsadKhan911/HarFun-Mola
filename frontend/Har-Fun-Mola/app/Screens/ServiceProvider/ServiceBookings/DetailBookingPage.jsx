@@ -82,7 +82,7 @@ const OrderDetailsScreen = () => {
         <View style={styles.container}>
             {/* Go Back Icon */}
             <TouchableOpacity style={styles.goBackContainer} onPress={() => navigation.goBack()}>
-                <Ionicons name="arrow-back" size={24} color={Colors.BLACK} />
+                <Ionicons name="arrow-back" size={28} color={Colors.BLACK} />
             </TouchableOpacity>
 
             <Card style={styles.card}>
@@ -258,9 +258,8 @@ const styles = StyleSheet.create({
     },
     goBackContainer: {
         position: "absolute",
-        top: 20,
-        left: 18,
-        zIndex: 1,
+        top: 50,
+        left: 35
     },
 });
 

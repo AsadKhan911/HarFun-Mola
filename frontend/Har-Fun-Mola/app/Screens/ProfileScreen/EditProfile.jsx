@@ -190,7 +190,7 @@ const EditProfile = () => {
 
 const styles = StyleSheet.create({
     headerContainer: {
-        padding: 30,
+        padding: 40,
         alignItems: 'center',
         backgroundColor: Colors.PRIMARY,
         borderBottomLeftRadius: 30,
@@ -202,11 +202,12 @@ const styles = StyleSheet.create({
     backButton: {
         position: 'absolute',
         left: 20,
-        top: 35,
+        top: 62,
         zIndex: 1,
     },
     headerText: {
         fontSize: 30,
+        marginTop:20,
         fontFamily: 'outfit-bold',
         color: Colors.WHITE,
         textAlign: 'center',

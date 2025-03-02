@@ -39,7 +39,8 @@ const Index = () => {
       "Text strings must be rendered within a <Text> component.",
       "Request failed with status code 400",
       "Request failed with status code 404",
-      "No bookings found for this service provider."
+      "No bookings found for this service provider.",
+      'A props object containing a "key" prop is being spread into JSX'
     ]);
 
     // Request location permission when app starts

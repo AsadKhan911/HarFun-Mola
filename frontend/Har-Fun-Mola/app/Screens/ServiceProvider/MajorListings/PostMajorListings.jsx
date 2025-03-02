@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import {
     View, Text, TextInput, StyleSheet, TouchableOpacity, Alert, ScrollView,
     ActivityIndicator, FlatList, KeyboardAvoidingView, Platform, TouchableWithoutFeedback,
-    Keyboard
+    Keyboard, Image
 } from 'react-native';
 import ModalDropdown from 'react-native-modal-dropdown';
 import { useNavigation, useRoute } from '@react-navigation/native';
@@ -13,21 +13,21 @@ import Colors from '../../../../constants/Colors.ts';
 import { useSelector } from 'react-redux';
 import Icon from 'react-native-vector-icons/MaterialIcons'; // For delete icon
 import { GooglePlacesAutocomplete } from 'react-native-google-places-autocomplete';
-
-
+import * as ImagePicker from 'expo-image-picker';
+import { Ionicons } from '@expo/vector-icons';
 
 const PostMajorListings = () => {
     const [selectedService, setSelectedService] = useState("");
     const [pricingOptions, setPricingOptions] = useState([]);
     const [predefinedServices, setPredefinedServices] = useState({});
     const [description, setDescription] = useState('');
-    const [price, setPrice] = useState('');
     const [location, setLocation] = useState('');
     const [city, setCity] = useState('');
     const [isLoading, setIsLoading] = useState(false);
     const [unavailableDates, setUnavailableDates] = useState([]); // Dates unavailable for work
     const [timeSlots, setTimeSlots] = useState([]); // Available time slots
     const [timeList, setTimeList] = useState([]); // Predefined time slots
+    const [selectedImage, setSelectedImage] = useState(null);
 
     const GOOGLE_PLACES_API_KEY = 'AIzaSyBt8hQFcT_LFuwCYQKs-pHE_MqUXJeZgpk'; // Replace with your API key
 
@@ -35,6 +35,22 @@ const PostMajorListings = () => {
     const navigation = useNavigation();
     const route = useRoute();
     const { categoryId, categoryName } = route.params;
+
+    // Function to pick an image
+    const pickImage = async () => {
+        const result = await ImagePicker.launchImageLibraryAsync({
+            mediaTypes: ['images'],
+            allowsEditing: true,
+            aspect: [4, 3],
+            quality: 1,
+        });
+
+        console.log(result);
+
+        if (!result.canceled) {
+            setSelectedImage(result.assets[0].uri);
+        }
+    };
 
     // Generate predefined time slots
     const generateTimeSlots = () => {
@@ -154,8 +170,46 @@ const PostMajorListings = () => {
                     contentContainerStyle={styles.scrollContainer}
                     keyboardShouldPersistTaps="handled"
                 >
+
+                    {/* Go Back Icon */}
+            <TouchableOpacity style={styles.goBackContainer} onPress={() => navigation.goBack()}>
+                <Ionicons name="arrow-back" size={28} color={Colors.BLACK} />
+            </TouchableOpacity>
+
                     <View style={styles.container}>
                         <Text style={styles.title}>Post your listing in {categoryName}</Text>
+
+                        {/* Image Picker Box */}
+                        <View style={styles.imagePickerContainer}>
+                            {/* Always show the TouchableOpacity, but make it transparent when an image is selected */}
+                            <TouchableOpacity
+                                style={[
+                                    styles.imagePickerButton,
+                                    selectedImage && styles.imagePickerButtonTransparent // Make button transparent when image is selected
+                                ]}
+                                onPress={pickImage}
+                            >
+                                <Text style={[
+                                    styles.imagePickerText,
+                                    selectedImage && styles.imagePickerTextHidden // Hide text when image is selected
+                                ]}>
+                                    <Text style={{ textAlign: "center", fontWeight: "bold", display: "block" }}>
+                                        Select Listing Image
+                                    </Text>
+                                    {"\n"} (Recommended Size: 800 x 600 pixels)
+                                </Text>
+
+
+                            </TouchableOpacity>
+
+                            {selectedImage && (
+                                <Image
+                                    source={{ uri: selectedImage }}
+                                    style={styles.selectedImage}
+                                />
+                            )}
+                        </View>
+
 
                         <View style={styles.card}>
                             <ModalDropdown
@@ -182,14 +236,15 @@ const PostMajorListings = () => {
                             />
 
                             {pricingOptions.length > 0 && (
-                                <View>
-                                    <Text style={styles.sectionTitle}>Set Your Prices</Text>
+                                <View style={styles.containerPrices}>
+                                    <Text style={styles.sectionTitlePrices}>Set Your Prices</Text>
                                     {pricingOptions.map((option, index) => (
-                                        <View key={index} style={styles.priceRow}>
-                                            <Text style={styles.priceLabel}>{option.label}:</Text>
+                                        <View key={index} style={styles.priceRowPrices}>
+                                            <Text style={styles.priceLabelPrices}>{option.label}:</Text>
                                             <TextInput
-                                                style={styles.input}
-                                                placeholder="Enter price"
+                                                style={styles.inputPrices}
+                                                placeholder="Enter price in pkr"
+                                                placeholderTextColor="#999"
                                                 keyboardType="numeric"
                                                 value={pricingOptions[index].price}
                                                 onChangeText={(text) => {
@@ -205,7 +260,7 @@ const PostMajorListings = () => {
 
 
                             {/* City Selection */}
-                            
+
                             <ModalDropdown
                                 options={['Rawalpindi', 'Lahore', 'Karachi']}
                                 defaultValue={'Select City'}
@@ -337,7 +392,7 @@ const PostMajorListings = () => {
 
 const styles = StyleSheet.create({
     scrollContainer: { flexGrow: 1, backgroundColor: Colors.WHITE, paddingBottom: 0, paddingTop: -60 },
-    container: { marginTop: '25%', flex: 1, padding: 20 },
+    container: { marginTop: '20%', flex: 1, padding: 20 },
     title: { fontSize: 24, fontFamily: 'outfit-Bold', textAlign: 'center', marginBottom: 20 },
     card: { backgroundColor: Colors.WHITE, padding: 20, borderRadius: 12, elevation: 5 },
     input: { backgroundColor: Colors.LIGHT_GRAY, padding: 14, borderRadius: 10, fontSize: 16, marginBottom: 10 },
@@ -424,6 +479,106 @@ const styles = StyleSheet.create({
     postButton: { backgroundColor: Colors.PRIMARY, padding: 16, borderRadius: 10, alignItems: 'center', marginTop: 10 },
     postButtonText: { color: Colors.WHITE, fontSize: 18, fontWeight: 'bold' },
     disabledButton: { backgroundColor: Colors.GRAY },
+    containerPrices: {
+        padding: 20,
+        backgroundColor: '#f8f9fa', // Light background for contrast
+        borderRadius: 10,
+        elevation: 2, // Shadow effect for better visibility
+    },
+    sectionTitlePrices: {
+        fontSize: 20,
+        fontWeight: 'bold',
+        marginBottom: 15,
+        color: '#333', // Dark color for better readability
+    },
+    priceRowPrices: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        justifyContent: 'space-between',
+        marginBottom: 10,
+        paddingVertical: 10,
+        paddingHorizontal: 15,
+        backgroundColor: '#fff',
+        borderRadius: 8,
+        shadowColor: '#000',
+        shadowOpacity: 0.1,
+        shadowOffset: { width: 0, height: 2 },
+        shadowRadius: 5,
+        elevation: 3, // Android shadow
+    },
+    priceLabelPrices: {
+        fontSize: 16,
+        fontWeight: '600',
+        color: '#555',
+    },
+    inputPrices: {
+        flex: 1,
+        marginLeft: 10,
+        padding: 10,
+        borderWidth: 1,
+        borderColor: '#ccc',
+        borderRadius: 5,
+        backgroundColor: '#f1f1f1',
+        color: '#333',
+        fontSize: 16,
+    },
+    imagePickerContainer: {
+        alignItems: 'center',
+        justifyContent: 'center', // Center content vertically and horizontally
+        marginVertical: 10,
+        backgroundColor: '#f8f8f8',
+        borderRadius: 10,
+        borderWidth: 1,
+        borderColor: '#ddd',
+        height: 200, // Set a fixed height for the container
+        width: '100%', // Make the container full width
+        position: 'relative', // For positioning the image absolutely
+        overflow: 'hidden', // Ensure the image doesn't overflow the container
+    },
+
+    imagePickerButton: {
+        position: 'absolute', // Position the button absolutely
+        top: 0,
+        left: 0,
+        right: 0,
+        bottom: 0,
+        justifyContent: 'center',
+        alignItems: 'center',
+        zIndex: 1, // Ensure the button is on top of the image
+        backgroundColor: 'transparent', // Default background
+    },
+
+    imagePickerButtonHidden: {
+        display: 'none', // Hide the button when an image is selected
+    },
+
+    imagePickerButtonTransparent: {
+        backgroundColor: 'transparent', // Make the button transparent when an image is selected
+    },
+
+    imagePickerText: {
+        color: Colors.GRAY,
+        fontWeight: 'bold',
+    },
+
+    selectedImage: {
+        width: '100%', // Make the image take the full width of the container
+        height: '100%', // Make the image take the full height of the container
+        borderRadius: 10,
+        resizeMode: 'cover', // Ensure the image covers the entire container
+        position: 'absolute', // Position the image absolutely within the container
+        top: 0,
+        left: 0,
+    },
+
+    imagePickerTextHidden: {
+        display: 'none', // Hide the text when an image is selected
+    },
+    goBackContainer: {
+        position: "absolute",
+        top: 50,
+        left: 35
+    },
 });
 
 export default PostMajorListings;

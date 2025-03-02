@@ -76,14 +76,96 @@ export const getAllBookingsForServiceProvider = async (req, res) => {
 };
 
 
+// export const BookServiceListingByListingId = async (req, res) => {
+//   try {
+//     const { serviceListingId } = req.params;
+//     const { date, timeSlot, address, latitude, longitude, instructions, userId, paymentMethod, paymentIntentId, paymentStatus } = req.body;
+
+//     console.log("📥 Booking Request Received:", req.body);
+
+//     if (!date || !timeSlot || !address || !latitude || !longitude || !userId || !paymentMethod) {
+//       return res.status(400).json({ message: "Missing required fields" });
+//     }
+
+//     const formattedDate = new Date(date).toISOString().split("T")[0];
+
+//     const service = await serviceListings
+//       .findById(serviceListingId)
+//       .populate("category", "name")
+//       .populate("created_by", "fullName email")
+//       .exec();
+
+//     if (!service) {
+//       return res.status(404).json({ message: "Service listing not found" });
+//     }
+
+//     const user = await User.findById(userId);
+//     if (!user) {
+//       return res.status(404).json({ message: "User not found" });
+//     }
+
+//     const newBooking = new Booking({
+//       service: service._id,
+//       user: user._id,
+//       date: formattedDate,
+//       timeSlot,
+//       address,
+//       latitude,
+//       longitude,
+//       instructions,
+//       created_by: service?.created_by,
+//       paymentMethod,
+//       paymentIntentId: paymentMethod === "CARD" ? paymentIntentId : null,
+//       paymentStatus: paymentMethod === "CARD" ? "Pending" : "Completed", // COD is auto "Completed"
+//     });
+
+//     await newBooking.save();
+
+//     // Call the email function
+//     await sendBookingPendingEmail(user, service, {
+//       date: formattedDate,
+//       timeSlot,
+//       address,
+//     });
+
+//     res.status(201).json({
+//       message: "Booking created successfully",
+//       bookingDetails: {
+//         serviceSelected: service.serviceName,
+//         providerName: service.created_by?.fullName || "Unknown Provider",
+//         providerPhone: service.created_by?.phoneNumber || "N/A",
+//         providerEmail: service.created_by?.email || "N/A",
+//         priceConfirmation: service.price,
+//         date: newBooking.date,
+//         timeSlot: newBooking.timeSlot,
+//         address: newBooking.address,
+//         latitude: newBooking.latitude,
+//         longitude: newBooking.longitude,
+//         userName: user.fullName,
+//         userPhone: user.phoneNumber,
+//         userEmail: user.email,
+//         instructions: newBooking.instructions,
+//         status: newBooking.status,
+//         paymentMethod: newBooking.paymentMethod,
+//         paymentStatus: newBooking.paymentStatus,
+//         paymentIntentId: newBooking.paymentIntentId,
+//       },
+//     });
+
+//   } catch (error) {
+//     console.error("Error processing booking:", error);
+//     res.status(500).json({ message: "Internal Server Error" });
+//   }
+// };
+
 export const BookServiceListingByListingId = async (req, res) => {
   try {
     const { serviceListingId } = req.params;
-    const { date, timeSlot, address, latitude, longitude, instructions, userId, paymentMethod, paymentIntentId, paymentStatus } = req.body;
+    const { date, timeSlot, address, latitude, longitude, instructions, userId, paymentMethod, paymentIntentId, paymentStatus, selectedPricingOption } = req.body;
 
     console.log("📥 Booking Request Received:", req.body);
 
-    if (!date || !timeSlot || !address || !latitude || !longitude || !userId || !paymentMethod) {
+    if (!date || !timeSlot || !address || !latitude || !longitude || !userId || !paymentMethod || !selectedPricingOption) {
       return res.status(400).json({ message: "Missing required fields" });
     }
 
@@ -117,6 +199,7 @@ export const BookServiceListingByListingId = async (req, res) => {
       paymentMethod,
       paymentIntentId: paymentMethod === "CARD" ? paymentIntentId : null,
       paymentStatus: paymentMethod === "CARD" ? "Pending" : "Completed", // COD is auto "Completed"
+      selectedPricingOption, // Include the selected pricing option
     });
 
     await newBooking.save();
@@ -135,7 +218,7 @@ export const BookServiceListingByListingId = async (req, res) => {
         providerName: service.created_by?.fullName || "Unknown Provider",
         providerPhone: service.created_by?.phoneNumber || "N/A",
         providerEmail: service.created_by?.email || "N/A",
-        priceConfirmation: service.price,
+        priceConfirmation: selectedPricingOption.price, // Use the selected pricing option's price
         date: newBooking.date,
         timeSlot: newBooking.timeSlot,
         address: newBooking.address,
@@ -157,7 +240,6 @@ export const BookServiceListingByListingId = async (req, res) => {
     res.status(500).json({ message: "Internal Server Error" });
   }
 };
-
 //SERVICE PROVIDER CONTROLLERS
 
 export const getServiceProviderBookings = async (req, res) => {

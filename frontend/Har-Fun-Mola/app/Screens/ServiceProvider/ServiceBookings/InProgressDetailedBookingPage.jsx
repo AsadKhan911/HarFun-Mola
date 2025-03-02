@@ -10,6 +10,7 @@ import Colors from '../../../../constants/Colors.ts';
 import { Heading } from '../../../../components/Heading.jsx';
 import { stopLocationUpdates } from '../../../../utils/getLocation.js';
 import RatingModal from '../../../Modals/RatingModal.jsx';
+import { Ionicons } from '@expo/vector-icons';
 
 const InProgressDetailBookingPage = ({ route }) => {
   const { bookingId } = route.params;
@@ -29,7 +30,7 @@ const InProgressDetailBookingPage = ({ route }) => {
   const [loading, setLoading] = useState(true);
   const [isCompleted, setIsCompleted] = useState(false);
   const [showRatingModal, setShowRatingModal] = useState(false);
-  const [userLocation , setUserLocation] = useState(null)
+  const [userLocation, setUserLocation] = useState(null)
   let intervalRef = null; // Store interval reference
 
   useGetFetchBookingDetails(bookingId);
@@ -55,7 +56,7 @@ const InProgressDetailBookingPage = ({ route }) => {
         startElapsedTime();
       }
 
-      if(latitude && longitude){
+      if (latitude && longitude) {
         setUserLocation({ latitude, longitude });
       }
     } catch (error) {
@@ -204,6 +205,8 @@ const InProgressDetailBookingPage = ({ route }) => {
 
   return (
     <ScrollView style={styles.container}>
+
+
       <View style={styles.timerContainer}>
         <Text>Booking Starts At:</Text>
         <Text style={styles.fieldName}>
@@ -214,6 +217,11 @@ const InProgressDetailBookingPage = ({ route }) => {
         <Text style={styles.timerLabel}>Service Started Since</Text>
         {loading ? <ActivityIndicator size="large" color={Colors.PRIMARY} /> : <Text style={styles.timer}>{formatTimer(elapsedTime)}</Text>}
       </View>
+
+      {/* Go Back Icon */}
+      <TouchableOpacity style={styles.goBackContainer} onPress={() => navigation.goBack()}>
+        <Ionicons name="arrow-back" size={28} color={Colors.BLACK} />
+      </TouchableOpacity>
 
       <View style={styles.orderDetailsContainer}>
         <Heading text="Booking Information" />
@@ -263,6 +271,7 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: Colors.LIGHT_GRAY,
     padding: 20,
+    paddingVertical: 110
   },
   timerContainer: {
     backgroundColor: Colors.WHITE,
@@ -377,6 +386,11 @@ const styles = StyleSheet.create({
     fontSize: 18,
     color: Colors.GRAY,
     fontFamily: 'outfit-medium',
+  },
+  goBackContainer: {
+    position: "absolute",
+    top: 20,
+    left: 15
   },
 });
 

@@ -7,7 +7,7 @@ const bookingSchema = new mongoose.Schema(
       ref: "majorListing",
       required: true,
     },
-    user: { //user who made the booking
+    user: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "user",
       required: true,
@@ -53,22 +53,30 @@ const bookingSchema = new mongoose.Schema(
       type: Date,
       default: null,
     },
-    elapsedTime: { // New field to store total time taken
+    elapsedTime: {
       type: String,
       default: null,
     },
     // Payment Fields
-  paymentMethod: { 
-    
-    type: String, enum: ["COD", "CARD"], required: true 
-  },
-  paymentIntentId: { 
-    
-    type: String, default: null
-   },
-  paymentStatus: {
-    type: String, enum: ["Pending", "Completed" , "Cancelled"], default: "Pending" 
-  },
+    paymentMethod: {
+      type: String,
+      enum: ["COD", "CARD"],
+      required: true,
+    },
+    paymentIntentId: {
+      type: String,
+      default: null,
+    },
+    paymentStatus: {
+      type: String,
+      enum: ["Pending", "Completed", "Cancelled"],
+      default: "Pending",
+    },
+    // New field: Selected Pricing Option
+    selectedPricingOption: {
+      label: { type: String, required: true }, // E.g., "250 sqft", "500 sqft"
+      price: { type: Number, required: true }, // Price for the selected option
+    },
   },
   { timestamps: true }
 );

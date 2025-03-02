@@ -30,6 +30,7 @@ const BookingModal = ({ business, handleCloseModal }) => {
   const [bookedTimeSlots, setBookedTimeSlots] = useState([]);
   const [paymentMethod, setPaymentMethod] = useState("COD"); // Default is COD
   const [paymentIntentId, setPaymentIntentId] = useState(null);
+  const [selectedPricingOption, setSelectedPricingOption] = useState(null); // New state for selected pricing option
   const { initPaymentSheet, presentPaymentSheet } = useStripe();
   const { _id } = useSelector(state => state?.auth?.user || {});
 
@@ -40,16 +41,20 @@ const BookingModal = ({ business, handleCloseModal }) => {
       console.log("No valid time slots found.");
     }
   }, [business]);
-  const createPaymentIntent = async () => {
 
-    const amountInPaisa = business?.price * 100;
+  const createPaymentIntent = async () => {
+    if (!selectedPricingOption) {
+      Alert.alert("Error", "Please select a pricing option.");
+      return;
+    }
+
+    const amountInPaisa = selectedPricingOption.price * 100; // Use the selected pricing option's price
 
     try {
-      console.log("PaymentBaseUrl:", business?.price);
       const response = await axios.post(
         `${PaymentBaseUrl}/create-payment-intent`,
         {
-          amount: amountInPaisa, // Replace with actual service price
+          amount: amountInPaisa,
           currency: "pkr",
           userId: _id,
         }
@@ -82,12 +87,11 @@ const BookingModal = ({ business, handleCloseModal }) => {
     }
   };
 
-
   useEffect(() => {
     if (paymentMethod === "CARD") {
       createPaymentIntent();
     }
-  }, [paymentMethod]);
+  }, [paymentMethod, selectedPricingOption]); // Add selectedPricingOption as a dependency
 
   const handleDateChange = async (date) => {
     if (!date) {
@@ -97,7 +101,6 @@ const BookingModal = ({ business, handleCloseModal }) => {
 
     const formattedDate = date.toISOString().split("T")[0]; // "YYYY-MM-DD"
 
-    // Ensure business?.unavailableDates is an array before checking
     if (business?.unavailableDates?.some(d => new Date(d).toISOString().split("T")[0] === formattedDate)) {
       Alert.alert("Date not available", "This date is not available for booking.");
       return;
@@ -108,7 +111,7 @@ const BookingModal = ({ business, handleCloseModal }) => {
     try {
       const response = await axios.get(`${BookingBaseUrl}/bookings/${business._id}/${formattedDate}`);
       if (response.status === 200) {
-        setBookedTimeSlots(response.data.bookedSlots); // Ensure this is an array of strings
+        setBookedTimeSlots(response.data.bookedSlots);
       }
     } catch (error) {
       console.error("Error fetching booked slots:", error);
@@ -116,11 +119,27 @@ const BookingModal = ({ business, handleCloseModal }) => {
   };
 
   const confirmBooking = async () => {
-    if (!selectedDate || !selectedTime || !address || !latitude || !longitude) {
-      Alert.alert("Please fill all fields", "Please select a date, time, and enter your address.");
+    if (!selectedDate) {
+      Alert.alert("Missing Field", "Please select a date.");
       return;
     }
-
+    if (!selectedTime) {
+      Alert.alert("Missing Field", "Please select a time.");
+      return;
+    }
+    if (!selectedPricingOption) {
+      Alert.alert("Missing Field", "Please select a pricing option.");
+      return;
+    }
+    if (!address) {
+      Alert.alert("Missing Field", "Please enter your address.");
+      return;
+    }
+    if (!latitude || !longitude) {
+      Alert.alert("Missing Field", "Location coordinates are missing.");
+      return;
+    }
+  
     setLoading(true);
     try {
       if (paymentMethod === "CARD") {
@@ -129,18 +148,18 @@ const BookingModal = ({ business, handleCloseModal }) => {
           setLoading(false);
           return;
         }
-
+  
         const { error } = await presentPaymentSheet();
         if (error) {
           Alert.alert("Payment Failed", error.message);
-          console.log(error.message)
+          console.log(error.message);
           setLoading(false);
           return;
         }
       }
-
+  
       const formattedDate = new Date(selectedDate).toISOString();
-
+  
       const bookingDetails = {
         date: formattedDate,
         timeSlot: selectedTime,
@@ -152,43 +171,40 @@ const BookingModal = ({ business, handleCloseModal }) => {
         paymentMethod,
         paymentIntentId: paymentMethod === "CARD" ? paymentIntentId : null,
         paymentStatus: paymentMethod === "CARD" ? "Pending" : "Completed",
+        selectedPricingOption,
       };
-
+  
       if (!business?._id) {
         Alert.alert("Error", "Invalid service listing ID.");
         setLoading(false);
         return;
       }
-
-      try {
-        const response = await axios.post(`${BookingBaseUrl}/post/${business._id}`, bookingDetails);
-        console.log("Booking Response:", response.data); // Log response
-
-        if (response.status === 201) {
-          Alert.alert("Success", "Your booking has been added. You can check your booking status in the booking tab.");
-          handleCloseModal();
-        } else {
-          Alert.alert("Error", "Failed to book. Please try again later.");
-        }
-      } catch (error) {
-        console.error("Booking Error:", error);
-        if (error.response) {
-          console.error("Server Response Data:", error.response.data);
-          console.error("Server Response Status:", error.response.status);
-          console.error("Server Response Headers:", error.response.headers);
-        } else if (error.request) {
-          console.error("No Response Received:", error.request);
-        } else {
-          console.error("Other Error:", error.message);
-        }
+  
+      const response = await axios.post(`${BookingBaseUrl}/post/${business._id}`, bookingDetails);
+      console.log("Booking Response:", response.data);
+  
+      if (response.status === 201) {
+        Alert.alert("Success", "Your booking has been added. You can check your booking status in the booking tab.");
+        handleCloseModal();
+      } else {
+        Alert.alert("Error", "Failed to book. Please try again later.");
       }
-    } catch (error) {  // Added missing catch block
-      Alert.alert("Error", "An unexpected error occurred.");
+    } catch (error) {
+      console.error("Booking Error:", error);
+      if (error.response) {
+        console.error("Server Response Data:", error.response.data);
+        console.error("Server Response Status:", error.response.status);
+        console.error("Server Response Headers:", error.response.headers);
+      } else if (error.request) {
+        console.error("No Response Received:", error.request);
+      } else {
+        console.error("Other Error:", error.message);
+      }
     } finally {
       setLoading(false);
     }
   };
-
+  
 
   return (
     <StripeProvider publishableKey="pk_test_51QugNP4ar1n4jNltsbhPR9kEV43YDjI4RDrhltYb5YgjHo3WQGevNAPuKPeY8yoNqNgrEir6JfQLsIrPxs12gmAX00hDxdInIS">
@@ -217,6 +233,31 @@ const BookingModal = ({ business, handleCloseModal }) => {
             />
           </View>
 
+          {/* Pricing Options Section */}
+          <View style={styles.section}>
+            <Heading text={"Select Pricing Option"} />
+            <FlatList
+              data={business?.pricingOptions || []}
+              horizontal
+              showsHorizontalScrollIndicator={false}
+              keyExtractor={(item, index) => index.toString()}
+              renderItem={({ item }) => (
+                <TouchableOpacity
+                  style={[
+                    styles.pricingOption,
+                    selectedPricingOption?.label === item.label && styles.selectedPricingOption,
+                  ]}
+                  onPress={() => setSelectedPricingOption(item)}
+                >
+                  <Text style={styles.pricingOptionText}>
+                    {item.label} - {item.price} PKR
+                  </Text>
+                </TouchableOpacity>
+              )}
+            />
+          </View>
+
+
           {/* Time select section */}
           <View style={styles.section}>
             <Heading text={"Select Time Slot"} />
@@ -230,15 +271,15 @@ const BookingModal = ({ business, handleCloseModal }) => {
                   style={[
                     styles.timeSlot,
                     selectedTime === item && styles.selectedTimeSlot,
-                    bookedTimeSlots.includes(item) && styles.disabledTimeSlot // Apply disabled styles
+                    bookedTimeSlots.includes(item) && styles.disabledTimeSlot
                   ]}
                   onPress={() => !bookedTimeSlots.includes(item) && setSelectedTime(item)}
-                  disabled={bookedTimeSlots.includes(item)} // Prevent selection
+                  disabled={bookedTimeSlots.includes(item)}
                 >
                   <Text
                     style={[
                       selectedTime === item ? styles.selectedTime : styles.unSelectedTime,
-                      bookedTimeSlots.includes(item) && styles.disabledTimeText // Apply disabled text styles
+                      bookedTimeSlots.includes(item) && styles.disabledTimeText
                     ]}
                   >
                     {item}
@@ -249,18 +290,6 @@ const BookingModal = ({ business, handleCloseModal }) => {
           </View>
 
           {/* Address section */}
-          {/* <View style={styles.section}>
-            <Heading text={"Enter Address"} />
-            <TextInput
-              placeholder="Enter your address"
-              placeholderTextColor="gray"
-              style={styles.addressInput}
-              onChangeText={setAddress}
-              value={address}
-            />
-          </View> */}
-
-          {/* Address section  */}
           <View style={styles.section}>
             <Heading text={"Enter Address"} />
             <GooglePlacesAutocomplete
@@ -282,7 +311,6 @@ const BookingModal = ({ business, handleCloseModal }) => {
                 listView: { backgroundColor: "white" },
               }}
             />
-
           </View>
 
           {/* User Note section */}
@@ -323,7 +351,6 @@ const BookingModal = ({ business, handleCloseModal }) => {
             </View>
           </View>
 
-
           {/* Confirm Button */}
           <TouchableOpacity
             style={[styles.confirmButton, loading && { backgroundColor: Colors.GRAY }]}
@@ -332,10 +359,9 @@ const BookingModal = ({ business, handleCloseModal }) => {
           >
             <Text style={styles.confirmButtonText}>{loading ? "Booking..." : "Confirm & Book"}</Text>
           </TouchableOpacity>
-
         </KeyboardAwareScrollView>
       </KeyboardAvoidingView>
-    </StripeProvider >
+    </StripeProvider>
   );
 };
 
@@ -455,6 +481,32 @@ const styles = StyleSheet.create({
   selectedPaymentText: {
     color: Colors.WHITE,
     fontWeight: "bold",
+  },
+  section: {
+    marginVertical: 10,
+  },
+
+  pricingOption: {
+   marginRight: 10,
+  padding: 10,
+  backgroundColor: Colors.WHITE,
+  borderBottomWidth: 1, // Only bottom border
+  borderBottomColor: Colors.GRAY, // Color of the bottom border
+  borderRadius: 0, // No rounded corners
+  },
+
+  selectedPricingOption: {
+   backgroundColor:Colors.PRIMARY_LIGHT
+  },
+
+  pricingOptionText: {
+    fontSize: 16,
+    fontWeight: 'bold',
+    color: Colors.DARK_GRAY,
+  },
+
+  selectedPricingOptionText: {
+    color: Colors.WHITE,
   },
 });
 

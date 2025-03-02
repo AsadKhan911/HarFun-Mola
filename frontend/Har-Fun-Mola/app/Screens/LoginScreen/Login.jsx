@@ -21,8 +21,16 @@ const Login = () => {
   const dispatch = useDispatch()
 
   const handleLogin = async () => {
-    if (!email || !password || !role) {
-      Alert.alert("Alert", "Please fill all fields.");
+    if (!email) {
+      Alert.alert("Email Missing", "Please enter your email.");
+      return;
+    }
+    if (!password) {
+      Alert.alert("Password Missing", "Please enter your password.");
+      return;
+    }
+    if (!role) {
+      Alert.alert("Role Missing", "Please select your role.");
       return;
     }
 

@@ -9,3 +9,5 @@ export const multipleUpload = multer({ storage }).fields([
     { name: 'cnicDocument', maxCount: 1 },
     { name: 'policeDocument', maxCount: 1 },
 ]);
+
+export const multipleImageUpload = multer({ storage }).array('images', 5); // Allow up to 5 images

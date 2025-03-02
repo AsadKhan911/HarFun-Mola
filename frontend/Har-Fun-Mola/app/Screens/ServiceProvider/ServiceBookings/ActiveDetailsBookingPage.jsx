@@ -172,7 +172,7 @@ const ActiveDetailsBookingPage = ({ route, handleCloseModal }) => {
             <View style={styles.disclaimerContainer}>
               <Ionicons name="information-circle-outline" size={20} color={Colors.PRIMARY} />
               <Text style={styles.disclaimerText}>
-                The service can be started up to two hours before the scheduled time slot. For example, if the time slot is 9:00 AM, you can start the service at 7:00 AM, but not before that.
+                The service can be started up to two hours before the scheduled time slot. For example, if the time slot is 9:00 AM, you can start the service at 7:00 AM, but not before.
               </Text>
             </View> : null
         }
@@ -218,6 +218,7 @@ const styles = StyleSheet.create({
   },
   scrollView: {
     padding: 20,
+    paddingVertical:60
   },
   backButton: {
     flexDirection: 'row',
