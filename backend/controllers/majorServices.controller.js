@@ -2,6 +2,8 @@ import mongoose from 'mongoose'
 import { serviceListings } from '../models/MajorListings/servicesListings.js'
 import { majorCategory } from '../models/MajorListings/category.js';
 import { User } from '../models/User/user.js';
+import cloudinary from '../utils/cloudinary.js';
+import { getDataUri } from '../utils/dataURI.js';
 
 // Modify postListing function to handle file upload
 
@@ -18,6 +20,23 @@ export const postListing = async (req, res) => {
                 success: false
             });
         }
+
+        let listingPicture = null;
+        let file = req.file;
+
+         if (file) {
+                    try {
+                        const fileUri = getDataUri(file);
+                        const cloudResponse = await cloudinary.uploader.upload(fileUri.content, {
+                            folder: 'HFM/majorListingPictures',
+                        });
+                        listingPicture = cloudResponse.secure_url;
+                    } catch (error) {
+                        console.error('Error uploading listing picture to Cloudinary:', error);
+                        listingPicture = null;
+                    }
+                }
+        
 
         // Validate if the provided categoryId exists
         const category = await majorCategory.findById(categoryId);
@@ -44,7 +63,7 @@ export const postListing = async (req, res) => {
             created_by: userID,
             unavailableDates,  // Save the unavailable dates
             timeSlots,  // Save the available time slots
-            Listingpicture: ""  // Add logic for image upload if needed
+            Listingpicture: listingPicture  // Add logic for image upload if needed
         });
 
         return res.status(201).json({
@@ -60,38 +79,6 @@ export const postListing = async (req, res) => {
         });
     }
 };
-
-// export const getListingsByCategory = async (req, res) => {
-//     const { categoryId } = req.params; // Get category ID from request parameters
-//     const userID = req.id;
-
-//     try {
-//         // Check if the category exists
-//         const categoryExists = await majorCategory.findById(categoryId);
-//         if (!categoryExists) {
-//             return res.status(404).json({ message: 'Category not found' });
-//         }
-
-//         // Fetch listings for the specific category
-//         const listings = await serviceListings
-//             .find({ category: categoryId })
-//             .populate('category', 'name') // Populate category name
-//             .populate('created_by', 'fullName email profile') // Populate user details
-//             .exec();
-
-//         // Return the listings
-//         return res.status(200).json({ 
-//             message: 'Listings fetched successfully', 
-//             listings
-//         });
-//     } catch (error) {
-//         console.error('Error fetching listings by category:', error);
-//         return res.status(500).json({ 
-//             message: 'An error occurred while fetching listings', 
-//             error: error.message 
-//         });
-//     }
-// };
 
 export const getListingsByCategory = async (req, res) => {
     const { categoryId } = req.params; // Get category ID from request parameters

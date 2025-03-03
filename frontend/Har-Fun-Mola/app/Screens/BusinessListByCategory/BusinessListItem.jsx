@@ -1,5 +1,5 @@
 import { View, Text, Image, StyleSheet, TouchableOpacity } from 'react-native';
-import React from 'react';
+import React, { useEffect } from 'react';
 import Colors from '@/constants/Colors';
 import FontAwesome6 from '@expo/vector-icons/FontAwesome6';
 import Ionicons from '@expo/vector-icons/Ionicons';
@@ -8,10 +8,11 @@ import { useNavigation } from 'expo-router';
 const BusinessListItem = ({ business }) => {
   const navigation = useNavigation();
 
+
   // Get Image (Either Listing Image or Profile Pic)
   const imageSource = business?.Listingpicture
     ? { uri: business.Listingpicture }
-    : { uri: business?.created_by?.profile?.profilePic };
+    : {uri:business?.created_by?.profile?.profilePic}; 
 
   // Find the minimum price from pricingOptions
   const minPrice = business?.pricingOptions?.length > 0
@@ -30,9 +31,9 @@ const BusinessListItem = ({ business }) => {
         {/* Service Name */}
         <View style={styles.locationContainer}>
           <Ionicons name="construct-outline" size={20} color={Colors.PRIMARY} />
-          <Text style={{ fontFamily: 'outfit-Bold', fontSize: 21 }}>   {business?.serviceName}</Text>            
+          <Text style={{ fontFamily: 'outfit-Bold', fontSize: 21 }}>   {business?.serviceName}</Text>
         </View>
-        
+
 
         {/* Price */}
         <View style={styles.priceContainer}>

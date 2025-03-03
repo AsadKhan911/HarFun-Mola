@@ -48,7 +48,7 @@ const BusinessDetailsScreen = () => {
             <Ionicons name="arrow-back-outline" size={30} color="white" />
           </TouchableOpacity>
           <Image
-            source={{ uri: business?.created_by?.profile?.profilePic }}
+            source={{ uri: business?.Listingpicture }}
             style={styles.businessImage}
           />
 

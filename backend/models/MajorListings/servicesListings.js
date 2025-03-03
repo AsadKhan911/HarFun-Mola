@@ -9,10 +9,8 @@ const services = new mongoose.Schema({
     },
     category: { 
         type: mongoose.Schema.Types.ObjectId, ref: 'category' 
-    }, // Reference to Category
-    // price: { 
-    //     type: Number, required: true 
-    // },
+    }, 
+    
     pricingOptions: [{
         label: { type: String, required: true }, // E.g., "250 sqft", "500 sqft"
         price: { type: Number, required: true }

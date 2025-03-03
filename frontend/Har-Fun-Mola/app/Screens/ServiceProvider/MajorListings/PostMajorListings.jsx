@@ -96,9 +96,7 @@ const PostMajorListings = () => {
 
     // Handle form submission
     const handlePostListing = async () => {
-        console.log("Posting listing..."); // Debug log
-        console.log("Selected City in State:", city); // Debug log
-
+        
         // Check each field and show an alert if missing
         if (!selectedService) {
             Alert.alert('Missing Field', 'Please select a service.');
@@ -127,24 +125,49 @@ const PostMajorListings = () => {
 
         try {
             setIsLoading(true);
-            const formattedPricingOptions = pricingOptions.map(option => ({
-                label: option.label,
-                price: Number(option.price) // Ensure price is stored as a number
-            }));
-
-            const response = await axios.post(`${MajorListingsBaseUrl}/post`, {
-                serviceName: selectedService,
-                description,
-                pricingOptions: formattedPricingOptions,
-                city,
-                location,
-                categoryId,
-                unavailableDates,
-                timeSlots
-            }, {
-                headers: { 'Content-Type': 'application/json' }
+            const formData = new FormData();
+    
+            // Append text fields
+            formData.append('serviceName', selectedService);
+            formData.append('description', description);
+            formData.append('city', city);
+            formData.append('location', location);
+            formData.append('categoryId', categoryId);
+    
+            // Append pricing options
+            pricingOptions.forEach((option, index) => {
+                formData.append(`pricingOptions[${index}][label]`, option.label);
+                formData.append(`pricingOptions[${index}][price]`, option.price);
             });
-
+    
+            // Append unavailable dates
+            unavailableDates.forEach((date, index) => {
+                formData.append(`unavailableDates[${index}]`, date.toISOString());
+            });
+    
+            // Append available time slots
+            timeSlots.forEach((slot, index) => {
+                formData.append(`timeSlots[${index}]`, slot);
+            });
+    
+            // Append image if selected
+            if (selectedImage) {
+                const fileName = selectedImage.split('/').pop();
+                    const fileType = fileName.split('.').pop();
+    
+                    formData.append('file', {
+                        uri: selectedImage,
+                        name: fileName,
+                        type: `image/${fileType}`,
+                    });
+            }
+    
+            const response = await axios.post(`${MajorListingsBaseUrl}/post`, formData, {
+                headers: {
+                    'Content-Type': 'multipart/form-data',
+                }
+            });
+    
             if (response.data.success) {
                 Alert.alert('Success', 'Listing posted successfully!');
                 navigation.goBack();
@@ -158,7 +181,6 @@ const PostMajorListings = () => {
             setIsLoading(false);
         }
     };
-
 
     return (
         <KeyboardAvoidingView
