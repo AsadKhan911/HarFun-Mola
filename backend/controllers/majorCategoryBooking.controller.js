@@ -16,7 +16,7 @@ export const getAllBookings = async (req, res) => {
     const bookings = await Booking.find({ user: userId })
       .populate({
         path: "service", 
-        select: "serviceName price created_by location", 
+        select: "serviceName price created_by location Listingpicture", 
         populate: { 
           path: "created_by",
           select: "profile fullName firebaseUID" 
@@ -530,7 +530,6 @@ export const updateBookingStatus = async (req, res) => {
 export const submitReview = async (req, res) => {
   try {
     const { userToReviewId, bookingId, rating, comment } = req.body;
-    console.log(userToReviewId, bookingId, rating, comment);
 
     // Find the user being reviewed
     const user = await User.findById(userToReviewId).populate(
@@ -559,29 +558,73 @@ export const submitReview = async (req, res) => {
 
     await user.save();
 
-    //Set `pendingReview` to `false` in the service user's `pendingReviewBookings`
+    // Update the service user's `pendingReviewBookings` to set `pendingReview` to `true`
     const serviceUser = await User.findOneAndUpdate(
-      { "pendingReviewBookings.bookingId": bookingId }, // Find the user who booked the service
-      {
-        $set: { "pendingReviewBookings.$.pendingReview": false }, // Update `pendingReview` to false
-      },
-      { new: true } // Return the updated document
+      { "pendingReviewBookings.bookingId": bookingId },
+      { $set: { "pendingReviewBookings.$.pendingReview": true } },
+      { new: true }
     );
 
     if (!serviceUser) {
       return res.status(404).json({ message: "Service user not found", success: false });
     }
 
-    // Populate updated user data before sending the response
-    const updatedUser = await User.findById(userToReviewId).populate(
+    return res.status(200).json({
+      message: "Review submitted successfully",
+      success: true,
+      user: user, // Send updated user data
+    });
+  } catch (error) {
+    console.error("Error submitting review:", error);
+    return res.status(500).json({ message: "Internal server error", success: false });
+  }
+};
+export const submitReviewUser = async (req, res) => {
+  try {
+    const { userToReviewId, bookingId, rating, comment } = req.body;
+
+    // Find the user being reviewed
+    const user = await User.findById(userToReviewId).populate(
       "reviews.userId",
       "fullName profile.profilePic"
     );
 
+    if (!user) {
+      return res.status(404).json({ message: "User not found", success: false });
+    }
+
+    // Create a new review object
+    const newReview = {
+      userId: req.id, // ID of the user submitting the review
+      rating,
+      comment,
+      createdAt: new Date(),
+    };
+
+    // Add the review to the user's reviews array
+    user.reviews.push(newReview);
+
+    // Recalculate the average rating
+    const totalRatings = user.reviews.reduce((sum, review) => sum + review.rating, 0);
+    user.averageRating = totalRatings / user.reviews.length;
+
+    await user.save();
+
+    // Update the service user's `pendingReviewBookings` to set `pendingReview` to `true`
+    const serviceUser = await User.findOneAndUpdate(
+      { "pendingReviewBookings.bookingId": bookingId },
+      { $set: { "pendingReviewBookings.$.pendingReview": false } },
+      { new: true }
+    );
+
+    if (!serviceUser) {
+      return res.status(404).json({ message: "Service user not found", success: false });
+    }
+
     return res.status(200).json({
       message: "Review submitted successfully",
       success: true,
-      user: updatedUser, // Send updated user data
+      user: user, // Send updated user data
     });
   } catch (error) {
     console.error("Error submitting review:", error);

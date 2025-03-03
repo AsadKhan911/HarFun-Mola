@@ -353,7 +353,7 @@ const BookingModal = ({ business, handleCloseModal }) => {
 
           {/* Confirm Button */}
           <TouchableOpacity
-            style={[styles.confirmButton, loading && { backgroundColor: Colors.GRAY }]}
+            style={[styles.confirmButton, loading && { backgroundColor: Colors.PRIMARY }]}
             onPress={confirmBooking}
             disabled={loading}
           >

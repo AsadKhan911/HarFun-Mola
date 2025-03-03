@@ -7,19 +7,18 @@ import { BusinessList } from "../HomeScreen/BusinessList.jsx";
 import { ScrollView } from "react-native-gesture-handler";
 import useUserData from "../../../customHooks/Universal/getUserData.jsx"; 
 import Colors from "../../../constants/Colors.ts";
-import RatingModal from "../../Modals/RatingModal.jsx"; 
+import RatingModalUser from "../../Modals/RatingModalUser.jsx"; 
 
 const Home = () => {
   const { userData, loading, error } = useUserData();
   const [isModalVisible, setModalVisible] = useState(false);
   const [pendingReviewBooking, setPendingReviewBooking] = useState(null);
 
-  // Update isModalVisible when userData is loaded
   useEffect(() => {
     if (userData?.pendingReviewBookings?.length > 0) {
       // Find the first booking where pendingReview is true
       const pendingReview = userData.pendingReviewBookings.find(booking => booking.pendingReview === true);
-  
+
       if (pendingReview) {
         setPendingReviewBooking(pendingReview);
         setModalVisible(true);
@@ -32,7 +31,6 @@ const Home = () => {
       setModalVisible(false);
     }
   }, [userData]); // Runs whenever userData changes
-  
 
   const handleReviewSubmit = () => {
     setModalVisible(false);
@@ -72,7 +70,7 @@ const Home = () => {
 
       {/* Show the Rating Modal if pendingReview is true */}
       {pendingReviewBooking && (
-        <RatingModal
+        <RatingModalUser
           visible={isModalVisible}
           onClose={() => setModalVisible(false)}
           onSubmit={handleReviewSubmit}

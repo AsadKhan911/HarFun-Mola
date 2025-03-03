@@ -13,6 +13,10 @@ const PendingOrderDetailed = () => {
   const { booking } = route.params;
   const { handleAction, loading } = useGetCancelOrder(booking?._id);  // Use custom hook
 
+   const imageSource = booking?.service?.Listingpicture
+    ? { uri: booking?.service?.Listingpicture }
+    : {uri:booking?.created_by?.profile?.profilePic};
+
   const handleCancelOrder = async () => {
     try {
         if (booking.paymentIntentId) {
@@ -54,7 +58,7 @@ const PendingOrderDetailed = () => {
 
       {/* Service Image */}
       <View style={styles.imageContainer}>
-        <Image source={{ uri: booking?.service?.created_by?.profile?.profilePic }} style={styles.image} />
+        <Image source={imageSource} style={styles.image} />
       </View>
 
       {/* Details Card */}
@@ -79,6 +83,12 @@ const PendingOrderDetailed = () => {
           <FontAwesome6 name="clock" size={16} color={Colors.PRIMARY} />
           <Text style={{ fontFamily: 'outfit-Medium' }}>  Time Slot: </Text>
           <Text style={styles.detailText}>{booking?.timeSlot}</Text>
+        </View>
+
+        <View style={styles.detailRow}>
+          <FontAwesome6 name="money-bill-wave" size={16} color={Colors.PRIMARY} />
+          <Text style={{ fontFamily: 'outfit-Medium' }}>  Service Price: </Text>
+          <Text style={styles.detailText}>{booking?.selectedPricingOption?.price} pkr for {booking?.selectedPricingOption?.label}</Text>
         </View>
 
         <View style={styles.detailRow}>
@@ -119,6 +129,7 @@ const styles = StyleSheet.create({
     flexGrow: 1,
     backgroundColor: Colors.LIGHT_GRAY,
     padding: 16,
+    paddingVertical:80
   },
   imageContainer: {
     width: "100%",
@@ -126,10 +137,10 @@ const styles = StyleSheet.create({
     marginBottom: 20,
   },
   image: {
-    width: "90%",
+    width: "100%",
     height: 200,
     borderRadius: 12,
-    resizeMode: "contain"
+    resizeMode: "cover"
   },
   detailsCard: {
     backgroundColor: Colors.WHITE,
@@ -219,8 +230,8 @@ const styles = StyleSheet.create({
   },
   goBackContainer: {
     position: "absolute",
-    top: 20,
-    left: 18,
+    top: 40,
+    left: 28,
     zIndex: 1,
   },
 });

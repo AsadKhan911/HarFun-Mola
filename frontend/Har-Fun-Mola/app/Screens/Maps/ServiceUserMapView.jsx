@@ -145,8 +145,8 @@ const styles = StyleSheet.create({
   },
   backButton: {
     position: "absolute",
-    top: 20,
-    left: 15,
+    top: 50,
+    left: 20,
     zIndex: 10,
   },
   markerContainer: {

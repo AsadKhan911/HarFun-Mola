@@ -27,9 +27,10 @@ const Header = () => {
         );
         setCompletedBookingsCount(completedBookings.length);
 
+
         // Calculate total earnings from completed bookings
         const earnings = completedBookings.reduce((total, booking) => {
-          return total + parseFloat(booking.service.price); // Accumulate the price of each booking
+          return total + parseFloat(booking.selectedPricingOption.price); // Accumulate the price of each booking
         }, 0);
 
         // Format earnings with commas (for thousands, lakhs, etc.)

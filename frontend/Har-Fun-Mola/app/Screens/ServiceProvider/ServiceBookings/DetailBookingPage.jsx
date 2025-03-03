@@ -124,7 +124,7 @@ const OrderDetailsScreen = () => {
 
                     <View style={styles.infoRow}>
                         <FontAwesome name="money" size={16} color={Colors.GRAY} />
-                        <Text style={styles.detail}> {singleBooking.service.price} Pkr</Text>
+                        <Text style={styles.detail}> {singleBooking.selectedPricingOption.price} Pkr for {singleBooking.selectedPricingOption.label}</Text>
                     </View>
 
                     <View style={styles.infoRow}>

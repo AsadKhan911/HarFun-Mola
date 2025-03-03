@@ -144,19 +144,19 @@ const InProgressDetailBookingPage = ({ route }) => {
       }
 
       // Ensure captured before transferring
+      // if (paymentResponse.data.success) {
+      //   const transferPayment = await axios.post(`${PaymentBaseUrl}/transfer-payment`, {
+      //     serviceProviderStripeId,
+      //     amount,
+      //   });
+
+      //   if (transferPayment.status !== 200) {
+      //     Alert.alert("Failed to transfer payment.");
+      //   }
+      // }
+
+
       if (paymentResponse.data.success) {
-        const transferPayment = await axios.post(`${PaymentBaseUrl}/transfer-payment`, {
-          serviceProviderStripeId,
-          amount,
-        });
-
-        if (transferPayment.status !== 200) {
-          Alert.alert("Failed to transfer payment.");
-        }
-      }
-
-
-
       const response = await axios.patch(`${BookingBaseUrl}/updateBooking/${bookingId}`, {
         status: "Completed",
         elapsedTime, // Send formatted duration
@@ -176,6 +176,7 @@ const InProgressDetailBookingPage = ({ route }) => {
           ]
         );
       }
+    }
     } catch (error) {
       console.error("Error completing service:", error);
       Alert.alert("Error", "Failed to complete the service. Please try again.");

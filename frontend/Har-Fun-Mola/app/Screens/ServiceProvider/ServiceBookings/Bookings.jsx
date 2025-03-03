@@ -139,7 +139,7 @@ const ServiceProviderBookings = () => {
                     <FontAwesome name="map-marker" size={14} color={Colors.GRAY} /> {item.user.area}, {item.user.city}
                   </Text>
                   <Text style={styles.detail}>
-                    <FontAwesome name="dollar" size={14} color={Colors.GRAY} /> {item.service.price}
+                    <FontAwesome name="dollar" size={14} color={Colors.GRAY} /> {item.selectedPricingOption.price} pkr
                   </Text>
                   <Text style={styles.detail}>
                     <FontAwesome name="credit-card" size={14} color={Colors.GRAY} /> {item.paymentMethod}

@@ -47,10 +47,14 @@ const BookingListItem = ({ booking }) => {
     navigation.navigate(screen , { booking }); // Pass booking details to the screen
   };
 
+  const imageSource = booking?.service?.Listingpicture
+  ? { uri: booking?.service?.Listingpicture }
+  : {uri:booking?.created_by?.profile?.profilePic}; 
+
   return (
     <TouchableOpacity style={styles.card} onPress={handlePress}>
       <Image
-        source={{ uri: booking?.service?.created_by?.profile?.profilePic }}
+        source={imageSource}
         style={styles.image}
       />
       <View style={styles.detailsContainer}>

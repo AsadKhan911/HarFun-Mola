@@ -7,7 +7,7 @@ import { FontAwesome6, Ionicons } from "@expo/vector-icons";
 const CancelledOrderDetailed = () => {
   const navigation = useNavigation();
   const route = useRoute();
-  const { booking } = route.params;
+  const { booking } = route.params; 
 
   return (
     <ScrollView contentContainerStyle={styles.container}>
@@ -51,6 +51,12 @@ const CancelledOrderDetailed = () => {
         </View>
 
         <View style={styles.detailRow}>
+          <FontAwesome6 name="money-bill-wave" size={16} color={Colors.PRIMARY} />
+          <Text style={{ fontFamily: 'outfit-Medium' }}>   Service Price: </Text>
+          <Text style={styles.detailText}>{booking?.selectedPricingOption?.price} pkr for {booking?.selectedPricingOption?.label}</Text>
+        </View>
+
+        <View style={styles.detailRow}>
           <FontAwesome6 name="credit-card" size={16} color={Colors.PRIMARY} />
           <Text style={{ fontFamily: 'outfit-Medium' }}>   Payment Status: </Text>
           <Text style={styles.detailText}>{booking?.paymentStatus}</Text>
@@ -76,17 +82,6 @@ const styles = StyleSheet.create({
     top: 20,
     left: 18,
     zIndex: 1,
-  },
-  imageContainer: {
-    width: "100%",
-    alignItems: "center",
-    marginBottom: 20,
-  },
-  image: {
-    width: "90%",
-    height: 200,
-    borderRadius: 12,
-    resizeMode: "contain"
   },
   detailsCard: {
     marginTop: '50%',

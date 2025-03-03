@@ -14,6 +14,10 @@ const ConfirmedOrderDetailed = () => {
   const { booking } = route.params;
   const { handleAction, loading } = useGetCancelOrder(booking?._id);  // Use custom hook
 
+  const imageSource = booking?.service?.Listingpicture
+  ? { uri: booking?.service?.Listingpicture }
+  : {uri:booking?.created_by?.profile?.profilePic}; 
+
   const handleCancelOrder = async () => {
     try {
     const response = await handleAction("Reject");
@@ -51,12 +55,12 @@ const ConfirmedOrderDetailed = () => {
       
       {/* Go Back Icon */}
       <TouchableOpacity style={styles.goBackContainer} onPress={() => navigation.goBack()}>
-        <Ionicons name="arrow-back" size={24} color={Colors.BLACK} />
+        <Ionicons name="arrow-back" size={28} color={Colors.BLACK} />
       </TouchableOpacity>
 
       {/* Service Image */}
       <View style={styles.imageContainer}>
-        <Image source={{ uri: booking?.service?.created_by?.profile?.profilePic }} style={styles.image} />
+        <Image source={imageSource} style={styles.image} />
       </View>
 
       {/* Details Card */}
@@ -130,6 +134,7 @@ const styles = StyleSheet.create({
     flexGrow: 1,
     backgroundColor: Colors.LIGHT_GRAY,
     padding: 16,
+    paddingVertical:70
   },
   imageContainer: {
     width: "100%",
@@ -260,8 +265,8 @@ const styles = StyleSheet.create({
   },
   goBackContainer: {
     position: "absolute",
-    top: 20,
-    left: 18,
+    top: 40,
+    left: 25,
     zIndex: 1,
   },
   ON: {

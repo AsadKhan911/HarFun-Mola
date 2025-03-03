@@ -96,7 +96,7 @@ const PostMajorListings = () => {
 
     // Handle form submission
     const handlePostListing = async () => {
-        
+
         // Check each field and show an alert if missing
         if (!selectedService) {
             Alert.alert('Missing Field', 'Please select a service.');
@@ -126,48 +126,48 @@ const PostMajorListings = () => {
         try {
             setIsLoading(true);
             const formData = new FormData();
-    
+
             // Append text fields
             formData.append('serviceName', selectedService);
             formData.append('description', description);
             formData.append('city', city);
             formData.append('location', location);
             formData.append('categoryId', categoryId);
-    
+
             // Append pricing options
             pricingOptions.forEach((option, index) => {
                 formData.append(`pricingOptions[${index}][label]`, option.label);
                 formData.append(`pricingOptions[${index}][price]`, option.price);
             });
-    
+
             // Append unavailable dates
             unavailableDates.forEach((date, index) => {
                 formData.append(`unavailableDates[${index}]`, date.toISOString());
             });
-    
+
             // Append available time slots
             timeSlots.forEach((slot, index) => {
                 formData.append(`timeSlots[${index}]`, slot);
             });
-    
+
             // Append image if selected
             if (selectedImage) {
                 const fileName = selectedImage.split('/').pop();
-                    const fileType = fileName.split('.').pop();
-    
-                    formData.append('file', {
-                        uri: selectedImage,
-                        name: fileName,
-                        type: `image/${fileType}`,
-                    });
+                const fileType = fileName.split('.').pop();
+
+                formData.append('file', {
+                    uri: selectedImage,
+                    name: fileName,
+                    type: `image/${fileType}`,
+                });
             }
-    
+
             const response = await axios.post(`${MajorListingsBaseUrl}/post`, formData, {
                 headers: {
                     'Content-Type': 'multipart/form-data',
                 }
             });
-    
+
             if (response.data.success) {
                 Alert.alert('Success', 'Listing posted successfully!');
                 navigation.goBack();
@@ -194,9 +194,9 @@ const PostMajorListings = () => {
                 >
 
                     {/* Go Back Icon */}
-            <TouchableOpacity style={styles.goBackContainer} onPress={() => navigation.goBack()}>
-                <Ionicons name="arrow-back" size={28} color={Colors.BLACK} />
-            </TouchableOpacity>
+                    <TouchableOpacity style={styles.goBackContainer} onPress={() => navigation.goBack()}>
+                        <Ionicons name="arrow-back" size={28} color={Colors.BLACK} />
+                    </TouchableOpacity>
 
                     <View style={styles.container}>
                         <Text style={styles.title}>Post your listing in {categoryName}</Text>
@@ -257,6 +257,7 @@ const PostMajorListings = () => {
                                 placeholderTextColor={Colors.GRAY}
                             />
 
+
                             {pricingOptions.length > 0 && (
                                 <View style={styles.containerPrices}>
                                     <Text style={styles.sectionTitlePrices}>Set Your Prices</Text>
@@ -281,16 +282,19 @@ const PostMajorListings = () => {
                             )}
 
 
+
                             {/* City Selection */}
 
-                            <ModalDropdown
-                                options={['Rawalpindi', 'Lahore', 'Karachi']}
-                                defaultValue={'Select City'}
-                                onSelect={handleCitySelect}
-                                style={styles.inputDropdown}
-                                textStyle={styles.dropdownText}
-                                dropdownStyle={styles.dropdownStyle}
-                            />
+                            <View style={{ marginTop: 20 }}>
+                                <ModalDropdown
+                                    options={['Rawalpindi', 'Lahore', 'Karachi']}
+                                    defaultValue={'Select City'}
+                                    onSelect={handleCitySelect}
+                                    style={styles.inputDropdown}
+                                    textStyle={styles.dropdownText}
+                                    dropdownStyle={styles.dropdownStyle}
+                                />
+                            </View>
 
                             {/* Searchable Area Input */}
                             <View style={styles.inputContainer}>
@@ -500,10 +504,10 @@ const styles = StyleSheet.create({
     },
     postButton: { backgroundColor: Colors.PRIMARY, padding: 16, borderRadius: 10, alignItems: 'center', marginTop: 10 },
     postButtonText: { color: Colors.WHITE, fontSize: 18, fontWeight: 'bold' },
-    disabledButton: { backgroundColor: Colors.GRAY },
+    disabledButton: { backgroundColor: Colors.PRIMARY_LIGHT },
     containerPrices: {
         padding: 20,
-        backgroundColor: '#f8f9fa', // Light background for contrast
+        backgroundColor: Colors.PRIMARY_LIGHT, // Light background for contrast
         borderRadius: 10,
         elevation: 2, // Shadow effect for better visibility
     },

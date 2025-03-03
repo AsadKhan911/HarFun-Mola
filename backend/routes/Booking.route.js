@@ -4,6 +4,7 @@ import { BookServiceListingByListingId , getAllBookings, getAllBookingsForServic
     getBooking, 
     getServiceProviderBookings, 
     submitReview, 
+    submitReviewUser, 
     updateBookingStatus} from '../controllers/majorCategoryBooking.controller.js'
 
 import isAuthenticated from '../middlewares/isAuthenticated.js'
@@ -19,6 +20,7 @@ router.route('/bookings/:serviceId/:date').get(isAuthenticated , getBookedSlots)
 router.route('/updateBooking/:bookingId').patch(isAuthenticated, updateBookingStatus);
 router.route('/getBooking/:bookingId').get(isAuthenticated, getBooking);
 router.route('/submitreview').post(isAuthenticated, submitReview);
+router.route('/submitreviewserviceUser').post(isAuthenticated, submitReviewUser);
 
 export default router
 

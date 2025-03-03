@@ -157,6 +157,7 @@ const styles = StyleSheet.create({
     flexGrow: 1,
     backgroundColor: Colors.LIGHT_GRAY,
     padding: 16,
+    paddingVertical:56
   },
   imageContainer: {
     width: "100%",
@@ -297,7 +298,7 @@ const styles = StyleSheet.create({
   },
   goBackContainer: {
     position: "absolute",
-    top: 20,
+    top: 55,
     left: 18,
     zIndex: 1,
     padding:10

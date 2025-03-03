@@ -29,6 +29,10 @@ const BusinessDetailsScreen = () => {
     }
   }, [param]);
 
+  const imageSource = business?.Listingpicture
+  ? { uri: business.Listingpicture }
+  : {uri:business?.created_by?.profile?.profilePic}; 
+
   if (isLoading) {
     return (
       <View style={styles.loaderContainer}>
@@ -48,7 +52,7 @@ const BusinessDetailsScreen = () => {
             <Ionicons name="arrow-back-outline" size={30} color="white" />
           </TouchableOpacity>
           <Image
-            source={{ uri: business?.Listingpicture }}
+            source={imageSource}
             style={styles.businessImage}
           />
 

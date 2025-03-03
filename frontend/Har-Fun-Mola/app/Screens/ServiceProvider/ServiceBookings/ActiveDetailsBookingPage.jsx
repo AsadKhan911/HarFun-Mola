@@ -116,6 +116,7 @@ const ActiveDetailsBookingPage = ({ route, handleCloseModal }) => {
         <Heading text="Booking Information" />
         <View style={styles.card}>
           <Text style={styles.fieldName}>Service: <Text style={styles.fieldValue}>{bookingDetails.service?.serviceName}</Text></Text>
+          <Text style={styles.fieldName}>Service Type: <Text style={styles.fieldValue}>{bookingDetails.selectedPricingOption?.label}</Text></Text>
           <Text style={styles.fieldName}>Order No: <Text style={styles.fieldValue}>{bookingDetails.orderNumber}</Text></Text>
           <Text style={styles.fieldName}>Date: <Text style={styles.fieldValue}>{new Date(bookingDetails.date).toDateString()}</Text></Text>
           <Text style={styles.fieldName}>Time Slot: <Text style={styles.fieldValue}>{bookingDetails.timeSlot}</Text></Text>

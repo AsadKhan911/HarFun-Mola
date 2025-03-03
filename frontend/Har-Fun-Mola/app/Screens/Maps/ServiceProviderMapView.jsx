@@ -112,8 +112,8 @@ const styles = StyleSheet.create({
   map: { flex: 1 },
   backButton: {
     position: "absolute",
-    top: 40,
-    left: 20,
+    top: 55,
+    left: 15,
     backgroundColor: "white",
     padding: 10,
     borderRadius: 20,

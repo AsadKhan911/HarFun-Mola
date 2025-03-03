@@ -51,7 +51,7 @@ const BusinessListByCategoryScreen = () => {
           renderItem={({ item }) => <BusinessListItem business={item} />}
         />
       ) : (
-        <Text style={styles.NAtext}>No Service Available Right Now</Text>
+        <Text style={styles.NAtext}>No Service Available Right Now!</Text>
       )}
     </View>
   );
@@ -82,7 +82,7 @@ const styles = StyleSheet.create({
     color: Colors.GRAY,
     fontSize: 20,
     textAlign: 'center',
-    marginTop: '20%',
+    margin:'auto'
   },
   spinner: {
     flex: 1, // Ensures the spinner is centered
