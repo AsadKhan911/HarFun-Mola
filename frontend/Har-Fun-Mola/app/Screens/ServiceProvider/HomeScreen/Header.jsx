@@ -1,5 +1,6 @@
 import { useState, useEffect, useCallback, useRef } from 'react';
-import { View, Text, Image, StyleSheet, TouchableOpacity, Modal, Animated, Easing } from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity, Modal, Animated, Easing } from 'react-native';
+import {Image} from 'expo-image'
 import { useSelector } from 'react-redux';
 import { useNavigation, useFocusEffect } from '@react-navigation/native'; // Import useFocusEffect
 import FontAwesome6 from '@expo/vector-icons/FontAwesome6';

@@ -2,8 +2,9 @@ import React, { useState, useEffect } from 'react';
 import {
     View, Text, TextInput, StyleSheet, TouchableOpacity, Alert, ScrollView,
     ActivityIndicator, FlatList, KeyboardAvoidingView, Platform, TouchableWithoutFeedback,
-    Keyboard, Image
+    Keyboard
 } from 'react-native';
+import {Image} from 'expo-image'
 import ModalDropdown from 'react-native-modal-dropdown';
 import { useNavigation, useRoute } from '@react-navigation/native';
 import axios from 'axios';

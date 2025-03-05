@@ -1,18 +1,22 @@
-import React from 'react';
-import { View, Text, StyleSheet, ScrollView, TouchableOpacity, ActivityIndicator } from 'react-native';
-import {Image} from 'expo-image'
+import { StyleSheet, Text, TouchableOpacity, View } from 'react-native'
+import React from 'react'
+import useFetchUserData from '../../../customHooks/Universal/getOppositeUserData';
+import { useNavigation } from 'expo-router';
+import { useRoute } from '@react-navigation/native';
+import { ActivityIndicator } from 'react-native-paper';
+import Colors from '../../../constants/Colors';
+import { ScrollView } from 'react-native-gesture-handler';
 import { Ionicons } from '@expo/vector-icons';
-import { useNavigation, useRoute } from '@react-navigation/native';
-import Colors from '../../../constants/Colors.ts';
-import useFetchUserData from '../../../customHooks/Universal/getOppositeUserData.jsx';  // Import the custom hook
+import { Image } from "expo-image";
 
-const ViewServiceUserProfile = () => {
+const ViewServiceProviderProfile = () => {
+
     const navigation = useNavigation();
     const route = useRoute();
-    const { serviceUser } = route.params;
-    const userId = serviceUser?._id; // Extract userId from serviceUser
+    const { serviceProvider } = route.params;
+    const providerId = serviceProvider?._id; // Extract provider Id from serviceUser
 
-    const { userData, loading, error } = useFetchUserData(userId);  // Call the hook with userId
+    const { userData, loading, error } = useFetchUserData(providerId);
 
     if (loading) {
         return (
@@ -26,8 +30,18 @@ const ViewServiceUserProfile = () => {
         return <Text style={styles.errorText}>{error}</Text>;
     }
 
+
     const reviews = userData?.reviews || [];
     const emailBadgeText = userData?.isEmailVerified ? 'Email Verified' : 'Email Not Verified';
+
+    const isProviderVerified =
+        userData?.isAddressVerified &&
+        userData?.isPoliceCerVerified &&
+        userData?.backgroundCheckStatus === 'Verified';
+
+    const verificationBadgeText = isProviderVerified ? 'Provider Verified' : 'Profile Not Verified';
+    const verificationBadgeColor = isProviderVerified ? 'green' : 'red';
+
 
     return (
         <ScrollView contentContainerStyle={{ flexGrow: 1, backgroundColor: Colors.LIGHT_GRAY }}>
@@ -36,22 +50,40 @@ const ViewServiceUserProfile = () => {
                 <TouchableOpacity onPress={() => navigation.goBack()} style={styles.backButton}>
                     <Ionicons name="arrow-back" size={30} color={Colors.WHITE} />
                 </TouchableOpacity>
-                <Text style={styles.headerText}>Client Profile</Text>
+                <Text style={styles.headerText}>Provider's Profile</Text>
             </View>
 
             {/* User Profile Info */}
             <View style={styles.card}>
                 <View style={styles.innerContainer}>
                     <Image source={{ uri: userData?.profile?.profilePic }} style={styles.imgStyle} />
+                     {/* Provider Verified Badge */}
                     <Text style={styles.userName}>{userData?.fullName}</Text>
                     <Text style={styles.email}>{userData?.email}</Text>
+
+                    {/*  Verified Badges */}
                     <View style={styles.badgeContainer}>
+                        <View style={{flexDirection:'row' , marginTop:4, marginBottom:8}}>
+                     <Ionicons
+                            name={isProviderVerified ? 'checkmark-circle' : 'close-circle'}
+                            size={18}
+                            color={verificationBadgeColor}
+                        />
+                        <Text style={[styles.badgeText, { color: verificationBadgeColor }]}>
+                            {verificationBadgeText}
+                        </Text>
+                        </View>
+
+                        <View style={{flexDirection:'row'}}>
                         <Ionicons
                             name={userData?.isEmailVerified ? 'checkmark-circle' : 'close-circle'}
                             size={18}
                             color={userData?.isEmailVerified ? 'green' : 'red'}
                         />
-                        <Text style={[styles.badgeText, { color: userData?.isEmailVerified ? 'green' : 'red' }]}>{emailBadgeText}</Text>
+                        <Text style={[styles.badgeText, { color: userData?.isEmailVerified ? 'green' : 'red' }]}>
+                            {emailBadgeText}
+                        </Text>
+                        </View>
                     </View>
                 </View>
 
@@ -101,10 +133,10 @@ const ViewServiceUserProfile = () => {
                 )}
             </ScrollView>
         </ScrollView>
-    );
-};
+    )
+}
 
-export default ViewServiceUserProfile;
+export default ViewServiceProviderProfile
 
 const styles = StyleSheet.create({
     loaderContainer: {
@@ -114,7 +146,7 @@ const styles = StyleSheet.create({
         backgroundColor: Colors.LIGHT_GRAY,
     },
     headerContainer: {
-        padding: 30,
+        paddingVertical: 40,
         alignItems: 'center',
         backgroundColor: Colors.PRIMARY,
         borderBottomLeftRadius: 30,
@@ -125,12 +157,13 @@ const styles = StyleSheet.create({
     },
     backButton: {
         position: 'absolute',
-        left: 20,
-        top: 35,
+        left: 25,
+        top: 54,
         zIndex: 1,
     },
     headerText: {
         fontSize: 30,
+        marginTop: 10,
         fontFamily: 'outfit-bold',
         color: Colors.WHITE,
         textAlign: 'center',
@@ -168,15 +201,19 @@ const styles = StyleSheet.create({
         marginBottom: 10,
     },
     badgeContainer: {
-        flexDirection: 'row',
+        flexDirection: 'column',
         justifyContent: 'center',
         alignItems: 'center',
-        marginTop: 10,
+        paddingVertical: 2,
+         // Light gray background for badge
+        borderRadius: 10,
+        paddingHorizontal: 10,
     },
     badgeText: {
         marginLeft: 5,
         fontFamily: 'outfit-Medium',
         fontSize: 14,
+        fontWeight: 'outfit-Bold',
     },
     infoContainer: {
         marginTop: 10,
@@ -243,4 +280,4 @@ const styles = StyleSheet.create({
     errorText: {
         color: "red", textAlign: "center", fontSize: 16, marginTop: 20
     },
-});
+})

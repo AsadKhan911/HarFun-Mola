@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
-import { View, Text, TouchableOpacity, StyleSheet, ScrollView, Alert, Image, ActivityIndicator } from 'react-native';
+import { View, Text, TouchableOpacity, StyleSheet, ScrollView, Alert, ActivityIndicator } from 'react-native';
+import {Image} from 'expo-image'
 import { useNavigation, useRoute } from '@react-navigation/native';
 import Colors from '@/constants/Colors';
 import * as ImagePicker from 'expo-image-picker';

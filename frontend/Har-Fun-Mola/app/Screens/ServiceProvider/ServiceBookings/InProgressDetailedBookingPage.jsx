@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, StyleSheet, ScrollView, TouchableOpacity, Alert, ActivityIndicator, Image } from 'react-native';
+import { View, Text, StyleSheet, ScrollView, TouchableOpacity, Alert, ActivityIndicator } from 'react-native';
+import {Image} from 'expo-image'
 import { useSelector } from 'react-redux';
 import { useNavigation } from '@react-navigation/native'; // Import navigation
 import axios from 'axios';

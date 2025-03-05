@@ -1,5 +1,5 @@
-import { View, StyleSheet, FlatList, Image } from 'react-native';
-import { useState, useEffect } from 'react';
+import { View, StyleSheet, FlatList } from 'react-native';
+import {Image} from 'expo-image'
 import {Heading} from '../../../../components/Heading.jsx';
 
 export const Slider = () => {

@@ -1,4 +1,4 @@
-import { View, Text, Image, TouchableOpacity, StyleSheet, ScrollView, Modal, ActivityIndicator } from 'react-native';
+import { View, Text, TouchableOpacity, StyleSheet, ScrollView, Modal, ActivityIndicator } from 'react-native';
 import React, { useEffect, useState } from 'react';
 import { useRoute, useNavigation } from '@react-navigation/native';
 import Ionicons from '@expo/vector-icons/Ionicons';
@@ -6,6 +6,7 @@ import FontAwesome6 from '@expo/vector-icons/FontAwesome6';
 import Colors from '../../../constants/Colors.ts';
 import { Heading } from '../../../components/Heading.jsx';
 import BookingModal from '../BookingScreen/BookingModal.jsx';
+import { Image } from "expo-image";
 
 const BusinessDetailsScreen = () => {
   const [business, setBusiness] = useState({});
@@ -54,6 +55,7 @@ const BusinessDetailsScreen = () => {
           <Image
             source={imageSource}
             style={styles.businessImage}
+            contentFit="cover"
           />
 
           <View style={styles.infoContainer}>
@@ -120,7 +122,7 @@ const BusinessDetailsScreen = () => {
       </ScrollView>
 
       <View style={styles.buttonContainer}>
-        <TouchableOpacity style={styles.messageBtn}>
+        <TouchableOpacity style={styles.messageBtn} onPress={()=>navigation.navigate('view-provider-profile' , {serviceProvider:business?.created_by})}>
           <Ionicons name="person-outline" size={18} color={Colors.PRIMARY} style={{ marginRight: 10 }} />
           <Text style={styles.messageText}>View Profile</Text>
         </TouchableOpacity>

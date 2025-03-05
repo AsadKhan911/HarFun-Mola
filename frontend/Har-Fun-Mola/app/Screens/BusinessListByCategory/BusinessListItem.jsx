@@ -1,9 +1,11 @@
-import { View, Text, Image, StyleSheet, TouchableOpacity } from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
 import React, { useEffect } from 'react';
 import Colors from '@/constants/Colors';
 import FontAwesome6 from '@expo/vector-icons/FontAwesome6';
 import Ionicons from '@expo/vector-icons/Ionicons';
 import { useNavigation } from 'expo-router';
+import { MaterialCommunityIcons } from '@expo/vector-icons';
+import {Image} from 'expo-image'
 
 const BusinessListItem = ({ business }) => {
   const navigation = useNavigation();
@@ -30,7 +32,7 @@ const BusinessListItem = ({ business }) => {
       <View style={styles.subContainer}>
         {/* Service Name */}
         <View style={styles.locationContainer}>
-          <Ionicons name="construct-outline" size={20} color={Colors.PRIMARY} />
+          <Ionicons name="construct" size={20} color={Colors.PRIMARY} />
           <Text style={{ fontFamily: 'outfit-Bold', fontSize: 21 }}>   {business?.serviceName}</Text>
         </View>
 
@@ -66,8 +68,8 @@ const BusinessListItem = ({ business }) => {
 
         {/* Location */}
         <View style={styles.locationContainer}>
-          <FontAwesome6 name="location-dot" size={20} color={Colors.PRIMARY} />
-          <Text style={{ fontFamily: 'outfit', fontSize: 14, marginLeft: 5 }}>
+        <MaterialCommunityIcons name="map-marker-outline" size={22} color={Colors.PRIMARY} />
+        <Text style={{ fontFamily: 'outfit', fontSize: 14, marginLeft: 5 }}>
             {business?.location}
           </Text>
         </View>

@@ -1,5 +1,6 @@
 import React from 'react';
-import { View, Text, StyleSheet, Image, ScrollView, TouchableOpacity } from 'react-native';
+import { View, Text, StyleSheet, ScrollView, TouchableOpacity } from 'react-native';
+import {Image} from 'expo-image'
 import { useSelector } from 'react-redux';
 import Colors from '../../../constants/Colors.ts';
 import { Ionicons } from '@expo/vector-icons';

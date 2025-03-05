@@ -4,7 +4,6 @@ import {
     Text,
     TextInput,
     StyleSheet,
-    Image,
     ScrollView,
     TouchableOpacity,
     Alert,
@@ -12,6 +11,7 @@ import {
     Platform,
     ActivityIndicator
 } from 'react-native';
+import {Image} from 'expo-image'
 import * as ImagePicker from 'expo-image-picker'; // Import ImagePicker
 import { useSelector, useDispatch } from 'react-redux';
 import { Ionicons } from '@expo/vector-icons';

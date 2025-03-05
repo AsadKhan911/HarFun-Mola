@@ -1,5 +1,6 @@
 import { useState, useContext } from 'react';
-import { View, Text, TextInput, TouchableOpacity, StyleSheet, Image, ScrollView, Alert } from 'react-native';
+import { View, Text, TextInput, TouchableOpacity, StyleSheet, ScrollView, Alert } from 'react-native';
+import {Image} from 'expo-image'
 import Colors from '@/constants/Colors';
 import { useNavigation } from '@react-navigation/native';
 import axios from 'axios';

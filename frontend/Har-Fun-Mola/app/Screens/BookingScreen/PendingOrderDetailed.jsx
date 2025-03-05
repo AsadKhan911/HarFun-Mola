@@ -1,5 +1,6 @@
 import React from "react";
-import { View, Text, Image, StyleSheet, ScrollView, TouchableOpacity, ActivityIndicator } from "react-native";
+import { View, Text, StyleSheet, ScrollView, TouchableOpacity, ActivityIndicator } from "react-native";
+import {Image} from 'expo-image'
 import { useNavigation, useRoute } from "@react-navigation/native";
 import Colors from "@/constants/Colors";
 import { FontAwesome6, Ionicons } from "@expo/vector-icons";

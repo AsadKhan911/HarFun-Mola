@@ -1,5 +1,6 @@
 import { useState } from 'react';
-import { View, Text, TextInput, TouchableOpacity, StyleSheet, Image, ScrollView, Alert, KeyboardAvoidingView, Platform } from 'react-native';
+import { View, Text, TextInput, TouchableOpacity, StyleSheet, ScrollView, Alert, KeyboardAvoidingView, Platform } from 'react-native';
+import {Image} from 'expo-image'
 import * as ImagePicker from 'expo-image-picker'; // Import Image Picker
 import { useNavigation } from '@react-navigation/native';
 import axios from 'axios';

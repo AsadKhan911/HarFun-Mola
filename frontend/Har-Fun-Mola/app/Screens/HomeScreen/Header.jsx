@@ -1,7 +1,8 @@
-import { View, Text, Image, StyleSheet, TextInput } from 'react-native'
+import { View, Text, StyleSheet, TextInput } from 'react-native'
 import Colors from '../../../constants/Colors.ts'
 import FontAwesome from '@expo/vector-icons/FontAwesome';
 import { useSelector } from 'react-redux';
+import {Image} from 'expo-image'
 
 export const Header = () => {
   //Fetchind user data from redux

@@ -1,4 +1,5 @@
-import { View, Text, StyleSheet, FlatList, Image, TouchableOpacity } from 'react-native';
+import { View, Text, StyleSheet, FlatList, TouchableOpacity } from 'react-native';
+import {Image} from 'expo-image'
 import { useEffect, useState } from 'react';
 import {Heading} from '../../../components/Heading.jsx';
 import Colors from '../../../constants/Colors.ts';
