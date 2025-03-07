@@ -1,37 +1,26 @@
+import mongoose from "mongoose";
+
 const ServiceSchema = new mongoose.Schema({
   category: {
     type: mongoose.Schema.Types.ObjectId, ref: "MinorCategory", required: true
   }, 
 
-  service: {
-    serviceName:{
-      type: String, required: true
-    },
-    icon: { 
-      type: String 
-  }
-  }, // e.g., "Microwave Repair"
+  serviceName: { type: String, required: true },
+
+  serviceIcon: { type: String },
+
+  description: {type:String},
+
+  priceRange: {
+    minPrice: { type: Number, required: true },
+    maxPrice: { type: Number, required: true }
+  },
 
   predefinedIssues: [{ // Static issue options
-    issueName: {
-      type: String, required: true
-    }, // e.g., "Microwave Heater Issue"
-    estimatedPrice: {
-      min: Number, max: Number
-    }, // Fixed estimated price range
-    icon : {
-      type: String 
-    }
+   type: mongoose.Schema.Types.ObjectId, ref: "PredefinedIssue"
   }],
 
-  diagnosticFee: {
-    type: Number, required: true
-  }, // Fixed diagnostic fee
-
-  serviceProvider: [{
-    type: mongoose.Schema.Types.ObjectId, ref: "user"
-  }] // Providers offering this service
 });
 
 
-export const Service = mongoose.model("Service", ServiceSchema);
+export const Service = mongoose.model("MinorService", ServiceSchema);

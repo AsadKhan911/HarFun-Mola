@@ -3,6 +3,7 @@ import { View, ActivityIndicator, Text } from 'react-native';
 import { Header } from "../HomeScreen/Header.jsx";
 import { Slider } from "../HomeScreen/Slider.jsx";
 import { Categories } from "../HomeScreen/Categories.jsx";
+import { MinorCategories } from "../HomeScreen/minorCategories.jsx";
 import { BusinessList } from "../HomeScreen/BusinessList.jsx";
 import { ScrollView } from "react-native-gesture-handler";
 import useUserData from "../../../customHooks/Universal/getUserData.jsx"; 
@@ -61,8 +62,11 @@ const Home = () => {
       <View style={{ padding: 20 }}>
         <Slider />
 
-        {/* Categories */}
+        {/*Major Categories */}
         <Categories />
+
+        {/*Minor Categories */}
+        <MinorCategories />
 
         {/* Business List */}
         <BusinessList />
