@@ -146,7 +146,7 @@ const CompletedDetailsBookingPage = () => {
                 {/* Service Price */}
                 <Text style={styles.detail}>
                   <Text style={styles.label}>Price: </Text>
-                  ₹{item.service.price}
+                  {item.selectedPricingOption.price} Pkr
                 </Text>
 
                 {/* Status */}
@@ -171,7 +171,7 @@ const styles = StyleSheet.create({
   header: {
     flexDirection: "row",
     alignItems: "center",
-    marginTop: 5,
+    marginTop: 40,
   },
   CompleteBookingText: {
     fontSize: 23,
@@ -186,6 +186,8 @@ const styles = StyleSheet.create({
     marginBottom: 12,
     borderRadius: 12,
     backgroundColor: Colors.WHITE,
+    borderColor:Colors.LIGHT_GRAY,
+    borderWidth:1,
     padding: 16,
     shadowColor: Colors.BLACK,
     shadowOpacity: 0.1,

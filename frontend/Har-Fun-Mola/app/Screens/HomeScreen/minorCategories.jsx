@@ -50,7 +50,7 @@ export const MinorCategories = () => {
             <TouchableOpacity
               style={styles.container}
               onPress={() =>
-                navigation.push('business-list', {
+                navigation.push('minor-business-list', {
                   categoryId: item._id, //Send category id
                    categoryName:item.name //Send category name
                 })

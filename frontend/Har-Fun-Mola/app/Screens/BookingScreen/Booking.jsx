@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { View, Text, FlatList, TouchableOpacity, StyleSheet, ActivityIndicator } from "react-native";
+import { View, Text, FlatList, TouchableOpacity, StyleSheet } from "react-native";
 import { useSelector } from "react-redux";
 import BookingListItem from "../BookingScreen/BookingListItem.jsx";
 import Colors from "@/constants/Colors";

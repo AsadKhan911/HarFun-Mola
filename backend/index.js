@@ -4,7 +4,7 @@ const app = express()
 import dotenv from 'dotenv'
 dotenv.config()
 
-import cookieParser from 'cookie-parser'
+
 import cors from 'cors'
 
 const port = process.env.PORT || 8000
@@ -22,7 +22,6 @@ import minorService from './routes/minorServices.route.js'
 //Middlewares
 app.use(express.json()) 
 app.use(express.urlencoded({extended:true}))
-app.use(cookieParser())
 app.use(cors())
 
 //API Endpoints

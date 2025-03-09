@@ -267,6 +267,7 @@ const styles = StyleSheet.create({
     radioButtonText: {
       fontSize: 16,
       color: '#000',
+      fontFamily:'outfit'
     },
     selectedText: {
       color: 'black',
