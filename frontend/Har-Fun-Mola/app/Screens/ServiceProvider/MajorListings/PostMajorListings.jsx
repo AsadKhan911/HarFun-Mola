@@ -246,6 +246,7 @@ const PostMajorListings = () => {
                                 style={styles.inputDropdown}
                                 textStyle={styles.dropdownText}
                                 dropdownStyle={styles.dropdownStyle}
+                                dropdownTextStyle={styles.dropdownItemText}
                             />
 
 
@@ -267,7 +268,7 @@ const PostMajorListings = () => {
                                             <Text style={styles.priceLabelPrices}>{option.label}:</Text>
                                             <TextInput
                                                 style={styles.inputPrices}
-                                                placeholder="Enter price in pkr"
+                                                placeholder="Price in pkr"
                                                 placeholderTextColor="#999"
                                                 keyboardType="numeric"
                                                 value={pricingOptions[index].price}
@@ -293,7 +294,8 @@ const PostMajorListings = () => {
                                     onSelect={handleCitySelect}
                                     style={styles.inputDropdown}
                                     textStyle={styles.dropdownText}
-                                    dropdownStyle={styles.dropdownStyle}
+                                    dropdownStyle={styles.dropdownStylecity}
+                                      dropdownTextStyle={styles.dropdownItemText}
                                 />
                             </View>
 
@@ -426,8 +428,8 @@ const styles = StyleSheet.create({
     textArea: { height: 100, textAlignVertical: 'top' },
     inputDropdown: {
         height: 50,
-        borderColor: Colors.GRAY,
-        borderWidth: 1,
+        
+       
         borderRadius: 10,
         paddingLeft: 10,
         marginBottom: 15,
@@ -443,8 +445,10 @@ const styles = StyleSheet.create({
         color: Colors.GRAY,
     },
     dropdownStyle: {
-        width: 340,
-        height: 100,
+        marginTop:20,
+        marginLeft:-10,
+        width: 348,
+        height: 193,
         borderRadius: 0,
         backgroundColor: Colors.WHITE,
         borderColor: Colors.GRAY,
@@ -454,7 +458,29 @@ const styles = StyleSheet.create({
         shadowRadius: 5,
         elevation: 5,
     },
-    section: { marginBottom: 20 },
+    dropdownItemText: {
+        fontSize: 15, 
+        color: Colors.BLACK, 
+        padding: 10, 
+        backgroundColor:Colors.WHITE
+    },
+    dropdownStylecity:{
+        marginTop:20,
+        marginLeft:-10,
+        width: 348,
+        height: 120,
+        borderRadius: 0,
+        backgroundColor: Colors.WHITE,
+        borderColor: Colors.GRAY,
+        borderWidth: 0,
+        shadowColor: '#000',
+        shadowOpacity: 0.15,
+        shadowRadius: 5,
+        elevation: 5,
+    },
+    section: { 
+        marginBottom: 20 
+    },
     sectionTitle: {
         fontSize: 18,
         fontFamily: 'outfit-Bold',
@@ -533,13 +559,17 @@ const styles = StyleSheet.create({
         shadowRadius: 5,
         elevation: 3, // Android shadow
     },
+    
     priceLabelPrices: {
+        width: 168, 
         fontSize: 16,
         fontWeight: '600',
         color: '#555',
+        textAlign: 'left',
     },
+    
     inputPrices: {
-        flex: 1,
+        flex: 1, // Take up remaining space dynamically
         marginLeft: 10,
         padding: 10,
         borderWidth: 1,
@@ -547,7 +577,7 @@ const styles = StyleSheet.create({
         borderRadius: 5,
         backgroundColor: '#f1f1f1',
         color: '#333',
-        fontSize: 16,
+        fontSize: 15,
     },
     imagePickerContainer: {
         alignItems: 'center',

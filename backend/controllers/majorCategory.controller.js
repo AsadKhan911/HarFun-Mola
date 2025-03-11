@@ -64,3 +64,49 @@ export const getMajorCategories = async (req, res) => {
 
     }
 }
+
+export const updateMajorCategory = async (req, res) => {
+    try {
+        const { id } = req.params; // Get category ID from request params
+        const { serviceName, pricingOptions } = req.body; // Get new service data from request body
+
+        // Validate input
+        if (!serviceName || !Array.isArray(pricingOptions)) {
+            return res.status(400).json({
+                message: "Missing required fields or invalid pricingOptions format",
+                success: false
+            });
+        }
+
+        // Find and update the category by adding a new predefined service
+        const updatedCategory = await majorCategory.findByIdAndUpdate(
+            id,
+            {
+                $push: {
+                    predefinedServices: { serviceName, pricingOptions }
+                }
+            },
+            { new: true } // Return the updated document
+        );
+
+        // Check if category exists
+        if (!updatedCategory) {
+            return res.status(404).json({
+                message: "Category not found",
+                success: false
+            });
+        }
+
+        return res.status(200).json({
+            message: "Predefined service added successfully",
+            category: updatedCategory,
+            success: true
+        });
+    } catch (error) {
+        console.error(error);
+        return res.status(500).json({
+            message: "Internal server error",
+            success: false
+        });
+    }
+};
