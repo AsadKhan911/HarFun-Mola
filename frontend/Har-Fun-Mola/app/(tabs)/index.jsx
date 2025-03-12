@@ -4,13 +4,14 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useEffect, useState } from 'react';
 import { useFonts } from 'expo-font';
 import TabNavigation from '../Navigations/ServiceUser/TabNavigation.jsx'
-import { LogBox } from 'react-native';
+import { LogBox, Platform , StatusBar  } from 'react-native';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { Provider, useSelector } from 'react-redux';
 import { store, persistor } from '../redux/store.js'; // Make sure the path to your store is correct
 import { PersistGate } from 'redux-persist/integration/react';
 import { requestLocationPermission } from '../../utils/locationPermission.js';  // Update the path if necessary
 import { useNavigation } from 'expo-router';
+import Colors from '../../constants/Colors.ts';
 
 
 const Index = () => {
@@ -58,6 +59,11 @@ const Index = () => {
     <GestureHandlerRootView style={{ flex: 1 }}>
       <Provider store={store}>
         <PersistGate loading={null} persistor={persistor}>
+          <StatusBar
+            barStyle={Platform.OS === 'ios' ? 'dark-content' : 'light-content'}
+            backgroundColor={Platform.OS === 'ios' ? Colors.WHITE : Colors.BLACK}
+            translucent={Platform.OS === 'android'} // Optional: Makes the status bar translucent on Android
+          />
           {isLoggedIn ? <TabNavigation /> : <LoginNavigation />}
         </PersistGate>
       </Provider>

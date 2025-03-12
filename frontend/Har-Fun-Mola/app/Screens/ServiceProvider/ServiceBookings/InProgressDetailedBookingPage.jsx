@@ -104,84 +104,84 @@ const InProgressDetailBookingPage = ({ route }) => {
   const completeService = async () => {
     try {
       setIsCompleted(true);
-
+  
       const now = new Date(); // Current time
       const elapsedSeconds = Math.floor((now - new Date(startTime)) / 1000); // Total time in seconds
-
+  
       // Convert elapsed time into HH:mm:ss format
       const hours = Math.floor(elapsedSeconds / 3600).toString().padStart(2, '0');
       const minutes = Math.floor((elapsedSeconds % 3600) / 60).toString().padStart(2, '0');
       const seconds = (elapsedSeconds % 60).toString().padStart(2, '0');
       const elapsedTime = `${hours}:${minutes}:${seconds}`; // Formatted duration
-
+  
       const completedTime = now.toISOString(); // Store full completion time
-
+  
       // Immediately update state for UI responsiveness
       setCompletedTime(completedTime);
       clearInterval(intervalRef); // Stop timer
-
-      // Call stopLocationUpdates to stop location tracking when the service is completed
-      // stopLocationUpdates();
-
-      // Send both elapsedTime and completedTime to the backend
-
-      // Get the paymentIntentId from booking details
-      const paymentIntentId = bookingDetails?.paymentIntentId;
-      if (!paymentIntentId) {
-        Alert.alert("Error", "No payment intent found for this booking.");
-        setIsCompleted(false);
-        return;
+  
+      // Check payment method (COD or CARD)
+      if (bookingDetails.paymentMethod === 'COD') {
+        // For COD, directly update booking status
+        const response = await axios.patch(`${BookingBaseUrl}/updateBooking/${bookingId}`, {
+          status: "Completed",
+          elapsedTime, // Send formatted duration
+          completedTime, // Send exact timestamp
+          paymentStatus: "Completed"
+        });
+  
+        if (response.status === 200) {
+          Alert.alert(
+            "Service Completed",
+            `The service has been marked as completed after ${elapsedTime}.`,
+            [
+              {
+                text: "OK",
+                onPress: () => setShowRatingModal(true), // Switch to home tab
+              }
+            ]
+          );
+        }
+      } else if (bookingDetails.paymentMethod === 'CARD') {
+        // For CARD, proceed with payment capture
+        const paymentIntentId = bookingDetails?.paymentIntentId;
+  
+        // Capture Payment
+        const paymentResponse = await axios.post(`${PaymentBaseUrl}/capture-payment`, {
+          paymentIntentId,
+        });
+  
+        if (paymentResponse.status !== 200) {
+          Alert.alert("Failed to capture payment.");
+          return; // Stop here if capturing payment fails
+        }
+  
+        if (paymentResponse.data.success) {
+          const response = await axios.patch(`${BookingBaseUrl}/updateBooking/${bookingId}`, {
+            status: "Completed",
+            elapsedTime, // Send formatted duration
+            completedTime, // Send exact timestamp
+            paymentStatus: "Completed"
+          });
+  
+          if (response.status === 200) {
+            Alert.alert(
+              "Service Completed",
+              `The service has been marked as completed after ${elapsedTime}.`,
+              [
+                {
+                  text: "OK",
+                  onPress: () => setShowRatingModal(true), // Switch to home tab
+                }
+              ]
+            );
+          }
+        }
       }
-
-      //Capture Payment
-      // Capture Payment
-      const paymentResponse = await axios.post(`${PaymentBaseUrl}/capture-payment`, {
-        paymentIntentId,
-      });
-
-      if (paymentResponse.status !== 200) {
-        Alert.alert("Failed to capture payment.");
-        return; // Stop here if capturing payment fails
-      }
-
-      // Ensure captured before transferring
-      // if (paymentResponse.data.success) {
-      //   const transferPayment = await axios.post(`${PaymentBaseUrl}/transfer-payment`, {
-      //     serviceProviderStripeId,
-      //     amount,
-      //   });
-
-      //   if (transferPayment.status !== 200) {
-      //     Alert.alert("Failed to transfer payment.");
-      //   }
-      // }
-
-
-      if (paymentResponse.data.success) {
-      const response = await axios.patch(`${BookingBaseUrl}/updateBooking/${bookingId}`, {
-        status: "Completed",
-        elapsedTime, // Send formatted duration
-        completedTime, // Send exact timestamp
-        paymentStatus: "Completed"
-      });
-
-      if (response.status === 200) {
-        Alert.alert(
-          "Service Completed",
-          `The service has been marked as completed after ${elapsedTime}.`,
-          [
-            {
-              text: "OK",
-              onPress: () => setShowRatingModal(true), // Switch to home tab
-            }
-          ]
-        );
-      }
-    }
     } catch (error) {
       console.error("Error completing service:", error);
       Alert.alert("Error", "Failed to complete the service. Please try again.");
-
+  
       // Rollback completed time if API fails
       setCompletedTime(null);
       startElapsedTime(); // Restart timer if API fails
@@ -189,6 +189,7 @@ const InProgressDetailBookingPage = ({ route }) => {
       setIsCompleted(false);
     }
   };
+  
 
   const handleViewLocation = () => {
     // Navigate to the map screen with the user's location

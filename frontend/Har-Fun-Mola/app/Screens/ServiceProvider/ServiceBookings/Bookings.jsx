@@ -136,7 +136,7 @@ const ServiceProviderBookings = () => {
                     <FontAwesome name="phone" size={14} color={Colors.GRAY} /> {item.user.phoneNumber}
                   </Text>
                   <Text style={styles.detail}>
-                    <FontAwesome name="map-marker" size={14} color={Colors.GRAY} /> {item.user.area}, {item.user.city}
+                    <FontAwesome name="map-marker" size={14} color={Colors.GRAY} /> {item.address}
                   </Text>
                   <Text style={styles.detail}>
                     <FontAwesome name="dollar" size={14} color={Colors.GRAY} /> {item.selectedPricingOption.price} pkr

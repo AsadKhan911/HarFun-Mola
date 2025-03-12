@@ -4,6 +4,9 @@ import { majorCategory } from '../models/MajorListings/category.js';
 import { User } from '../models/User/user.js';
 import cloudinary from '../utils/cloudinary.js';
 import { getDataUri } from '../utils/dataURI.js';
+import axios from 'axios'
+
+axios.defaults.timeout = 120000;
 
 // Modify postListing function to handle file upload
 

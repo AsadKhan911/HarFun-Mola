@@ -297,10 +297,20 @@ const BookingModal = ({ business, handleCloseModal }) => {
               minLength={2}
               fetchDetails={true}
               onPress={(data, details = null) => {
-                setAddress(details?.formatted_address || data.description);
-                setLatitude(details?.geometry?.location?.lat);
-                setLongitude(details?.geometry?.location?.lng);
+                console.log("Selected Address:", data.description);
+                console.log("Details:", details);
+              
+                if (details?.geometry?.location) {
+                  const { lat, lng } = details.geometry.location;
+                  console.log(`Latitude: ${lat}, Longitude: ${lng}`);
+                  setAddress(details?.formatted_address || data.description);
+                  setLatitude(lat);
+                  setLongitude(lng);
+                } else {
+                  console.log("Invalid or missing location details");
+                }
               }}
+              
               query={{
                 key: GOOGLE_API_KEY,
                 language: "en",

@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { View, Text, TextInput, TouchableOpacity, StyleSheet, ScrollView, Alert, KeyboardAvoidingView, Platform } from 'react-native';
-import {Image} from 'expo-image'
+import { Image } from 'expo-image'
 import * as ImagePicker from 'expo-image-picker'; // Import Image Picker
 import { useNavigation } from '@react-navigation/native';
 import axios from 'axios';
@@ -40,6 +40,50 @@ const Signup = () => {
     const [area, setArea] = useState('');
     const [selectedImage, setSelectedImage] = useState(null);
     const [loading, setLoading] = useState(false)
+    const [passwordStrength, setPasswordStrength] = useState('');
+    const [passwordFeedback, setPasswordFeedback] = useState('');
+    const [passwordFeedbackColor, setPasswordFeedbackColor] = useState('red');
+
+    const checkPasswordStrength = (password) => {
+        const lengthCondition = password.length >= 8;
+        const upperCaseCondition = /[A-Z]/.test(password);
+        const specialCharCondition = /[!@#$%^&*(),.?":{}|<>]/.test(password);
+
+        let strength = '';
+        let feedback = '';
+        let color = 'red';
+        if (lengthCondition && upperCaseCondition && specialCharCondition) {
+            strength = 'Strong';
+            feedback = 'Password Strong';
+            color = 'green';
+
+        } else if (lengthCondition && (upperCaseCondition || specialCharCondition)) {
+            strength = 'Medium';
+            feedback = 'Not too strong: add special characters and uppercase letters.';
+            color = 'orange';
+
+        } else {
+            strength = 'Weak';
+            feedback = 'Password should be at least 8 characters long, include uppercase letters and special characters.';
+            color = 'red';
+        }
+
+        setPasswordStrength(strength);
+        setPasswordFeedback(feedback);
+        setPasswordFeedbackColor(color);
+
+
+        if (strength === 'Weak') {
+            setPasswordFeedback('Password should be at least 8 characters long, include uppercase letters and special characters.');
+        } else if (strength === 'Medium') {
+            setPasswordFeedback('add special characters and uppercase letters.');
+        } else if (strength === 'Strong') {
+            setPasswordFeedback('Password Strong');
+        } else {
+            setPasswordFeedback('');
+        }
+    };
+
 
     const pickImage = async () => {
         const permissionResult = await ImagePicker.requestMediaLibraryPermissionsAsync();
@@ -153,9 +197,7 @@ const Signup = () => {
 
     return (
         <KeyboardAvoidingView
-            style={{ flex: 1 }}
-            behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-            keyboardVerticalOffset={60}
+            behavior={Platform.OS === "ios" ? "padding" : "height"} style={{ flex: 1 }}
         >
             <ScrollView contentContainerStyle={styles.scrollContainer} keyboardShouldPersistTaps="handled">
                 <View style={styles.container}>
@@ -194,8 +236,22 @@ const Signup = () => {
                             style={styles.input}
                             placeholderTextColor="#aaa"
                             value={password}
-                            onChangeText={(text) => setPassword(text)}
+                            onChangeText={(text) => {
+                                setPassword(text);
+                                checkPasswordStrength(text); // Check password strength as the user types
+                            }}
                         />
+
+                        {/* Password Strength Indicator */}
+                        {password && (
+                            <View style={styles.passwordStrengthContainer}>
+                                {passwordFeedback ? (
+                                    <Text style={[styles.passwordFeedback, { color: passwordFeedbackColor }]}>
+                                        {passwordFeedback}
+                                    </Text>
+                                ) : null}
+                            </View>
+                        )}
 
                         <View style={styles.radioButtons}>
                             <Text style={styles.inputLabel}>Role</Text>
@@ -413,6 +469,12 @@ const styles = StyleSheet.create({
         marginTop: 10,
         alignSelf: 'center',
     },
+    passwordStrengthContainer: { marginTop: 5, marginBottom: 10, marginLeft:5, width: '100%' },
+    passwordStrengthText: { fontSize: 14, fontWeight: 'bold' },
+    weak: { color: 'red' },
+    medium: { color: 'orange' },
+    strong: { color: 'green' },
+    passwordFeedback: { fontSize: 13 , fontFamily:'outfit-Medium' },
 });
 
 export default Signup;

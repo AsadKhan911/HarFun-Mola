@@ -135,7 +135,7 @@ const CompletedDetailsBookingPage = () => {
 
                 <Text style={styles.detail}>
                   <Text style={styles.label}>Address: </Text>
-                  {item.user.area}, {item.user.city}
+                  {item.address}
                 </Text>
 
                 <Text style={styles.detail}>

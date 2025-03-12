@@ -40,7 +40,7 @@ export const MinorCategories = () => {
   };
 
   return (
-    <View style={{ marginTop: 10 }}>
+    <View style={{ marginTop: 15 }}>
       <Heading text="Minor Categories" isViewAll={true} />
       <FlatList
         data={categories}
@@ -78,10 +78,12 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     alignItems: 'center',
+    
   },
   iconContainer: {
     backgroundColor: Colors.LIGHT_GRAY,
     padding: 17,
     borderRadius: 99,
+    marginTop:5
   },
 });

@@ -114,7 +114,7 @@ const OrderDetailsScreen = () => {
 
                     <View style={styles.infoRow}>
                         <FontAwesome name="map-marker" size={16} color={Colors.GRAY} />
-                        <Text style={styles.detail}> {singleBooking.address}, {singleBooking.user.city}</Text>
+                        <Text style={styles.detail}> {singleBooking.address}, {singleBooking.address}</Text>
                     </View>
 
                     <View style={styles.infoRow}>
