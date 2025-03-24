@@ -13,6 +13,14 @@ const iconMap = {
   "Handy": require('../../../../assets/images/support.png'),
   "Painting": require('../../../../assets/images/paintbrush.png'),
   "Delivery": require('../../../../assets/images/cargo-truck.png'),
+  "Gardening": require('../../../../assets/images/gardening.png'),
+  "Moving": require('../../../../assets/images/moving.png'),
+  "Pool": require('../../../../assets/images/pool.png'),
+  "Roofing" :require('../../../../assets/images/roof.png'),
+  "PetCare" :require('../../../../assets/images/pet.png'),
+  "Fitness" :require('../../../../assets/images/fitness.png'),
+  "Photography" :require('../../../../assets/images/photography.png'),
+  "Tutoring" :require('../../../../assets/images/tutoring.png'),
   // Add more categories as needed
 };
 

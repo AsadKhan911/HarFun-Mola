@@ -1,5 +1,6 @@
 {
   "dependencies": {
-    "@clerk/clerk-expo": "^2.6.1"
+    "@clerk/clerk-expo": "^2.6.1",
+    "expo-constants": "~17.0.8"
   }
 }

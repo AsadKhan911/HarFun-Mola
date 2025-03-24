@@ -1,3 +1,4 @@
+import { useNavigation } from "expo-router";
 import React from "react";
 import { View, Text, TouchableOpacity, Linking, StyleSheet } from "react-native";
 import { Card } from "react-native-paper";
@@ -6,7 +7,7 @@ import { useSelector } from "react-redux";
 const StripeLinkScreen = () => {
 
     const StripeLink = useSelector((store)=>store.auth.user.onboardingLink)
-  
+  const navigation = useNavigation()
   
 
   const handleOnboarding = () => {
@@ -23,6 +24,10 @@ const StripeLinkScreen = () => {
         <TouchableOpacity style={styles.button} onPress={handleOnboarding}>
           <Text style={styles.buttonText}>Start Onboarding</Text>
         </TouchableOpacity>
+        <TouchableOpacity style={styles.button} onPress={()=>navigation.navigate('Login')}>
+          <Text style={styles.buttonText}>Back to Login</Text>
+        </TouchableOpacity>
+
       </Card>
     </View>
   );
@@ -64,6 +69,7 @@ const styles = StyleSheet.create({
     paddingVertical: 12,
     paddingHorizontal: 20,
     borderRadius: 8,
+    marginTop:5
   },
   buttonText: {
     color: "#fff",

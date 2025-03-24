@@ -195,6 +195,103 @@ const Signup = () => {
         }
     };
 
+    // const handleSignup = async () => {
+    //     try {
+    //         console.log("Auth object before signup:", auth);
+    
+    //         if (!auth) {
+    //             console.error("Firebase Auth is not initialized!");
+    //             return;
+    //         }
+    
+    //         if (!fullName || !email || !phoneNumber || !password || !area || !role) {
+    //             Alert.alert('Error', 'All fields are required');
+    //             return;
+    //         }
+    
+    //         // Check if password strength is weak, and if the user is a service provider
+    //         if (role === "Service Provider" || role === "Service User" && passwordStrength === "Weak") {
+    //             Alert.alert('Password is too weak', 'Your password must be at least 8 characters long and include uppercase letters and special characters.');
+    //             return;
+    //         }
+    
+    //         setLoading(true);
+    
+    //         if (role === "Service User") {
+    //             // Step 1: Create user in Firebase Authentication
+    //             const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+    //             const user = userCredential.user;
+    //             console.log("User registered in Firebase:", user.uid);
+    
+    //             // Step 2: Prepare form data for your backend
+    //             const formData = new FormData();
+    //             formData.append('fullName', fullName);
+    //             formData.append('email', email);
+    //             formData.append('phoneNumber', phoneNumber);
+    //             formData.append('password', password);
+    //             formData.append('role', role);
+    //             formData.append('city', city);
+    //             formData.append('area', area);
+    //             formData.append('firebaseUID', user.uid); // Use the Firebase UID from the created user
+    
+    //             if (selectedImage) {
+    //                 const fileName = selectedImage.split('/').pop();
+    //                 const fileType = fileName.split('.').pop();
+    
+    //                 formData.append('file', {
+    //                     uri: selectedImage,
+    //                     name: fileName,
+    //                     type: `image/${fileType}`,
+    //                 });
+    //             }
+    
+    //             // Step 3: Send data to your backend
+    //             const response = await axios.post(`${userBaseUrl}/register`, formData, {
+    //                 headers: {
+    //                     'Content-Type': 'multipart/form-data',
+    //                 },
+    //             });
+    
+    //             if (response.data.success) {
+    //                 Alert.alert(response.data.message, 'Verify your email');
+    //                 dispatch(setUser(response.data.newUser));
+    //                 navigation.push('EmailOTPScreen');
+    //             } else {
+    //                 Alert.alert('Signup Failed', response.data.message);
+    //             }
+    //         } else if (role === "Service Provider") {
+    //             // For Service Provider, navigate to service-provider-signup-details-1 with entered details
+    //             navigation.navigate('service-provider-signup-details-1', {
+    //                 userData: {
+    //                     fullName,
+    //                     email,
+    //                     phoneNumber,
+    //                     password,
+    //                     role,
+    //                     city,
+    //                     area,
+    //                     selectedImage, // Pass the selected image URI
+    //                 },
+    //             });
+    //         }
+    //     } catch (error) {
+    //         console.error('Signup Error:', error);
+    
+    //         // Handle Firebase-specific errors
+    //         if (error.code === 'auth/email-already-in-use') {
+    //             Alert.alert('Error', 'This email is already in use.');
+    //         } else if (error.code === 'auth/invalid-email') {
+    //             Alert.alert('Error', 'Invalid email address.');
+    //         } else if (error.code === 'auth/weak-password') {
+    //             Alert.alert('Error', 'Password should be at least 6 characters.');
+    //         } else {
+    //             Alert.alert('Error', 'An unknown error occurred.');
+    //         }
+    //     } finally {
+    //         setLoading(false);
+    //     }
+    // };
+    
     return (
         <KeyboardAvoidingView
             behavior={Platform.OS === "ios" ? "padding" : "height"} style={{ flex: 1 }}
@@ -429,7 +526,11 @@ const styles = StyleSheet.create({
         width: '100%',
         borderRadius: 10,
         marginTop: 15, // Added margin for spacing
+        flexDirection: 'row', // Ensure the button content (text and indicator) are in a row
+        justifyContent: 'center', // Centers the content horizontally
+        alignItems: 'center', // Centers the content vertically
     },
+
     signupText: {
         color: Colors.WHITE,
         textAlign: 'center',
