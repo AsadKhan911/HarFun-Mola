@@ -1,7 +1,7 @@
 import mongoose from "mongoose";
 
 const BidSchema = new mongoose.Schema({
-    customerId: { type: mongoose.Schema.Types.ObjectId, ref: "user", required: true },
+    customerId: { type: mongoose.Schema.Types.ObjectId, ref: "user" },
     serviceType: { type: String, required: true },
     description: { type: String, required: true },
     images: [{ type: String }], // Array of image URLs
