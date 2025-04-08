@@ -10,6 +10,7 @@ import HomeNavigationSP from '../ServiceProvider/HomeNavigationSP.jsx';
 import BookingNavigationSP from '../ServiceProvider/BookingNavigationSP.jsx'
 import JobNavigation from './BiddingNavigation.jsx';
 import { useSelector } from 'react-redux';
+import BiddingNavigationSP from '../../Navigations/ServiceProvider/BiddingNavigationSP.jsx'
 
 const Tab = createBottomTabNavigator();
 
@@ -90,6 +91,18 @@ const TabNavigation = () => {
                             ),
                             tabBarIcon: ({ color, size }) => (
                                 <Entypo name="home" size={size} color={color} />
+                            ),
+                        }}
+                    />
+                    <Tab.Screen
+                        name="job"
+                        component={BiddingNavigationSP}
+                        options={{
+                            tabBarLabel: ({ color }) => (
+                                <Text style={{ color: color, fontSize: 12, marginTop: -1 }}>Jobs</Text>
+                            ),
+                            tabBarIcon: ({ color, size }) => (
+                                <Entypo name="bookmarks" size={size} color={color} />
                             ),
                         }}
                     />

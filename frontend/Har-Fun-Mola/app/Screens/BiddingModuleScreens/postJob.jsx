@@ -6,112 +6,89 @@ import axios from 'axios';
 import * as ImagePicker from 'expo-image-picker';
 import * as ImageManipulator from 'expo-image-manipulator';
 import { BiddingModelBaseUrl } from '../../URL/userBaseUrl';
+import { useSelector } from 'react-redux';
 
 const PostJob = () => {
     const { control, handleSubmit, reset } = useForm();
     const [loading, setLoading] = useState(false);
     const [images, setImages] = useState([]);
     const { manipulateAsync, SaveFormat } = ImageManipulator;
+    const { token } = useSelector((store) => store.auth.user)
 
 
     // Optimized compression function
-    const compressImage = async (imageUri) => {
-        try {
-            const manipResult = await ImageManipulator.manipulate(
-                imageUri,
-                [{ resize: { width: 640, height: 480 } }],  // Resize to desired dimensions
-                {
-                    format: ImageManipulator.SaveFormat.JPEG,  // Use the correct format enum
-                    compress: 0.7,  // Apply compression, where 0 is maximum compression and 1 is the best quality
-                }
-            );
-            return manipResult.uri;  // Return the URI of the compressed image
-        } catch (error) {
-            console.error("Compression error:", error);
-            Alert.alert("Notice", "Image couldn't be optimized. Using original version.");
-            return imageUri;  // Fallback to the original image URI
-        }
-    };
+    // const compressImage = async (imageUri) => {
+    //     try {
+    //         const manipResult = await ImageManipulator.manipulate(
+    //             imageUri,
+    //             [{ resize: { width: 640, height: 480 } }],  // Resize to desired dimensions
+    //             {
+    //                 format: ImageManipulator.SaveFormat.JPEG,  // Use the correct format enum
+    //                 compress: 0.7,  // Apply compression, where 0 is maximum compression and 1 is the best quality
+    //             }
+    //         );
+    //         return manipResult.uri;  // Return the URI of the compressed image
+    //     } catch (error) {
+    //         console.error("Compression error:", error);
+    //         Alert.alert("Notice", "Image couldn't be optimized. Using original version.");
+    //         return imageUri;  // Fallback to the original image URI
+    //     }
+    // };
 
-    const pickImages = async () => {
-        // Request permissions
-        const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
-        if (status !== 'granted') {
-            Alert.alert('Permission required', 'Please enable photo access in settings');
-            return;
-        }
+    // const pickImages = async () => {
+    //     // Request permissions
+    //     const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
+    //     if (status !== 'granted') {
+    //         Alert.alert('Permission required', 'Please enable photo access in settings');
+    //         return;
+    //     }
 
-        // Select images
-        const result = await ImagePicker.launchImageLibraryAsync({
-            mediaTypes: ['images'],
-            allowsEditing: false,
-            allowsMultipleSelection: true,
-            selectionLimit: 5,
-            quality: 0.8, // Initial quality reduction
-        });
+    //     // Select images
+    //     const result = await ImagePicker.launchImageLibraryAsync({
+    //         mediaTypes: ['images'],
+    //         allowsEditing: false,
+    //         allowsMultipleSelection: true,
+    //         selectionLimit: 5,
+    //         quality: 0.8, // Initial quality reduction
+    //     });
 
-        if (!result.canceled) {
-            setLoading(true);
-            try {
-                // Process images with progress feedback
-                const processedImages = [];
-                for (const asset of result.assets) {
-                    const compressed = await compressImage(asset.uri);
-                    processedImages.push(compressed);
-                }
-                setImages(processedImages);
-            } catch (error) {
-                Alert.alert("Error", "Failed to process images");
-            } finally {
-                setLoading(false);
-            }
-        }
-    };
+    //     if (!result.canceled) {
+    //         setLoading(true);
+    //         try {
+    //             // Process images with progress feedback
+    //             const processedImages = [];
+    //             for (const asset of result.assets) {
+    //                 const compressed = await compressImage(asset.uri);
+    //                 processedImages.push(compressed);
+    //             }
+    //             setImages(processedImages);
+    //         } catch (error) {
+    //             Alert.alert("Error", "Failed to process images");
+    //         } finally {
+    //             setLoading(false);
+    //         }
+    //     }
+    // };
 
     const onSubmit = async (data) => {
-        if (images.length === 0) {
-            Alert.alert("Error", "Please select at least one image");
-            return;
-        }
-
-        const formData = new FormData();
-
-        // Append text fields
-        formData.append('serviceType', data.serviceType);
-        formData.append('description', data.description);
-        formData.append('budget', data.budget);
-
-        // Append images with proper formatting
-        images.forEach((uri) => {
-            formData.append('images[]', {
-                uri,
-                name: `image_${Date.now()}.jpg`,
-                type: 'image/jpeg',
-            });
-        });
-
         try {
             setLoading(true);
-            const response = await axios.post(`${BiddingModelBaseUrl}/post-bid`, formData, {
+            const response = await axios.post(`${BiddingModelBaseUrl}/post-bid`, data, {
                 headers: {
-                    'Content-Type': 'multipart/form-data',
+                    'Authorization': `Bearer ${token}`,
+                    'Content-Type': 'application/json',
                 },
-                timeout: 30000,
             });
-
+    
             Alert.alert("Success", "Job posted successfully!");
-            reset();
-            setImages([]);
         } catch (error) {
             console.error("Upload error:", error);
-            Alert.alert(
-                "Error",
-                error.response?.data?.message || "Failed to post job. Please try again."
-            );
+            Alert.alert("Error", error.response?.data?.message || "Failed to post job.");
         } finally {
             setLoading(false);
         }
     };
+    
 
     return (
         <ScrollView contentContainerStyle={styles.container}>
@@ -169,16 +146,16 @@ const PostJob = () => {
                     )}
                 />
 
-                <Button
+                {/* <Button
                     icon="image"
                     mode="outlined"
                     onPress={() => pickImages(setImages)}
                     style={{ marginVertical: 10 }}
                 >
                     Select Images
-                </Button>
+                </Button> */}
 
-                <ScrollView horizontal style={{ marginVertical: 10 }}>
+                {/* <ScrollView horizontal style={{ marginVertical: 10 }}>
                     {images.map((img, index) => (
                         <Image
                             key={index}
@@ -186,7 +163,7 @@ const PostJob = () => {
                             style={{ width: 80, height: 80, borderRadius: 8, marginRight: 10 }}
                         />
                     ))}
-                </ScrollView>
+                </ScrollView> */}
 
                 <Button
                     mode="contained"
