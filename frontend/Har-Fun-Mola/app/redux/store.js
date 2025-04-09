@@ -2,6 +2,7 @@ import { combineReducers, configureStore } from "@reduxjs/toolkit";
 import authReducer from "./authSlice.js";
 import listingReducer from "./listingsSlice.js";
 import bookingReducer from "./bookingSlice.js";
+import biddingReducer from './biddingSlice.js'
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { persistStore, persistReducer } from "redux-persist";
 
@@ -15,6 +16,7 @@ const rootReducer = combineReducers({
     auth: authReducer,
     listing: listingReducer,
     bookings: bookingReducer,
+    bidding: biddingReducer
 });
 
 const persistedReducer = persistReducer(persistConfig, rootReducer);

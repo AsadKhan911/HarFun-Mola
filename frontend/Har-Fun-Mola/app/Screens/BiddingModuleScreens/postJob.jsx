@@ -3,72 +3,15 @@ import { StyleSheet, View, Alert, Image, ScrollView, Text } from 'react-native';
 import { TextInput, Button, Card, Title } from 'react-native-paper';
 import { useForm, Controller } from 'react-hook-form';
 import axios from 'axios';
-import * as ImagePicker from 'expo-image-picker';
-import * as ImageManipulator from 'expo-image-manipulator';
+import { useDispatch, useSelector } from 'react-redux'; // Import dispatch and useSelector
+import { setJobDetails } from '../../redux/biddingSlice.js'; // Import the action
 import { BiddingModelBaseUrl } from '../../URL/userBaseUrl';
-import { useSelector } from 'react-redux';
 
 const PostJob = () => {
+    const dispatch = useDispatch(); // To dispatch actions
     const { control, handleSubmit, reset } = useForm();
     const [loading, setLoading] = useState(false);
-    const [images, setImages] = useState([]);
-    const { manipulateAsync, SaveFormat } = ImageManipulator;
-    const { token } = useSelector((store) => store.auth.user)
-
-
-    // Optimized compression function
-    // const compressImage = async (imageUri) => {
-    //     try {
-    //         const manipResult = await ImageManipulator.manipulate(
-    //             imageUri,
-    //             [{ resize: { width: 640, height: 480 } }],  // Resize to desired dimensions
-    //             {
-    //                 format: ImageManipulator.SaveFormat.JPEG,  // Use the correct format enum
-    //                 compress: 0.7,  // Apply compression, where 0 is maximum compression and 1 is the best quality
-    //             }
-    //         );
-    //         return manipResult.uri;  // Return the URI of the compressed image
-    //     } catch (error) {
-    //         console.error("Compression error:", error);
-    //         Alert.alert("Notice", "Image couldn't be optimized. Using original version.");
-    //         return imageUri;  // Fallback to the original image URI
-    //     }
-    // };
-
-    // const pickImages = async () => {
-    //     // Request permissions
-    //     const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
-    //     if (status !== 'granted') {
-    //         Alert.alert('Permission required', 'Please enable photo access in settings');
-    //         return;
-    //     }
-
-    //     // Select images
-    //     const result = await ImagePicker.launchImageLibraryAsync({
-    //         mediaTypes: ['images'],
-    //         allowsEditing: false,
-    //         allowsMultipleSelection: true,
-    //         selectionLimit: 5,
-    //         quality: 0.8, // Initial quality reduction
-    //     });
-
-    //     if (!result.canceled) {
-    //         setLoading(true);
-    //         try {
-    //             // Process images with progress feedback
-    //             const processedImages = [];
-    //             for (const asset of result.assets) {
-    //                 const compressed = await compressImage(asset.uri);
-    //                 processedImages.push(compressed);
-    //             }
-    //             setImages(processedImages);
-    //         } catch (error) {
-    //             Alert.alert("Error", "Failed to process images");
-    //         } finally {
-    //             setLoading(false);
-    //         }
-    //     }
-    // };
+    const { token } = useSelector((store) => store.auth.user);
 
     const onSubmit = async (data) => {
         try {
@@ -79,8 +22,12 @@ const PostJob = () => {
                     'Content-Type': 'application/json',
                 },
             });
-    
+
+            // Store the job details in Redux
+            dispatch(setJobDetails(data)); // Save the job details to Redux
             Alert.alert("Success", "Job posted successfully!");
+            reset(); // Reset the form after successful submission
+            
         } catch (error) {
             console.error("Upload error:", error);
             Alert.alert("Error", error.response?.data?.message || "Failed to post job.");
@@ -88,7 +35,6 @@ const PostJob = () => {
             setLoading(false);
         }
     };
-    
 
     return (
         <ScrollView contentContainerStyle={styles.container}>
@@ -145,25 +91,6 @@ const PostJob = () => {
                         />
                     )}
                 />
-
-                {/* <Button
-                    icon="image"
-                    mode="outlined"
-                    onPress={() => pickImages(setImages)}
-                    style={{ marginVertical: 10 }}
-                >
-                    Select Images
-                </Button> */}
-
-                {/* <ScrollView horizontal style={{ marginVertical: 10 }}>
-                    {images.map((img, index) => (
-                        <Image
-                            key={index}
-                            source={{ uri: img }}
-                            style={{ width: 80, height: 80, borderRadius: 8, marginRight: 10 }}
-                        />
-                    ))}
-                </ScrollView> */}
 
                 <Button
                     mode="contained"

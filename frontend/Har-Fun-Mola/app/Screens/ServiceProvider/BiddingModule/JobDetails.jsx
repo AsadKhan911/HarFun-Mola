@@ -1,81 +1,147 @@
+import { useRoute } from '@react-navigation/native';
 import React, { useState } from 'react';
-import { View, StyleSheet, ScrollView, Image } from 'react-native';
+import {  StyleSheet, ScrollView, Image, Alert } from 'react-native';
 import { Card, Title, Paragraph, Button, TextInput, Divider, Text } from 'react-native-paper';
+import { SafeAreaView } from 'react-native';
+import axios from 'axios';
+import { BiddingModelBaseUrl } from '../../../URL/userBaseUrl';
+import { useSelector, useDispatch } from 'react-redux'; // Import useDispatch to dispatch actions
+import { useNavigation } from 'expo-router';
+import { addBidOffer } from '../../../redux/biddingSlice.js'; // Import the addBidOffer action
 
-const JobDetails = ({ route }) => {
-    const { job } = route.params; // Pass job data via navigation route
+const JobDetails = () => {
+    const navigation = useNavigation();
+    const route = useRoute();
+    const { job } = route.params; // make sure you pass this from navigation
     const [bidAmount, setBidAmount] = useState('');
+    const [additionalNotes, setAdditionalNotes] = useState('');
     const [loading, setLoading] = useState(false);
+    const { token } = useSelector((store) => store.auth.user);
+    const dispatch = useDispatch(); // Initialize dispatch
 
-    const handlePlaceBid = () => {
-        setLoading(true);
-        // TODO: Add API call to place bid
-        setTimeout(() => {
+    const handlePlaceBid = async () => {
+        if (!bidAmount) {
+            Alert.alert("Error", "Please enter your bid amount.");
+            return;
+        }
+
+        try {
+            setLoading(true);
+            const response = await axios.post(`${BiddingModelBaseUrl}/place-bid`, {
+                bidId: job._id,
+                proposedPrice: parseFloat(bidAmount),
+                additionalNotes,
+            },
+                {
+                    headers: {
+                        'Authorization': `Bearer ${token}`,
+                        'Content-Type': 'application/json',
+                    }
+                });
+
+            Alert.alert("Success", response.data.message);
+
+            // Dispatch the bid offer to Redux after successful bid submission
+            dispatch(addBidOffer({
+                bidId: job._id,
+                proposedPrice: parseFloat(bidAmount),
+                additionalNotes,
+            }));
+
+            console.log({
+                bidId: job._id,
+                proposedPrice: parseFloat(bidAmount),
+                additionalNotes,
+            });
+            
+            setBidAmount('');
+            setAdditionalNotes('');
+            navigation.goBack();
+        } catch (error) {
+            console.error("Bid submission error:", error);
+            Alert.alert("Error", error?.response?.data?.message || "Failed to place bid.");
+        } finally {
             setLoading(false);
-            alert("Bid placed successfully!");
-        }, 1500);
+        }
     };
 
     return (
-        <ScrollView contentContainerStyle={styles.container}>
-            <Card style={styles.card}>
-                <Title style={styles.title}>{job.serviceType}</Title>
-                <Paragraph style={styles.label}>Description</Paragraph>
-                <Text style={styles.text}>{job.description}</Text>
+        <SafeAreaView style={styles.safeArea}>
+            <ScrollView contentContainerStyle={styles.container}>
+                <Card style={styles.card}>
+                    <Title style={styles.title}>{job.serviceType}</Title>
+                    <Paragraph style={styles.label}>Description</Paragraph>
+                    <Text style={styles.text}>{job.description}</Text>
 
-                <Divider style={styles.divider} />
+                    <Divider style={styles.divider} />
 
-                <Paragraph style={styles.label}>Budget</Paragraph>
-                <Text style={styles.budget}>${job.budget}</Text>
+                    <Paragraph style={styles.label}>Budget</Paragraph>
+                    <Text style={styles.budget}>${job.budget}</Text>
 
-                <Divider style={styles.divider} />
+                    <Divider style={styles.divider} />
 
-                {job.images?.length > 0 && (
-                    <>
-                        <Paragraph style={styles.label}>Images</Paragraph>
-                        <ScrollView horizontal showsHorizontalScrollIndicator={false}>
-                            {job.images.map((uri, index) => (
-                                <Image
-                                    key={index}
-                                    source={{ uri }}
-                                    style={styles.image}
-                                />
-                            ))}
-                        </ScrollView>
-                        <Divider style={styles.divider} />
-                    </>
-                )}
+                    {job.images?.length > 0 && (
+                        <>
+                            <Paragraph style={styles.label}>Images</Paragraph>
+                            <ScrollView horizontal showsHorizontalScrollIndicator={false}>
+                                {job.images.map((uri, index) => (
+                                    <Image
+                                        key={index}
+                                        source={{ uri }}
+                                        style={styles.image}
+                                    />
+                                ))}
+                            </ScrollView>
+                            <Divider style={styles.divider} />
+                        </>
+                    )}
 
-                <Paragraph style={styles.label}>Your Offer</Paragraph>
-                <TextInput
-                    mode="outlined"
-                    label="Enter your bid amount"
-                    value={bidAmount}
-                    onChangeText={setBidAmount}
-                    keyboardType="numeric"
-                    style={styles.input}
-                />
+                    <Paragraph style={styles.label}>Add Note</Paragraph>
+                    <TextInput
+                        mode="outlined"
+                        label="Additional Notes (optional)"
+                        value={additionalNotes}
+                        onChangeText={setAdditionalNotes}
+                        multiline
+                        style={styles.input}
+                    />
 
-                <Button
-                    mode="contained"
-                    onPress={handlePlaceBid}
-                    disabled={loading || !bidAmount}
-                    style={styles.bidButton}
-                >
-                    {loading ? "Placing Bid..." : "Place Bid"}
-                </Button>
-            </Card>
-        </ScrollView>
+                    <Paragraph style={styles.label}>Your Offer</Paragraph>
+                    <TextInput
+                        mode="outlined"
+                        label="Enter your bid amount"
+                        value={bidAmount}
+                        onChangeText={setBidAmount}
+                        keyboardType="numeric"
+                        style={styles.input}
+                    />
+
+                    <Button
+                        mode="contained"
+                        onPress={handlePlaceBid}
+                        disabled={loading || !bidAmount}
+                        style={styles.bidButton}
+                    >
+                        {loading ? "Placing Bid..." : "Place Bid"}
+                    </Button>
+                </Card>
+            </ScrollView>
+        </SafeAreaView>
     );
 };
 
 export default JobDetails;
 
 const styles = StyleSheet.create({
+    safeArea: {
+        flex: 1,
+        backgroundColor: 'white',
+    },
     container: {
+        marginTop: 20,
         padding: 16,
-        backgroundColor: '#F8FAFC',
-        flex:1
+        backgroundColor: 'white',
+        flex: 1,
     },
     card: {
         padding: 20,

@@ -22,7 +22,7 @@ const RecentJobs = () => {
   }, []);
 
   const renderItem = ({ item }) => (
-    <TouchableOpacity  onPress={() => navigation.navigate('job-details', { job: bids })}  style={styles.card}>
+    <TouchableOpacity onPress={() => navigation.navigate('job-details', { job: item })} style={styles.card}>
       <Text style={styles.serviceType}>{item.serviceType}</Text>
       <Text style={styles.description}>{item.description}</Text>
       <Text style={styles.postedBy}>Posted by: {item.customerId?.fullName || "Unknown"}</Text>
