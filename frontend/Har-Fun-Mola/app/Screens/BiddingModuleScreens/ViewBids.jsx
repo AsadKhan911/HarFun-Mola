@@ -7,7 +7,8 @@ const ViewAllBids = () => {
     const [loading, setLoading] = useState(false);
     const [allOffers, setAllOffers] = useState([]);
 
-    const { token, user } = useSelector((state) => state.auth); // Get user token and user from Redux
+    const {  user } = useSelector((state) => state.auth); // Get user token and user from Redux
+    const {  token } = useSelector((state) => state.auth.user); // Get user token and user from Redux
 
     useEffect(() => {
         const fetchAllBidOffers = async () => {
@@ -45,16 +46,72 @@ const ViewAllBids = () => {
         fetchAllBidOffers();
     }, [user, token]); // Dependency on user and token
 
-    const handleAcceptOffer = (offerId) => {
-        console.log('Offer Accepted:', offerId);
-        // Implement accept offer logic (e.g., API call to accept offer)
+    const handleAcceptOffer = async (offer) => {
+        try {
+            const contractTerms = "Standard service agreement."; // Customize or prompt user input
+    
+            const response = await fetch(`${BiddingModelBaseUrl}/accept-bid`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    offerId:offer._id,
+                    agreedPrice:offer.proposedPrice,
+                    contractTerms,
+                }),
+            });
+    
+            const data = await response.json();
+    
+            if (response.ok) {
+                alert("Offer accepted and contract created successfully!");
+    
+                // Refresh bid offers list
+                setAllOffers((prevOffers) =>
+                    prevOffers.map((offer) =>
+                        offer._id === offer._id ? { ...offer, status: "Accepted" } : offer
+                    )
+                );
+            } else {
+                alert(data.message || "Failed to accept the offer.");
+            }
+        } catch (error) {
+            console.error("Error accepting the offer:", error);
+            alert("Something went wrong while accepting the offer.");
+        }
     };
 
-    const handleRejectOffer = (offerId) => {
-        console.log('Offer Rejected:', offerId);
-        // Implement reject offer logic (e.g., API call to reject offer)
+    const handleRejectOffer = async (offerId) => {
+        try {
+            const response = await fetch(`${BiddingModelBaseUrl}/reject-bid`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ offerId }),
+            });
+    
+            const data = await response.json();
+    
+            if (response.ok) {
+                alert("Offer rejected successfully.");
+    
+                // Update the status locally in the UI
+                setAllOffers((prevOffers) =>
+                    prevOffers.map((offer) =>
+                        offer._id === offerId ? { ...offer, status: "Rejected" } : offer
+                    )
+                );
+            } else {
+                alert(data.message || "Failed to reject the offer.");
+            }
+        } catch (error) {
+            console.error("Error rejecting the offer:", error);
+            alert("Something went wrong while rejecting the offer.");
+        }
     };
-
+    
     return (
         <ScrollView contentContainerStyle={styles.container}>
             {loading ? (
@@ -85,7 +142,7 @@ const ViewAllBids = () => {
                                     Status: {offer.bidId.status}
                                 </Text>
 
-                                <Button title="Accept Offer" onPress={() => handleAcceptOffer(offer._id)} />
+                                <Button title="Accept Offer" onPress={() => handleAcceptOffer(offer)} />
                                 <Button title="Reject Offer" onPress={() => handleRejectOffer(offer._id)} />
                             </View>
                         ))

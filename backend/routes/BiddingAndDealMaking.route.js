@@ -6,6 +6,7 @@ import isAuthenticated from '../middlewares/isAuthenticated.js'
 import { createBid, deleteBid, editBid, getBidById, getBids, getBidsByCustomer } from '../controllers/BiddingModule/BidController.js'
 import { placeBidOffer , getBidOffersByBidId , getAllBidOffersForUser } from '../controllers/BiddingModule/PlaceBidController.js'
 import { getAllJobsPostedByUser , updateJobById } from '../controllers/BiddingModule/MyJobs.js'
+import { acceptBidOffer, getProviderOfferResponses, rejectBidOffer } from '../controllers/BiddingModule/Contract.controller.js'
 
 router.route('/post-bid').post(isAuthenticated , createBid)
 router.route('/get-bid').get(getBids)
@@ -22,6 +23,12 @@ router.route('/all-jobs-bid-offers/:userId').get(getAllBidOffersForUser)
 //User posted jobs
 router.route('/get-all-jobs/:userId').get(getAllJobsPostedByUser)
 router.route('/edit-job/:jobId').put(updateJobById)
+
+//Create contract
+router.route('/accept-bid').post(acceptBidOffer)
+router.route('/reject-bid').post(rejectBidOffer)
+router.route('/get-offers-responses/:serviceProviderId').get(getProviderOfferResponses)
+
 
 
 export default router

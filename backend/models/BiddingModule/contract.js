@@ -1,4 +1,4 @@
-const mongoose = require("mongoose");
+import mongoose from "mongoose";
 
 const ContractSchema = new mongoose.Schema({
     bidId: { type: mongoose.Schema.Types.ObjectId, ref: "Bid", required: true },
@@ -6,7 +6,7 @@ const ContractSchema = new mongoose.Schema({
     serviceProviderId: { type: mongoose.Schema.Types.ObjectId, ref: "user", required: true },
     agreedPrice: { type: Number, required: true },
     contractTerms: { type: String, required: true },
-    status: { type: String, enum: [ "Agreed", "Disagreed"], default: "Agreed" },
+    status: { type: String, enum: [ "Agreed", "Rejected"], default: "Agreed" },
     createdAt: { type: Date, default: Date.now }
 });
 

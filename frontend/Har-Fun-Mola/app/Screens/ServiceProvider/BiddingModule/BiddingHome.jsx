@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { View, KeyboardAvoidingView, ScrollView, Platform, Text } from 'react-native';
 import { Button, Card, Title } from 'react-native-paper';
 import RecentJobs from './RecentJobs';
+import Proposals from './Proposals';
 
 const ServiceUserCreateBid = () => {
   
@@ -14,9 +15,9 @@ const ServiceUserCreateBid = () => {
          <RecentJobs />
         );
 
-      case 'view':
+      case 'proposals':
         return (
-         "View Bids"
+         <Proposals />
         );
 
       case 'myjobs':
@@ -53,11 +54,11 @@ const ServiceUserCreateBid = () => {
             Recent Jobs
           </Button>
           <Button
-            mode={activeTab === 'view' ? "contained" : "outlined"}
-            onPress={() => setActiveTab('view')}
+            mode={activeTab === 'proposals' ? "contained" : "outlined"}
+            onPress={() => setActiveTab('proposals')}
             compact
           >
-            View Bids
+            Proposals
           </Button>
           <Button
             mode={activeTab === 'Active Jobs' ? "contained" : "outlined"}
