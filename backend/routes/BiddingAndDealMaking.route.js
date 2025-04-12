@@ -5,7 +5,7 @@ const router = express.Router()
 import isAuthenticated from '../middlewares/isAuthenticated.js'
 import { createBid, deleteBid, editBid, getBidById, getBids, getBidsByCustomer } from '../controllers/BiddingModule/BidController.js'
 import { placeBidOffer , getBidOffersByBidId , getAllBidOffersForUser } from '../controllers/BiddingModule/PlaceBidController.js'
-import { getAllJobsPostedByUser , updateJobById } from '../controllers/BiddingModule/MyJobs.js'
+import { getAllJobsPostedByUser , saveJob, updateJobById } from '../controllers/BiddingModule/MyJobs.js'
 import { acceptBidOffer, getProviderOfferResponses, rejectBidOffer } from '../controllers/BiddingModule/Contract.controller.js'
 
 router.route('/post-bid').post(isAuthenticated , createBid)
@@ -28,6 +28,9 @@ router.route('/edit-job/:jobId').put(updateJobById)
 router.route('/accept-bid').post(acceptBidOffer)
 router.route('/reject-bid').post(rejectBidOffer)
 router.route('/get-offers-responses/:serviceProviderId').get(getProviderOfferResponses)
+
+//Saved jobs
+router.route('/saved-jobs').post(saveJob)
 
 
 

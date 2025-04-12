@@ -3,6 +3,7 @@ import { View, KeyboardAvoidingView, ScrollView, Platform, Text } from 'react-na
 import { Button, Card, Title } from 'react-native-paper';
 import RecentJobs from './RecentJobs';
 import Proposals from './Proposals';
+import SavedJobs from './SavedJobs';
 
 const ServiceUserCreateBid = () => {
   
@@ -26,12 +27,7 @@ const ServiceUserCreateBid = () => {
         );
 
       case 'saved':
-        return (
-          <Card style={{ padding: 20, borderRadius: 10, marginTop: 10 }}>
-            <Title style={{ textAlign: 'center' }}>Saved Bids</Title>
-            <Text>Your profile and settings info will go here.</Text>
-          </Card>
-        );
+       <SavedJobs />
 
       default:
         return null;

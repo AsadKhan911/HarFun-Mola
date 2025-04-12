@@ -1,5 +1,6 @@
 import mongoose from "mongoose";
 import { Bid } from "../../models/BiddingModule/bidModel.js";  // Make sure to import the Bid model
+import SavedJob from "../../models/BiddingModule/SavedJobs.js";
 
 // Controller to fetch all jobs posted by a service user
 export const getAllJobsPostedByUser = async (req, res) => {
@@ -55,3 +56,43 @@ export const updateJobById = async (req, res) => {
       res.status(500).json({ message: "Server error", error: error.message });
     }
   };
+
+  //Saved jobs
+  // Controller to save a job when clicked on bookmark
+export const saveJob = async (req, res) => {
+  try {
+    const { userId, jobId } = req.body;
+
+    // Check if userId and jobId are provided
+    if (!userId || !jobId) {
+      return res.status(400).json({ message: "User ID and Job ID are required." });
+    }
+
+    // Check if the job exists
+    const job = await Bid.findById(jobId);
+    if (!job) {
+      return res.status(404).json({ message: "Job not found." });
+    }
+
+    // Check if the job is already saved by the user
+    const existingSavedJob = await SavedJob.findOne({ userId, jobId });
+    if (existingSavedJob) {
+      return res.status(400).json({ message: "Job is already saved." });
+    }
+
+    // Create a new SavedJob entry
+    const savedJob = new SavedJob({
+      userId,
+      jobId
+    });
+
+    // Save the saved job to the database
+    await savedJob.save();
+
+    // Return success response
+    res.status(201).json({ message: "Job saved successfully", savedJob });
+  } catch (error) {
+    console.error("Error saving job:", error);
+    res.status(500).json({ message: "Server error", error: error.message });
+  }
+};

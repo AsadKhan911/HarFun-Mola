@@ -1,14 +1,25 @@
 import React, { useState, useEffect } from 'react';
-import { StyleSheet, ScrollView, Text, View, Button, ActivityIndicator } from 'react-native';
-import { useSelector } from 'react-redux'; // Access Redux state
-import { BiddingModelBaseUrl } from '../../URL/userBaseUrl.js'; // Assuming you have a base URL
+import { StyleSheet, ScrollView, Text, View, TouchableOpacity, ActivityIndicator, Alert } from 'react-native';
+import { useSelector } from 'react-redux';
+import { BiddingModelBaseUrl, PaymentBaseUrl } from '../../URL/userBaseUrl.js';
+import { StripeProvider, useStripe } from "@stripe/stripe-react-native";
+import 'react-native-get-random-values';
+import { v4 as uuidv4 } from 'uuid';
+import { KeyboardAvoidingView, Platform } from 'react-native';
+import Colors from '../../../constants/Colors.ts';
+
+const generateUUID = () => uuidv4();
 
 const ViewAllBids = () => {
     const [loading, setLoading] = useState(false);
     const [allOffers, setAllOffers] = useState([]);
+    const [paymentIntentId, setPaymentIntentId] = useState(null);
+    const [showPaymentModal, setShowPaymentModal] = useState(false);
+    const [selectedOffer, setSelectedOffer] = useState(null);
+    const { initPaymentSheet, presentPaymentSheet } = useStripe();
 
-    const {  user } = useSelector((state) => state.auth); // Get user token and user from Redux
-    const {  token } = useSelector((state) => state.auth.user); // Get user token and user from Redux
+    const { user } = useSelector((state) => state.auth);
+    const { token } = useSelector((state) => state.auth.user);
 
     useEffect(() => {
         const fetchAllBidOffers = async () => {
@@ -19,20 +30,16 @@ const ViewAllBids = () => {
 
             setLoading(true);
             try {
-                // Fetch all offers for jobs posted by the service user
                 const response = await fetch(`${BiddingModelBaseUrl}/all-jobs-bid-offers/${user._id}`, {
                     method: 'GET',
                     headers: {
-                        'Authorization': `Bearer ${token}`, // Pass token in headers if needed
+                        'Authorization': `Bearer ${token}`,
                     },
                 });
 
                 const data = await response.json();
 
                 if (data && data.offers) {
-                    console.log("Fetched All Offers:", data.offers);
-
-                    // Set all fetched offers
                     setAllOffers(data.offers);
                 }
 
@@ -44,41 +51,121 @@ const ViewAllBids = () => {
         };
 
         fetchAllBidOffers();
-    }, [user, token]); // Dependency on user and token
+    }, [user, token]);
 
-    const handleAcceptOffer = async (offer) => {
+    const createPaymentIntent = async (price) => {
+        const amountInPaisa = price * 100;
+
         try {
-            const contractTerms = "Standard service agreement."; // Customize or prompt user input
-    
+            const response = await fetch(
+                `${PaymentBaseUrl}/create-payment-intent`,
+                {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        amount: amountInPaisa,
+                        currency: "pkr",
+                        userId: user._id,
+                    }),
+                }
+            );
+
+            const responseData = await response.json();
+
+            if (response.status === 200) {
+                setPaymentIntentId(responseData.paymentIntentId);
+
+                const { error } = await initPaymentSheet({
+                    paymentIntentClientSecret: responseData.clientSecret,
+                    returnURL: "myapp://stripe-redirect",
+                });
+
+                if (error) {
+                    console.error("Error initializing payment sheet:", error.message);
+                    Alert.alert("Payment Error", error.message);
+                    return false;
+                }
+                return true;
+            }
+        } catch (error) {
+            console.error("Error creating payment intent:", error);
+        }
+        return false;
+    };
+
+    const handlePayment = async (offer) => {
+        setSelectedOffer(offer);
+        setLoading(true);
+
+        const paymentSuccess = await createPaymentIntent(offer.proposedPrice);
+        setLoading(false);
+
+        if (paymentSuccess) {
+            setShowPaymentModal(true);
+        }
+    };
+
+    const processPaymentAndAcceptOffer = async () => {
+        setLoading(true);
+        try {
+            const { error } = await presentPaymentSheet();
+
+            if (error) {
+                Alert.alert("Payment Failed", error.message);
+                setLoading(false);
+                return;
+            }
+
+            // Payment succeeded, now accept the offer
+            await acceptOfferAfterPayment(selectedOffer);
+
+        } catch (error) {
+            console.error("Error processing payment:", error);
+            setLoading(false);
+        }
+    };
+
+    const acceptOfferAfterPayment = async (offer) => {
+        try {
+            const contractTerms = "Standard service agreement.";
+
             const response = await fetch(`${BiddingModelBaseUrl}/accept-bid`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${token}`,
                 },
                 body: JSON.stringify({
-                    offerId:offer._id,
-                    agreedPrice:offer.proposedPrice,
+                    offerId: offer._id,
+                    agreedPrice: offer.proposedPrice,
                     contractTerms,
+                    paymentIntentId,
+                    paymentMethod: "CARD",
                 }),
             });
-    
+
             const data = await response.json();
-    
+
             if (response.ok) {
-                alert("Offer accepted and contract created successfully!");
-    
-                // Refresh bid offers list
+                Alert.alert("Success", "Offer accepted and payment processed successfully!");
+
                 setAllOffers((prevOffers) =>
-                    prevOffers.map((offer) =>
-                        offer._id === offer._id ? { ...offer, status: "Accepted" } : offer
+                    prevOffers.map((prevOffer) =>
+                        prevOffer._id === offer._id ? { ...prevOffer, status: "Accepted" } : prevOffer
                     )
                 );
             } else {
-                alert(data.message || "Failed to accept the offer.");
+                Alert.alert("Error", data.message || "Failed to accept the offer.");
             }
         } catch (error) {
             console.error("Error accepting the offer:", error);
-            alert("Something went wrong while accepting the offer.");
+            Alert.alert("Error", "Something went wrong while accepting the offer.");
+        } finally {
+            setLoading(false);
+            setShowPaymentModal(false);
+            setSelectedOffer(null);
         }
     };
 
@@ -88,70 +175,130 @@ const ViewAllBids = () => {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${token}`,
                 },
                 body: JSON.stringify({ offerId }),
             });
-    
+
             const data = await response.json();
-    
+
             if (response.ok) {
-                alert("Offer rejected successfully.");
-    
-                // Update the status locally in the UI
+                Alert.alert("Success", "Offer rejected successfully.");
+
                 setAllOffers((prevOffers) =>
                     prevOffers.map((offer) =>
                         offer._id === offerId ? { ...offer, status: "Rejected" } : offer
                     )
                 );
             } else {
-                alert(data.message || "Failed to reject the offer.");
+                Alert.alert("Error", data.message || "Failed to reject the offer.");
             }
         } catch (error) {
             console.error("Error rejecting the offer:", error);
-            alert("Something went wrong while rejecting the offer.");
+            Alert.alert("Error", "Something went wrong while rejecting the offer.");
         }
     };
-    
+
     return (
-        <ScrollView contentContainerStyle={styles.container}>
-            {loading ? (
-                <ActivityIndicator size="large" color="#0000ff" />
-            ) : (
-                <>
-                    {allOffers.length > 0 ? (
-                        allOffers.map((offer, index) => (
-                            <View key={index} style={styles.offerCard}>
-                                <Text style={styles.serviceProviderName}>{offer.serviceProviderId.fullName}</Text>
-                                <Text>Email: {offer.serviceProviderId.email}</Text>
-                                <Text>Phone: {offer.serviceProviderId.phone}</Text>
-                                <Text>Price Offered: ${offer.proposedPrice}</Text>
-                                <Text>Notes: {offer.additionalNotes || "No additional notes"}</Text>
-                                <Text>Status: {offer.status}</Text>
-
-                                {/* Displaying Bid Details */}
-                                <Text style={styles.bidDetails}>
-                                    Service Type: {offer.bidId.serviceType}
-                                </Text>
-                                <Text style={styles.bidDetails}>
-                                    Description: {offer.bidId.description}
-                                </Text>
-                                <Text style={styles.bidDetails}>
-                                    Budget: ${offer.bidId.budget}
-                                </Text>
-                                <Text style={styles.bidDetails}>
-                                    Status: {offer.bidId.status}
-                                </Text>
-
-                                <Button title="Accept Offer" onPress={() => handleAcceptOffer(offer)} />
-                                <Button title="Reject Offer" onPress={() => handleRejectOffer(offer._id)} />
-                            </View>
-                        ))
+        <StripeProvider publishableKey="pk_test_51QugNP4ar1n4jNltsbhPR9kEV43YDjI4RDrhltYb5YgjHo3WQGevNAPuKPeY8yoNqNgrEir6JfQLsIrPxs12gmAX00hDxdInIS">
+            <KeyboardAvoidingView
+                behavior={Platform.OS === "ios" ? "padding" : "height"}
+                style={{ flex: 1 }}
+            >
+                <ScrollView contentContainerStyle={styles.container}>
+                    {loading && !showPaymentModal ? (
+                        <ActivityIndicator size="large" color={Colors.PRIMARY} />
                     ) : (
-                        <Text>No offers available for the jobs posted by you.</Text>
+                        <>
+                            {allOffers.length > 0 ? (
+                                allOffers.map((offer, index) => {
+                                    return (
+                                        <View key={index} style={styles.offerCard}>
+                                            <Text style={styles.serviceProviderName}>{offer.serviceProviderId.fullName}</Text>
+                                            <Text>Email: {offer.serviceProviderId.email}</Text>
+                                            <Text>Phone: {offer.serviceProviderId.phone}</Text>
+                                            <Text>Price Offered: Rs.{offer.proposedPrice}</Text>
+                                            <Text>Notes: {offer.additionalNotes || "No additional notes"}</Text>
+                                            <Text>Status: {offer.status}</Text>
+
+                                            <Text style={styles.bidDetails}>
+                                                Service Type: {offer.bidId.serviceType}
+                                            </Text>
+                                            <Text style={styles.bidDetails}>
+                                                Description: {offer.bidId.description}
+                                            </Text>
+                                            <Text style={styles.bidDetails}>
+                                                Budget: Rs.{offer.bidId.budget}
+                                            </Text>
+                                            <Text style={styles.bidDetails}>
+                                                Status: {offer.bidId.status}
+                                            </Text>
+
+                                            {offer.status === "Pending" && (
+                                                <View style={styles.buttonContainer}>
+                                                    <TouchableOpacity
+                                                        style={[styles.button, styles.acceptButton]}
+                                                        onPress={() => handlePayment(offer)}
+                                                        disabled={loading}
+                                                    >
+                                                        <Text style={[styles.buttonText , {color:Colors.BLACK}]}>Accept & Pay</Text>
+                                                    </TouchableOpacity>
+                                                    <TouchableOpacity
+                                                        style={[styles.button, styles.rejectButton]}
+                                                        onPress={() => handleRejectOffer(offer._id)}
+                                                        disabled={loading}
+                                                    >
+                                                        <Text style={styles.buttonText}>Reject</Text>
+                                                    </TouchableOpacity>
+                                                </View>
+                                            )}
+                                        </View>
+                                    );
+                                })
+                            ) : (
+                                <Text>No offers available for the jobs posted by you.</Text>
+                            )}
+
+                        </>
                     )}
-                </>
-            )}
-        </ScrollView>
+
+                    {/* Payment Modal */}
+                    {showPaymentModal && (
+                        <View style={styles.paymentModal}>
+                            <View style={styles.paymentContent}>
+                                <Text style={styles.modalTitle}>Complete Payment</Text>
+                                <Text style={styles.modalText}>
+                                    You're about to pay Rs.{selectedOffer?.proposedPrice} to accept this offer.
+                                </Text>
+
+                                <TouchableOpacity
+                                    style={[styles.button, styles.payButton]}
+                                    onPress={processPaymentAndAcceptOffer}
+                                    disabled={loading}
+                                >
+                                    {loading ? (
+                                        <ActivityIndicator color={Colors.WHITE} />
+                                    ) : (
+                                        <Text style={styles.buttonText}>Pay Now</Text>
+                                    )}
+                                </TouchableOpacity>
+
+                                <TouchableOpacity
+                                    style={[styles.button, styles.cancelButton]}
+                                    onPress={() => {
+                                        setShowPaymentModal(false);
+                                        setSelectedOffer(null);
+                                    }}
+                                    disabled={loading}
+                                >
+                                    <Text style={[styles.buttonText, { color: Colors.PRIMARY }]}>Cancel</Text>
+                                </TouchableOpacity>
+                            </View>
+                        </View>
+                    )}
+                </ScrollView>
+            </KeyboardAvoidingView>
+        </StripeProvider>
     );
 };
 
@@ -176,6 +323,74 @@ const styles = StyleSheet.create({
         fontSize: 14,
         color: '#555',
         marginVertical: 5,
+    },
+    buttonContainer: {
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+        marginTop: 10,
+        height: 50, // Fixed height
+    },
+    button: {
+        flex: 1,
+        padding: 15,
+        borderRadius: 5,
+        alignItems: 'center',
+        justifyContent: 'center',
+        marginHorizontal: 5,
+        minHeight: 50,
+    },
+    buttonText: {
+        color: '#FFFFFF', // Hardcoded white for testing
+        fontWeight: 'bold',
+        fontSize: 16, // Explicit size
+    },
+    acceptButton: {
+        backgroundColor: Colors.PRIMARY,
+    },
+    rejectButton: {
+        backgroundColor: '#dc3545',
+    },
+    payButton: {
+        backgroundColor: Colors.PRIMARY,
+        marginBottom: 10,
+    },
+    cancelButton: {
+        backgroundColor: Colors.WHITE,
+        borderWidth: 1,
+        borderColor: Colors.PRIMARY,
+    },
+    buttonText: {
+        color: Colors.WHITE,
+        fontWeight: 'bold',
+    },
+    paymentModal: {
+        position: 'absolute',
+        top: 0,
+        left: 0,
+        right: 0,
+        bottom: 0,
+        backgroundColor: 'rgba(0,0,0,0.5)',
+        justifyContent: 'center',
+        alignItems: 'center',
+        padding: 20,
+        paddingVertical:50
+    },
+    paymentContent: {
+        backgroundColor: Colors.WHITE,
+        padding: 20,
+        borderRadius: 10,
+        width: '100%',
+    },
+    modalTitle: {
+        fontSize: 20,
+        fontWeight: 'bold',
+        marginBottom: 15,
+        textAlign: 'center',
+    },
+    modalText: {
+        fontSize: 16,
+        marginBottom: 20,
+        textAlign: 'center',
     },
 });
 
