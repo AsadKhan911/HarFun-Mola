@@ -4,6 +4,7 @@ import { Button, Card, Title } from 'react-native-paper';
 import PostJob from './postJob';
 import ViewBids from './ViewBids';
 import MyJobs from './MyJobs';
+import Interviewing from './Interviewing';
 
 const ServiceUserCreateBid = () => {
   
@@ -25,13 +26,10 @@ const ServiceUserCreateBid = () => {
         return (
          <MyJobs />
         );
-
-      case 'profile':
+        
+      case 'Interviewing':
         return (
-          <Card style={{ padding: 20, borderRadius: 10, marginTop: 10 }}>
-            <Title style={{ textAlign: 'center' }}>Saved Bids</Title>
-            <Text>Your profile and settings info will go here.</Text>
-          </Card>
+        <Interviewing />
         );
 
       default:
@@ -69,11 +67,11 @@ const ServiceUserCreateBid = () => {
             My Jobs
           </Button>
           <Button
-            mode={activeTab === 'profile' ? "contained" : "outlined"}
-            onPress={() => setActiveTab('profile')}
+            mode={activeTab === 'Interviewing' ? "contained" : "outlined"}
+            onPress={() => setActiveTab('Interviewing')}
             compact
           >
-            Active Bids
+            Interviewing
           </Button>
         </View>
 

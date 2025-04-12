@@ -41,12 +41,8 @@ export const acceptBidOffer = async (req, res) => {
     await newContract.save();
 
     // Step 5: Update the BidOffer status to "Accepted"
-    bidOffer.status = "Accepted";
+    bidOffer.status = "Interviewing";
     await bidOffer.save();
-
-    // Step 6: Optionally update the Bid status to "Closed"
-    bid.status = "Closed";
-    await bid.save();
 
     res.status(200).json({ message: "Contract accepted and contract created successfully.", contract: newContract });
   } catch (error) {
@@ -122,6 +118,89 @@ export const getProviderOfferResponses = async (req, res) => {
     });
   } catch (error) {
     console.error("Error fetching offer responses:", error);
+    res.status(500).json({ message: "Server error", error: error.message });
+  }
+};
+
+export const getInterviewingOffers = async (req, res) => {
+  try {
+    const { userId } = req.params;
+
+    if (!userId) {
+      return res.status(400).json({ message: "User ID is required." });
+    }
+
+    const offers = await BidOffer.find({ status: "Interviewing" })
+      .populate({
+        path: "bidId",
+        match: { customerId: userId },
+        select: "serviceType description status", // Select only relevant fields
+      })
+      .populate({
+        path: "serviceProviderId",
+        select: "fullName email phone", // Optional: reduce payload
+      });
+
+    // Filter out offers without matched bidId
+    const filteredOffers = offers.filter((offer) => offer.bidId !== null);
+
+    res.status(200).json({ offers: filteredOffers });
+  } catch (error) {
+    console.error("Error fetching interviewing offers:", error);
+    res.status(500).json({ message: "Server error", error: error.message });
+  }
+};
+
+export const hireBidOffer = async (req, res) => {
+  try {
+    const { offerId, agreedPrice, contractTerms } = req.body; // offerId is the MongoDB ObjectId of the BidOffer
+
+    // Validate the data
+    if (!offerId || !agreedPrice || !contractTerms) {
+      return res.status(400).json({ message: "Offer ID, agreed price, and contract terms are required." });
+    }
+
+    // Step 1: Find the BidOffer by its _id (offerId)
+    const bidOffer = await BidOffer.findById(offerId).populate('bidId serviceProviderId');
+    if (!bidOffer) {
+      return res.status(404).json({ message: "Bid offer not found." });
+    }
+
+    // Step 2: Ensure the bid offer status is "Interviewing"
+    if (bidOffer.status !== "Interviewing") {
+      return res.status(400).json({ message: "Bid offer is not in 'Interviewing' status." });
+    }
+
+    // Step 3: Find the corresponding Bid
+    const bid = await Bid.findById(bidOffer.bidId);
+    if (!bid) {
+      return res.status(404).json({ message: "Bid not found." });
+    }
+
+    // Step 4: Find the existing contract
+    const existingContract = await Contract.findOne({ bidId: bid._id, serviceProviderId: bidOffer.serviceProviderId });
+    if (!existingContract) {
+      return res.status(404).json({ message: "Contract not found." });
+    }
+
+    // Step 5: Update the existing contract with agreed price and contract terms
+    existingContract.agreedPrice = agreedPrice;
+    existingContract.contractTerms = contractTerms;
+
+    // Save the updated contract
+    await existingContract.save();
+
+    // Step 6: Update the BidOffer status to "Accepted"
+    bidOffer.status = "Accepted"; // Marking the bid offer as accepted
+    await bidOffer.save();
+
+    // Step 7: Update the Bid status to "Closed"
+    bid.status = "Closed"; // Marking the bid as closed
+    await bid.save();
+
+    res.status(200).json({ message: "Provider hired successfully, contract updated, and bid closed.", contract: existingContract });
+  } catch (error) {
+    console.error("Error hiring bid offer:", error);
     res.status(500).json({ message: "Server error", error: error.message });
   }
 };

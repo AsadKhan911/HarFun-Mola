@@ -76,21 +76,22 @@ export const getAllBidOffersForUser = async (req, res) => {
       return res.status(400).json({ message: "User ID is required." });
     }
 
-    // Fetch all bids posted by the user (assuming 'postedBy' field in the Job/Bid schema)
-    const userJobs = await Bid.find({customerId: userId }); // Find all jobs posted by the service user
+    // Fetch all bids posted by the user (assuming 'customerId' field in the Job/Bid schema)
+    const userJobs = await Bid.find({ customerId: userId }); // Find all jobs posted by the service user
     console.log('Fetching bids for user:', userId);
 
     if (!userJobs || userJobs.length === 0) {
       return res.status(404).json({ message: "No jobs found for the user." });
     }
 
-    // Get all the offers related to these jobs
+    // Get all the offers related to these jobs with status "Pending"
     const offers = await BidOffer.find({
       bidId: { $in: userJobs.map((job) => job._id) }, // Match bids related to these jobs
+      status: "Pending", // Filter only the offers with status "Pending"
     })
       .populate("bidId", "serviceType description images budget status")  // Populate bid details
       .populate("serviceProviderId", "fullName email phone profilePic") // Populate service provider details
-      .sort({ createdAt: -1 });
+      .sort({ createdAt: -1 }); // Sort offers by creation date
 
     res.status(200).json({ message: "Offers fetched successfully", offers });
   } catch (error) {
@@ -98,3 +99,4 @@ export const getAllBidOffersForUser = async (req, res) => {
     res.status(500).json({ message: "Server error", error: error.message });
   }
 };
+

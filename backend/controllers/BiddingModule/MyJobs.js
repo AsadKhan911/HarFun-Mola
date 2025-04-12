@@ -1,6 +1,7 @@
 import mongoose from "mongoose";
 import { Bid } from "../../models/BiddingModule/bidModel.js";  // Make sure to import the Bid model
 import SavedJob from "../../models/BiddingModule/SavedJobs.js";
+import { BidOffer } from "../../models/BiddingModule/bidOffer.js";
 
 // Controller to fetch all jobs posted by a service user
 export const getAllJobsPostedByUser = async (req, res) => {

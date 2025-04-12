@@ -6,7 +6,7 @@ const BidSchema = new mongoose.Schema({
     description: { type: String, required: true },
     images: [{ type: String }], // Array of image URLs
     budget: { type: Number, required: true },
-    status: { type: String, enum: ["Open", "Closed", "Cancelled"], default: "Open" },
+    status: { type: String, enum: ["Open", "Interviewing" , "Closed", "Cancelled"], default: "Open" },
     createdAt: { type: Date, default: Date.now }
 });
 

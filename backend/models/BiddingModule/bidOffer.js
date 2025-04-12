@@ -5,7 +5,7 @@ const BidOfferSchema = new mongoose.Schema({
     serviceProviderId: { type: mongoose.Schema.Types.ObjectId, ref: "user", required: true },
     proposedPrice: { type: Number, required: true },
     additionalNotes: { type: String },
-    status: { type: String, enum: ["Pending", "Accepted", "Rejected"], default: "Pending" },
+    status: { type: String, enum: ["Pending", "Interviewing" , "Accepted", "Rejected"], default: "Pending" },
     createdAt: { type: Date, default: Date.now }
 });
 
