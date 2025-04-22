@@ -102,10 +102,10 @@ export const getProviderOfferResponses = async (req, res) => {
       return res.status(400).json({ message: "Service provider ID is required." });
     }
 
-    // Find all contracts related to the provider that are either accepted or rejected
+    // Fetch only 'Interviewing' and 'Rejected' contracts
     const contracts = await Contract.find({
       serviceProviderId,
-      status: { $in: ["Agreed", "Rejected"] },
+      status: { $in: ["Interviewing", "Rejected"] },
     })
       .populate("bidId")
       .populate("customerId", "fullName email")
@@ -118,6 +118,34 @@ export const getProviderOfferResponses = async (req, res) => {
     });
   } catch (error) {
     console.error("Error fetching offer responses:", error);
+    res.status(500).json({ message: "Server error", error: error.message });
+  }
+};
+
+export const getAgreedContractsForProvider = async (req, res) => {
+  try {
+    const { serviceProviderId } = req.params;
+
+    if (!serviceProviderId) {
+      return res.status(400).json({ message: "Service provider ID is required." });
+    }
+
+    // Fetch only contracts with status "Agreed"
+    const contracts = await Contract.find({
+      serviceProviderId,
+      status: "Agreed",
+    })
+      .populate("bidId")
+      .populate("customerId", "fullName email")
+      .populate("serviceProviderId", "fullName email")
+      .sort({ createdAt: -1 });
+
+    res.status(200).json({
+      message: "Agreed contracts fetched successfully.",
+      contracts,
+    });
+  } catch (error) {
+    console.error("Error fetching agreed contracts:", error);
     res.status(500).json({ message: "Server error", error: error.message });
   }
 };
@@ -202,5 +230,34 @@ export const hireBidOffer = async (req, res) => {
   } catch (error) {
     console.error("Error hiring bid offer:", error);
     res.status(500).json({ message: "Server error", error: error.message });
+  }
+};
+
+export const updateContractStatus = async (req, res) => {
+  try {
+    const { bidId } = req.params;  // Expecting the bidId as a URL parameter
+    const { status } = req.body;
+
+    // Validate status value
+    const validStatuses = ["Agreed", "Interviewing", "Rejected"];
+    if (!validStatuses.includes(status)) {
+      return res.status(400).json({ message: "Invalid status value." });
+    }
+
+    // Find the contract based on the bidId and update the status
+    const contract = await Contract.findOneAndUpdate(
+      { bidId },  // Find contract by bidId
+      { status },
+      { new: true }  // Return the updated contract
+    ).populate("customerId serviceProviderId bidId");  // Populate the related fields
+
+    if (!contract) {
+      return res.status(404).json({ message: "Contract not found." });
+    }
+
+    res.status(200).json({ message: "Contract status updated.", contract });
+  } catch (error) {
+    console.error("Error updating contract status:", error);
+    res.status(500).json({ message: "Server error. Could not update contract status." });
   }
 };

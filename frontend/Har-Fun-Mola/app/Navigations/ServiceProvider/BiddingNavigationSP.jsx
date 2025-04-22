@@ -1,6 +1,7 @@
 import { createStackNavigator } from '@react-navigation/stack';
 import BiddingHome from '../../Screens/ServiceProvider/BiddingModule/BiddingHome.jsx'
 import JobDetails from '../../Screens/ServiceProvider/BiddingModule/JobDetails.jsx';
+import detailedProposal from '../../Screens/ServiceProvider/BiddingModule/detailedProposal.jsx';
 
 const Stack = createStackNavigator();
 
@@ -12,6 +13,7 @@ const BiddingNavigationSP = () => {
       }}>
       <Stack.Screen name='job-home' component={BiddingHome}/>
       <Stack.Screen name='job-details' component={JobDetails}/>
+      <Stack.Screen name='detailed-proposal' component={detailedProposal}/>
     </Stack.Navigator>
   );
 };

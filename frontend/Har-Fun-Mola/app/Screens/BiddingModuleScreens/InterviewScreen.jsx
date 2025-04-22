@@ -89,16 +89,16 @@ const InterviewDetailsScreen = () => {
           text: "Hire",
           onPress: async () => {
             setLoading(true);
-
+  
             try {
-              // First handle payment
+              // Step 1: Handle payment
               const paymentSuccess = await handlePayment();
               if (!paymentSuccess) {
                 setLoading(false);
                 return;
               }
-
-              // Then proceed with hiring
+  
+              // Step 2: Create the contract
               const response = await axios.post(`${BiddingModelBaseUrl}/hire-provider`, 
                 {
                   offerId: offer._id,
@@ -109,7 +109,12 @@ const InterviewDetailsScreen = () => {
                   paymentStatus: "Pending",
                 }
               );
-
+  
+              // Step 3: Update contract status to "Agreed"
+              await axios.put(`${BiddingModelBaseUrl}/update-contract-status/${offer.bidId._id}`, {
+                status: "Agreed",
+              });
+  
               setLoading(false);
               Alert.alert("Success", "Provider hired successfully!", [
                 { text: "OK", onPress: () => navigation.goBack() },

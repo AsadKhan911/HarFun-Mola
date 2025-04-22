@@ -4,6 +4,7 @@ import { Button, Card, Title } from 'react-native-paper';
 import RecentJobs from './RecentJobs';
 import Proposals from './Proposals';
 import SavedJobs from './SavedJobs';
+import ActiveJobs from './ActiveJobs'
 
 const ServiceUserCreateBid = () => {
   
@@ -21,9 +22,9 @@ const ServiceUserCreateBid = () => {
          <Proposals />
         );
 
-      case 'myjobs':
+      case 'Active Jobs':
         return (
-        "Active Jobs"
+        <ActiveJobs />
         );
 
       case 'saved':
