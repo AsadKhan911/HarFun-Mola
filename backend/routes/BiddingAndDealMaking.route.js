@@ -5,7 +5,7 @@ const router = express.Router()
 import isAuthenticated from '../middlewares/isAuthenticated.js'
 import { createBid, deleteBid, editBid, getBidById, getBids, getBidsByCustomer } from '../controllers/BiddingModule/BidController.js'
 import { placeBidOffer, getBidOffersByBidId, getAllBidOffersForUser } from '../controllers/BiddingModule/PlaceBidController.js'
-import { getAllJobsPostedByUser, saveJob, updateJobById } from '../controllers/BiddingModule/MyJobs.js'
+import { completeJobById, getAllJobsPostedByUser, saveJob, updateJobById } from '../controllers/BiddingModule/MyJobs.js'
 import {
     acceptBidOffer,
     getAgreedContractsForProvider,
@@ -46,7 +46,7 @@ router.route('/saved-jobs').post(saveJob)
 //Hire provider
 router.route('/hire-provider').post(hireBidOffer)
 
-
-
+//update job status
+router.route('/complete-job').post(completeJobById)
 
 export default router

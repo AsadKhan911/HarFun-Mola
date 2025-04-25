@@ -2,6 +2,7 @@ import mongoose from "mongoose";
 import { Bid } from "../../models/BiddingModule/bidModel.js";  // Make sure to import the Bid model
 import SavedJob from "../../models/BiddingModule/SavedJobs.js";
 import { BidOffer } from "../../models/BiddingModule/bidOffer.js";
+import { Contract } from "../../models/BiddingModule/contract.js";
 
 // Controller to fetch all jobs posted by a service user
 export const getAllJobsPostedByUser = async (req, res) => {
@@ -94,6 +95,37 @@ export const saveJob = async (req, res) => {
     res.status(201).json({ message: "Job saved successfully", savedJob });
   } catch (error) {
     console.error("Error saving job:", error);
+    res.status(500).json({ message: "Server error", error: error.message });
+  }
+};
+
+export const completeJobById = async (req, res) => {
+  try {
+    const { jobId, contractId } = req.body;
+
+    // 1. Update the Bid status to "Closed"
+    const job = await Bid.findById(jobId);
+    if (!job) {
+      return res.status(404).json({ message: "Job not found" });
+    }
+    job.status = "Closed";
+    await job.save();
+
+    // 2. Update the Contract status to "Completed"
+    const contract = await Contract.findById(contractId);
+    if (!contract) {
+      return res.status(404).json({ message: "Contract not found" });
+    }
+    contract.status = "Completed";
+    await contract.save();
+
+    res.status(200).json({
+      message: "Job and contract successfully marked as completed.",
+      updatedJob: job,
+      updatedContract: contract,
+    });
+  } catch (error) {
+    console.error("Error completing job:", error);
     res.status(500).json({ message: "Server error", error: error.message });
   }
 };

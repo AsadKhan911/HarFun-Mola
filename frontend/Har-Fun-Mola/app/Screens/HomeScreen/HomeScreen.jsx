@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { View, ActivityIndicator, Text } from 'react-native';
+import { View, ActivityIndicator, Text, TouchableOpacity, StyleSheet } from 'react-native';
 import { Header } from "../HomeScreen/Header.jsx";
 import { Slider } from "../HomeScreen/Slider.jsx";
 import { Categories } from "../HomeScreen/Categories.jsx";
@@ -9,11 +9,15 @@ import { ScrollView } from "react-native-gesture-handler";
 import useUserData from "../../../customHooks/Universal/getUserData.jsx"; 
 import Colors from "../../../constants/Colors.ts";
 import RatingModalUser from "../../Modals/RatingModalUser.jsx"; 
+import ChatPopup from '../AssistiveFixNavigator/ChatPopup.jsx';
+import Ionicons from '@expo/vector-icons/Ionicons';
 
 const Home = () => {
   const { userData, loading, error } = useUserData();
   const [isModalVisible, setModalVisible] = useState(false);
   const [pendingReviewBooking, setPendingReviewBooking] = useState(null);
+  const [chatVisible, setChatVisible] = useState(false);
+
 
   useEffect(() => {
     if (userData?.pendingReviewBookings?.length > 0) {
@@ -82,8 +86,23 @@ const Home = () => {
           bookingId={pendingReviewBooking.bookingId}  // Booking ID
         />
       )}
+
+      {/* Chat Popup */}
+      <ChatPopup visible={chatVisible} onClose={() => setChatVisible(false)} />
     </ScrollView>
   );
 };
+
+const styles = StyleSheet.create({
+  chatButton: {
+    position: 'absolute',
+    bottom: 250,
+    right: 20,
+    backgroundColor: Colors.PRIMARY,
+    borderRadius: 30,
+    padding: 15,
+    elevation: 5,
+  },
+});
 
 export default Home;

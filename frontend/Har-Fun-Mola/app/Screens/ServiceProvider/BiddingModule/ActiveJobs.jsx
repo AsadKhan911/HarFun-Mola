@@ -40,7 +40,7 @@ const ActiveJobs = () => { //These are contract with status === "Agreed"
 
   const renderItem = ({ item }) => (
     <TouchableOpacity
-      onPress={() => navigation.navigate('detailed-proposal', { responses: item })}
+      onPress={() => navigation.navigate('detailed-agreed-proposal', { responses: item })}
       style={styles.card}
     >
       <Text style={[styles.status, { color: 'green' }]}>Agreed</Text>

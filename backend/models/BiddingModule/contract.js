@@ -6,7 +6,7 @@ const ContractSchema = new mongoose.Schema({
     serviceProviderId: { type: mongoose.Schema.Types.ObjectId, ref: "user", required: true },
     agreedPrice: { type: Number, required: true },
     contractTerms: { type: String, required: true },
-    status: { type: String, enum: [ "Agreed", "Interviewing" , "Rejected"], default: "Interviewing" },
+    status: { type: String, enum: [ "Agreed", "Interviewing" , "Rejected" , "Completed"], default: "Interviewing" },
     createdAt: { type: Date, default: Date.now }
 });
 

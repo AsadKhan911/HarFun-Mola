@@ -22,3 +22,4 @@ export const PaymentBaseUrl = `${BASE_URL}/bookingpayment`;
 export const MinorCategoryBaseUrl = `${BASE_URL}/minorcategory`;
 export const MinorServicesBaseUrl = `${BASE_URL}/minorservice`;
 export const BiddingModelBaseUrl = `${BASE_URL}/biddingAndDealMaking`;
+export const AssistiveFixBaseUrl = `${BASE_URL}/assistiveFix`;
