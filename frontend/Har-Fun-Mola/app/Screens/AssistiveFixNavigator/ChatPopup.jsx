@@ -15,7 +15,7 @@ import {
 } from 'react-native';
 import axios from 'axios';
 import Colors from '../../../constants/Colors';
-import {  Ionicons } from "@expo/vector-icons";
+import { Ionicons } from "@expo/vector-icons";
 import { AssistiveFixBaseUrl } from '../../URL/userBaseUrl';
 
 const { width: SCREEN_WIDTH, height: SCREEN_HEIGHT } = Dimensions.get('window');
@@ -79,7 +79,20 @@ const ChatPopup = ({ visible, onClose, iconPosition }) => {
                 messages: updatedMessages,
             });
 
-            const assistantMessage = { role: 'assistant', content: res.data.reply };
+            let assistantMessage = { role: 'assistant', content: res.data.reply };
+            
+            // Assuming the assistant replies with a specific service name, suggest providers
+            if (res.data.reply.toLowerCase().includes("fan motor repair")) {
+                // Call your backend to fetch providers
+                const providerRes = await axios.get(`${AssistiveFixBaseUrl}/providers?service=fan_motor_repair`);
+                const providers = providerRes.data.providers;
+
+                assistantMessage.content = `
+                    We suggest these providers for Fan Motor Repair:
+                    ${providers.map(provider => provider.name).join(', ')}
+                `;
+            }
+            
             setMessages([...updatedMessages, assistantMessage]);
         } catch (error) {
             console.error('Error:', error.message);
@@ -97,13 +110,13 @@ const ChatPopup = ({ visible, onClose, iconPosition }) => {
         <Modal visible={visible} transparent animationType="none">
             <View style={styles.overlay}>
                 <Animated.View
-                    style={[
-                        styles.chatBox,
+                    style={[ 
+                        styles.chatBox, 
                         {
                             bottom: calculateChatBoxBottom(),
                             transform: [{ translateY: slideAnim }],
                             opacity: opacityAnim,
-                        },
+                        }
                     ]}
                 >
                     <KeyboardAvoidingView
@@ -150,7 +163,7 @@ const ChatPopup = ({ visible, onClose, iconPosition }) => {
                                 {
                                     left: iconPosition ? iconPosition.x - 70 : SCREEN_WIDTH / 2 - 20,
                                     bottom: -10,
-                                },
+                                }
                             ]}
                         />
                     )}
@@ -159,7 +172,6 @@ const ChatPopup = ({ visible, onClose, iconPosition }) => {
         </Modal>
     );
 };
-
 
 const App = () => {
     const [chatVisible, setChatVisible] = useState(false);
@@ -272,7 +284,8 @@ const styles = StyleSheet.create({
     },
     botMsg: {
         alignSelf: 'flex-start',
-        backgroundColor: '#F2F2F7',
+        backgroundColor: Colors.GRAY,
+        color: Colors.BLACK,
         padding: 12,
         marginVertical: 6,
         borderRadius: 16,

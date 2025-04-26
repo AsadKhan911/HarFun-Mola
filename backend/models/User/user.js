@@ -2,22 +2,18 @@ import mongoose from "mongoose";
 import validator from "validator";
 
 const userSchema = mongoose.Schema({
-
   fullName: { type: String, required: true },
-
-  // username: { type: String, required: true, unique: true },
 
   email: {
     type: String,
-
     validate(value) {
-      if (!validator.isEmail(value)) { //This will check if the entered email is not valid then throw error.
-        throw new Error("Email is inValid")
+      if (!validator.isEmail(value)) {
+        throw new Error("Email is invalid");
       }
     },
     required: true,
     lowercase: true,
-    unique: true
+    unique: true,
   },
 
   phoneNumber: { type: String, required: true },
@@ -30,63 +26,46 @@ const userSchema = mongoose.Schema({
 
   area: { type: String, required: true },
 
-  isEmailVerified: { type: Boolean, default: false }, // Email verification status
+  isEmailVerified: { type: Boolean, default: false },
 
-  verificationCode: { type: String }, // OTP for email verification
+  verificationCode: { type: String },
 
-  verificationExpiry: { type: Date }, // Expiry date for OTP
+  verificationExpiry: { type: Date },
 
   firebaseUID: { type: String },
 
-  stripeAccountId: {type:String},
-
-  onboardingLink:{type:String},
-
-  //   serviceName: { type: String },  Only for Service Providers
-
-  // Only for Service Providers
-
+  stripeAccountId: { type: String },
+  
+  onboardingLink: { type: String },
+  
   profile: {
     bio: { type: String },
-
-    profilePic: {
-      type: String,
-      default: ""
-    }
+    profilePic: { type: String, default: "" },
   },
-
+  
   reviews: [{
-    userId: {
-      type: mongoose.Schema.Types.ObjectId, ref: 'user'
-    },
+    userId: { type: mongoose.Schema.Types.ObjectId, ref: 'user' },
     rating: Number,
     comment: String,
     createdAt: Date
   }],
 
-  pendingReviewBookings: [{ 
-    pendingReview: {type:Boolean , default:false},// Track if user has a pending review
+
+  pendingReviewBookings: [{
+    pendingReview: { type: Boolean, default: false },
     bookingId: mongoose.Schema.Types.ObjectId,
-    serviceProviderId: mongoose.Schema.Types.ObjectId, // Service provider ID
+    serviceProviderId: mongoose.Schema.Types.ObjectId,
     _id: false
-  }], 
-
-  // feedbacks: [{ type: Schema.Types.ObjectId, ref: 'feedback' }], // Reference to feedbacks submitted
-
-  //For service providers
+  }],
 
   fullAddress: { type: String },
 
-  certifications: [{
-    type: String
-  }],
+  certifications: [{ type: String }],
 
   availability: { type: String, enum: ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'] },
-
   govtID: { type: String },
 
   experience: { type: Number, default: 0 },
-
 
   policeVerification: { type: Boolean, default: false },
 
@@ -97,9 +76,10 @@ const userSchema = mongoose.Schema({
     enum: ['Utility Bill', 'Bank Statement', 'Driver’s License'],
     required: false
   },
-  addressProofDocument: { type: String }, // URL to uploaded document
 
-  policeDocument: { type: String }, // URL to uploaded document
+  addressProofDocument: { type: String },
+
+  policeDocument: { type: String },
 
   CNIC: { type: String },
 
@@ -109,17 +89,14 @@ const userSchema = mongoose.Schema({
 
   backgroundCheckStatus: { type: String, enum: ['Pending', 'Verified', 'Rejected'], default: 'Pending' },
 
-  addressVerificationStatus: {
-    type: String,
-    enum: ['Pending', 'Verified', 'Rejected'],
-    default: 'Pending'
-  },
+  addressVerificationStatus: { type: String, enum: ['Pending', 'Verified', 'Rejected'], default: 'Pending' },
 
+  servicesOffered: [{ type: String }], // Empty array for users to add services dynamically
 
   createdAt: { type: Date, default: Date.now },
 
   updatedAt: { type: Date, default: Date.now },
+  
+}, { timestamps: true });
 
-}, { timestamps: true })
-
-export const User = mongoose.model('user', userSchema)
+export const User = mongoose.model('user', userSchema);

@@ -1,7 +1,7 @@
 import express from 'express'
-import { chatWithGPT } from '../controllers/AssistiveFixNavigatorModule/chat.controller.js'
+import { chatWithGemini } from '../controllers/AssistiveFixNavigatorModule/chat.controller.js'
 const router = express.Router()
 
-router.route('/chat').post(chatWithGPT)
+router.route('/chat').post(chatWithGemini)
 
 export default router
