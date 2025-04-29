@@ -4,7 +4,7 @@ import {
     ActivityIndicator, FlatList, KeyboardAvoidingView, Platform, TouchableWithoutFeedback,
     Keyboard
 } from 'react-native';
-import {Image} from 'expo-image'
+import { Image } from 'expo-image'
 import ModalDropdown from 'react-native-modal-dropdown';
 import { useNavigation, useRoute } from '@react-navigation/native';
 import axios from 'axios';
@@ -29,6 +29,8 @@ const PostMajorListings = () => {
     const [timeSlots, setTimeSlots] = useState([]); // Available time slots
     const [timeList, setTimeList] = useState([]); // Predefined time slots
     const [selectedImage, setSelectedImage] = useState(null);
+    const [latitude, setLatitude] = useState(null);
+    const [longitude, setLongitude] = useState(null);
 
     const GOOGLE_PLACES_API_KEY = 'AIzaSyBt8hQFcT_LFuwCYQKs-pHE_MqUXJeZgpk'; // Replace with your API key
 
@@ -123,6 +125,11 @@ const PostMajorListings = () => {
             Alert.alert('Missing Field', 'Please select at least one available time slot.');
             return;
         }
+        // Add this check with other validation checks
+        if (!latitude || !longitude) {
+            Alert.alert('Missing Field', 'Please select a valid location from the suggestions.');
+            return;
+        }
 
         try {
             setIsLoading(true);
@@ -133,7 +140,10 @@ const PostMajorListings = () => {
             formData.append('description', description);
             formData.append('city', city);
             formData.append('location', location);
+            formData.append('latitude', latitude);
+            formData.append('longitude', longitude);
             formData.append('categoryId', categoryId);
+
 
             // Append pricing options
             pricingOptions.forEach((option, index) => {
@@ -295,7 +305,7 @@ const PostMajorListings = () => {
                                     style={styles.inputDropdown}
                                     textStyle={styles.dropdownText}
                                     dropdownStyle={styles.dropdownStylecity}
-                                      dropdownTextStyle={styles.dropdownItemText}
+                                    dropdownTextStyle={styles.dropdownItemText}
                                 />
                             </View>
 
@@ -305,14 +315,25 @@ const PostMajorListings = () => {
                                     placeholder="Search Area"
                                     minLength={2}
                                     fetchDetails={true}
-                                    onPress={(data, details) => {
-                                        setLocation(data.description); // Set selected area
+                                    onPress={(data, details = null) => {
+                                        console.log("Selected Address:", data.description);
+                                        console.log("Details:", details);
+
+                                        if (details?.geometry?.location) {
+                                            const { lat, lng } = details.geometry.location;
+                                            console.log(`Latitude: ${lat}, Longitude: ${lng}`);
+                                            setLocation(data.description);
+                                            setLatitude(lat);
+                                            setLongitude(lng);
+                                        } else {
+                                            console.log("Invalid or missing location details");
+                                        }
                                     }}
                                     query={{
                                         key: GOOGLE_PLACES_API_KEY,
                                         language: 'en',
-                                        types: 'geocode', // Fetch places related to location
-                                        components: `country:PK`, // Restrict search to Pakistan
+                                        types: 'geocode',
+                                        components: 'country:PK',
                                     }}
                                     styles={{
                                         textInput: styles.input,
@@ -428,8 +449,8 @@ const styles = StyleSheet.create({
     textArea: { height: 100, textAlignVertical: 'top' },
     inputDropdown: {
         height: 50,
-        
-       
+
+
         borderRadius: 10,
         paddingLeft: 10,
         marginBottom: 15,
@@ -445,8 +466,8 @@ const styles = StyleSheet.create({
         color: Colors.GRAY,
     },
     dropdownStyle: {
-        marginTop:20,
-        marginLeft:-10,
+        marginTop: 20,
+        marginLeft: -10,
         width: 348,
         height: 193,
         borderRadius: 0,
@@ -459,14 +480,14 @@ const styles = StyleSheet.create({
         elevation: 5,
     },
     dropdownItemText: {
-        fontSize: 15, 
-        color: Colors.BLACK, 
-        padding: 10, 
-        backgroundColor:Colors.WHITE
+        fontSize: 15,
+        color: Colors.BLACK,
+        padding: 10,
+        backgroundColor: Colors.WHITE
     },
-    dropdownStylecity:{
-        marginTop:20,
-        marginLeft:-10,
+    dropdownStylecity: {
+        marginTop: 20,
+        marginLeft: -10,
         width: 348,
         height: 120,
         borderRadius: 0,
@@ -478,8 +499,8 @@ const styles = StyleSheet.create({
         shadowRadius: 5,
         elevation: 5,
     },
-    section: { 
-        marginBottom: 20 
+    section: {
+        marginBottom: 20
     },
     sectionTitle: {
         fontSize: 18,
@@ -559,15 +580,15 @@ const styles = StyleSheet.create({
         shadowRadius: 5,
         elevation: 3, // Android shadow
     },
-    
+
     priceLabelPrices: {
-        width: 168, 
+        width: 168,
         fontSize: 16,
         fontWeight: '600',
         color: '#555',
         textAlign: 'left',
     },
-    
+
     inputPrices: {
         flex: 1, // Take up remaining space dynamically
         marginLeft: 10,

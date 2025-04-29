@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { View, Text, TouchableOpacity, StyleSheet, ScrollView, Alert, ActivityIndicator } from 'react-native';
-import {Image} from 'expo-image'
+import { Image } from 'expo-image'
 import { useNavigation, useRoute } from '@react-navigation/native';
 import Colors from '@/constants/Colors';
 import * as ImagePicker from 'expo-image-picker';
@@ -68,6 +68,8 @@ const ServiceProviderDetails2 = () => {
             registerFormData.append('role', userData.role);
             registerFormData.append('city', userData.city);
             registerFormData.append('area', userData.area);
+            registerFormData.append('latitude', userData.latitude); // Add latitude
+            registerFormData.append('longitude', userData.longitude); // Add longitude
             registerFormData.append('firebaseUID', user.uid); // Use the Firebase UID from the created user
             registerFormData.append('availability', userData.availability);
             registerFormData.append('fullAddress', userData.fullAddress);
@@ -215,7 +217,7 @@ const ServiceProviderDetails2 = () => {
 
                 {/* Submit Button */}
                 <TouchableOpacity style={styles.submitButton} onPress={handleSubmit}>
-                    <Text style={styles.submitText}>{loading ? 'Uploading...'  : 'Submit'}</Text>
+                    <Text style={styles.submitText}>{loading ? 'Uploading...' : 'Submit'}</Text>
                 </TouchableOpacity>
             </View>
         </ScrollView>
@@ -234,7 +236,7 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         padding: 20,
         paddingBottom: 30,
-        paddingTop:55
+        paddingTop: 55
     },
     title: {
         fontSize: 20,

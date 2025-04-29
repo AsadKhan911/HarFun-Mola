@@ -26,6 +26,16 @@ const userSchema = mongoose.Schema({
 
   area: { type: String, required: true },
 
+  // Add these new fields
+  latitude: {
+    type: Number,
+    required: false // Can be optional if needed
+  },
+  longitude: {
+    type: Number,
+    required: false // Can be optional if needed
+  },
+
   isEmailVerified: { type: Boolean, default: false },
 
   verificationCode: { type: String },

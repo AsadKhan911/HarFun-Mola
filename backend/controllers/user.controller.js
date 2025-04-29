@@ -12,12 +12,25 @@ const stripe = new Stripe(process.env.STRIPE_SECRET_KEY);
 
 export const register = async (req, res) => {
     try {
-        const { fullName, email, city, phoneNumber, password, role, isEmailVerified, area, bio, firebaseUID } = req.body;
+        const { 
+            fullName, 
+            email, 
+            city, 
+            phoneNumber, 
+            password, 
+            role, 
+            isEmailVerified, 
+            area, 
+            latitude,
+            longitude,
+            bio, 
+            firebaseUID 
+        } = req.body;
 
         console.log("firebase uid ", firebaseUID);
 
         // Validate input fields
-        if (!fullName || !email || !phoneNumber || !password || !city || !role || !area || !firebaseUID) {
+        if (!fullName || !email || !phoneNumber || !password || !city || !role || !area || !firebaseUID || !latitude || !longitude ) {
             return res.status(400).json({
                 message: "All fields are required",
                 success: false,
@@ -66,6 +79,8 @@ export const register = async (req, res) => {
             isEmailVerified,
             verificationCode,
             area,
+            latitude: latitude ? parseFloat(latitude) : null, // Convert to number if exists
+            longitude: longitude ? parseFloat(longitude) : null, // Convert to number if exists
             firebaseUID,
             profile: {
                 profilePic,

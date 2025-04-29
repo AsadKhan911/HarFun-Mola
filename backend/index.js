@@ -20,6 +20,7 @@ import minorCategory from './routes/minorCategory.route.js'
 import minorService from './routes/minorServices.route.js'
 import BiddingAndDealMaking from './routes/BiddingAndDealMaking.route.js'
 import AssistiveFixNavigator from './routes/assistiveFix.route.js'
+import IntelliServe from './routes/recommendations.route.js'
 import { User } from './models/User/user.js'
 
 //Middlewares
@@ -61,6 +62,7 @@ app.use('/api/v1/minorcategory' , minorCategory)
 app.use('/api/v1/minorservice' , minorService)
 app.use('/api/v1/biddingAndDealMaking' , BiddingAndDealMaking)
 app.use('/api/v1/assistiveFix' , AssistiveFixNavigator)
+app.use('/api/v1/intelliServe' , IntelliServe)
 
 app.listen(port , '0.0.0.0' , ()=>{
     console.log(`Server running at port ${port}`)

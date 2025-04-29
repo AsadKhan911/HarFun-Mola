@@ -10,16 +10,110 @@ axios.defaults.timeout = 120000;
 
 // Modify postListing function to handle file upload
 
+// export const postListing = async (req, res) => {
+//     try {
+//         // Destructure the required fields from req.body
+//         const { serviceName, description, pricingOptions, city, location, categoryId, unavailableDates, timeSlots } = req.body;
+//         const userID = req.id;
+
+//         // Check for missing fields
+//         if (!serviceName || !description || !pricingOptions  || !city || !location || !categoryId || !timeSlots) {
+//             return res.status(400).json({
+//                 message: "All fields are required, including categoryId and timeSlots.",
+//                 success: false
+//             });
+//         }
+
+//         let listingPicture = null;
+//         let file = req.file;
+
+//          if (file) {
+//                     try {
+//                         const fileUri = getDataUri(file);
+//                         const cloudResponse = await cloudinary.uploader.upload(fileUri.content, {
+//                             folder: 'HFM/majorListingPictures',
+//                         });
+//                         listingPicture = cloudResponse.secure_url;
+//                     } catch (error) {
+//                         console.error('Error uploading listing picture to Cloudinary:', error);
+//                         listingPicture = null;
+//                     }
+//                 }
+        
+
+//         // Validate if the provided categoryId exists
+//         const category = await majorCategory.findById(categoryId);
+//         if (!category) {
+//             return res.status(404).json({
+//                 message: "Category not found.",
+//                 success: false
+//             });
+//         }
+
+//          // Validate Pricing Options
+//          if (!Array.isArray(pricingOptions) || pricingOptions.length === 0) {
+//             return res.status(400).json({ message: "At least one pricing option is required.", success: false });
+//         }
+
+//         // Create a new service listing
+//         const listing = await serviceListings.create({
+//             serviceName,
+//             description,
+//             pricingOptions,
+//             city,
+//             location,
+//             category: categoryId,  // Associate the listing with the category
+//             created_by: userID,
+//             unavailableDates,  // Save the unavailable dates
+//             timeSlots,  // Save the available time slots
+//             Listingpicture: listingPicture  // Add logic for image upload if needed
+//         });
+
+//         return res.status(201).json({
+//             message: "New listing created successfully",
+//             listing,
+//             success: true
+//         });
+//     } catch (error) {
+//         console.error("Error creating listing:", error);
+//         return res.status(500).json({
+//             message: "Internal server error",
+//             success: false
+//         });
+//     }
+// };
+
 export const postListing = async (req, res) => {
     try {
         // Destructure the required fields from req.body
-        const { serviceName, description, pricingOptions, city, location, categoryId, unavailableDates, timeSlots } = req.body;
+        const { 
+            serviceName, 
+            description, 
+            pricingOptions, 
+            city, 
+            location, 
+            latitude,
+            longitude,
+            categoryId, 
+            unavailableDates, 
+            timeSlots 
+        } = req.body;
+        
         const userID = req.id;
 
-        // Check for missing fields
-        if (!serviceName || !description || !pricingOptions  || !city || !location || !categoryId || !timeSlots) {
+        // Check for missing fields (add latitude and longitude validation)
+        if (!serviceName || !description || !pricingOptions || !city || !location || 
+            !latitude || !longitude || !categoryId || !timeSlots) {
             return res.status(400).json({
-                message: "All fields are required, including categoryId and timeSlots.",
+                message: "All fields are required, including location coordinates.",
+                success: false
+            });
+        }
+
+        // Validate coordinates are numbers
+        if (isNaN(latitude) || isNaN(longitude)) {
+            return res.status(400).json({
+                message: "Invalid latitude or longitude values.",
                 success: false
             });
         }
@@ -27,19 +121,18 @@ export const postListing = async (req, res) => {
         let listingPicture = null;
         let file = req.file;
 
-         if (file) {
-                    try {
-                        const fileUri = getDataUri(file);
-                        const cloudResponse = await cloudinary.uploader.upload(fileUri.content, {
-                            folder: 'HFM/majorListingPictures',
-                        });
-                        listingPicture = cloudResponse.secure_url;
-                    } catch (error) {
-                        console.error('Error uploading listing picture to Cloudinary:', error);
-                        listingPicture = null;
-                    }
-                }
-        
+        if (file) {
+            try {
+                const fileUri = getDataUri(file);
+                const cloudResponse = await cloudinary.uploader.upload(fileUri.content, {
+                    folder: 'HFM/majorListingPictures',
+                });
+                listingPicture = cloudResponse.secure_url;
+            } catch (error) {
+                console.error('Error uploading listing picture to Cloudinary:', error);
+                listingPicture = null;
+            }
+        }
 
         // Validate if the provided categoryId exists
         const category = await majorCategory.findById(categoryId);
@@ -50,23 +143,28 @@ export const postListing = async (req, res) => {
             });
         }
 
-         // Validate Pricing Options
-         if (!Array.isArray(pricingOptions) || pricingOptions.length === 0) {
-            return res.status(400).json({ message: "At least one pricing option is required.", success: false });
+        // Validate Pricing Options
+        if (!Array.isArray(pricingOptions) || pricingOptions.length === 0) {
+            return res.status(400).json({ 
+                message: "At least one pricing option is required.", 
+                success: false 
+            });
         }
 
-        // Create a new service listing
+        // Create a new service listing with coordinates
         const listing = await serviceListings.create({
             serviceName,
             description,
             pricingOptions,
             city,
             location,
-            category: categoryId,  // Associate the listing with the category
+            latitude: parseFloat(latitude), // Ensure it's stored as a number
+            longitude: parseFloat(longitude), // Ensure it's stored as a number
+            category: categoryId,
             created_by: userID,
-            unavailableDates,  // Save the unavailable dates
-            timeSlots,  // Save the available time slots
-            Listingpicture: listingPicture  // Add logic for image upload if needed
+            unavailableDates,
+            timeSlots,
+            Listingpicture: listingPicture
         });
 
         return res.status(201).json({

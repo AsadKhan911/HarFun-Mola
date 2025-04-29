@@ -26,6 +26,19 @@ const getCityCoordinates = (city) => {
     return cityCoordinates[city] || "31.5204,74.3587"; // Default to Lahore
 };
 
+const handleAreaSelect = (data, details = null) => {
+    if (details?.geometry?.location) {
+        const { lat, lng } = details.geometry.location;
+        setArea(data.description);
+        setLatitude(lat);
+        setLongitude(lng);
+    } else {
+        setArea(data.description);
+        setLatitude(null);
+        setLongitude(null);
+    }
+};
+
 const GOOGLE_API_KEY = 'AIzaSyBt8hQFcT_LFuwCYQKs-pHE_MqUXJeZgpk';
 const Signup = () => {
     const navigation = useNavigation();
@@ -38,6 +51,8 @@ const Signup = () => {
     const [role, setRole] = useState('Service User');
     const [city, setCity] = useState('Rawalpindi');
     const [area, setArea] = useState('');
+    const [latitude, setLatitude] = useState(null);
+    const [longitude, setLongitude] = useState(null);
     const [selectedImage, setSelectedImage] = useState(null);
     const [loading, setLoading] = useState(false)
     const [passwordStrength, setPasswordStrength] = useState('');
@@ -135,7 +150,9 @@ const Signup = () => {
                 formData.append('role', role);
                 formData.append('city', city);
                 formData.append('area', area);
-                formData.append('firebaseUID', user.uid); // Use the Firebase UID from the created user
+                formData.append('latitude', latitude);
+                formData.append('longitude', longitude);
+                formData.append('firebaseUID', user.uid);
 
                 if (selectedImage) {
                     const fileName = selectedImage.split('/').pop();
@@ -173,6 +190,8 @@ const Signup = () => {
                         role,
                         city,
                         area,
+                        latitude,  // Pass the coordinates
+                        longitude, // Pass the coordinates
                         selectedImage, // Pass the selected image URI
                     },
                 });
@@ -195,103 +214,6 @@ const Signup = () => {
         }
     };
 
-    // const handleSignup = async () => {
-    //     try {
-    //         console.log("Auth object before signup:", auth);
-    
-    //         if (!auth) {
-    //             console.error("Firebase Auth is not initialized!");
-    //             return;
-    //         }
-    
-    //         if (!fullName || !email || !phoneNumber || !password || !area || !role) {
-    //             Alert.alert('Error', 'All fields are required');
-    //             return;
-    //         }
-    
-    //         // Check if password strength is weak, and if the user is a service provider
-    //         if (role === "Service Provider" || role === "Service User" && passwordStrength === "Weak") {
-    //             Alert.alert('Password is too weak', 'Your password must be at least 8 characters long and include uppercase letters and special characters.');
-    //             return;
-    //         }
-    
-    //         setLoading(true);
-    
-    //         if (role === "Service User") {
-    //             // Step 1: Create user in Firebase Authentication
-    //             const userCredential = await createUserWithEmailAndPassword(auth, email, password);
-    //             const user = userCredential.user;
-    //             console.log("User registered in Firebase:", user.uid);
-    
-    //             // Step 2: Prepare form data for your backend
-    //             const formData = new FormData();
-    //             formData.append('fullName', fullName);
-    //             formData.append('email', email);
-    //             formData.append('phoneNumber', phoneNumber);
-    //             formData.append('password', password);
-    //             formData.append('role', role);
-    //             formData.append('city', city);
-    //             formData.append('area', area);
-    //             formData.append('firebaseUID', user.uid); // Use the Firebase UID from the created user
-    
-    //             if (selectedImage) {
-    //                 const fileName = selectedImage.split('/').pop();
-    //                 const fileType = fileName.split('.').pop();
-    
-    //                 formData.append('file', {
-    //                     uri: selectedImage,
-    //                     name: fileName,
-    //                     type: `image/${fileType}`,
-    //                 });
-    //             }
-    
-    //             // Step 3: Send data to your backend
-    //             const response = await axios.post(`${userBaseUrl}/register`, formData, {
-    //                 headers: {
-    //                     'Content-Type': 'multipart/form-data',
-    //                 },
-    //             });
-    
-    //             if (response.data.success) {
-    //                 Alert.alert(response.data.message, 'Verify your email');
-    //                 dispatch(setUser(response.data.newUser));
-    //                 navigation.push('EmailOTPScreen');
-    //             } else {
-    //                 Alert.alert('Signup Failed', response.data.message);
-    //             }
-    //         } else if (role === "Service Provider") {
-    //             // For Service Provider, navigate to service-provider-signup-details-1 with entered details
-    //             navigation.navigate('service-provider-signup-details-1', {
-    //                 userData: {
-    //                     fullName,
-    //                     email,
-    //                     phoneNumber,
-    //                     password,
-    //                     role,
-    //                     city,
-    //                     area,
-    //                     selectedImage, // Pass the selected image URI
-    //                 },
-    //             });
-    //         }
-    //     } catch (error) {
-    //         console.error('Signup Error:', error);
-    
-    //         // Handle Firebase-specific errors
-    //         if (error.code === 'auth/email-already-in-use') {
-    //             Alert.alert('Error', 'This email is already in use.');
-    //         } else if (error.code === 'auth/invalid-email') {
-    //             Alert.alert('Error', 'Invalid email address.');
-    //         } else if (error.code === 'auth/weak-password') {
-    //             Alert.alert('Error', 'Password should be at least 6 characters.');
-    //         } else {
-    //             Alert.alert('Error', 'An unknown error occurred.');
-    //         }
-    //     } finally {
-    //         setLoading(false);
-    //     }
-    // };
-    
     return (
         <KeyboardAvoidingView
             behavior={Platform.OS === "ios" ? "padding" : "height"} style={{ flex: 1 }}
@@ -403,16 +325,16 @@ const Signup = () => {
                             placeholder="Search Area"
                             minLength={2}
                             fetchDetails={true}
-                            onPress={(data, details = null) => setArea(data.description)}
+                            onPress={handleAreaSelect}
                             query={{
                                 key: GOOGLE_API_KEY,
                                 language: 'en',
                                 components: 'country:pk',
-                                location: getCityCoordinates(city), // Ensure city is selected
-                                radius: 10000, // 10km radius
+                                location: getCityCoordinates(city),
+                                radius: 10000,
                             }}
                             styles={{ textInput: styles.input }}
-                        />;
+                        />
 
 
                         <TouchableOpacity style={styles.imagePickerButton} onPress={pickImage}>
@@ -570,12 +492,12 @@ const styles = StyleSheet.create({
         marginTop: 10,
         alignSelf: 'center',
     },
-    passwordStrengthContainer: { marginTop: 5, marginBottom: 10, marginLeft:5, width: '100%' },
+    passwordStrengthContainer: { marginTop: 5, marginBottom: 10, marginLeft: 5, width: '100%' },
     passwordStrengthText: { fontSize: 14, fontWeight: 'bold' },
     weak: { color: 'red' },
     medium: { color: 'orange' },
     strong: { color: 'green' },
-    passwordFeedback: { fontSize: 13 , fontFamily:'outfit-Medium' },
+    passwordFeedback: { fontSize: 13, fontFamily: 'outfit-Medium' },
 });
 
 export default Signup;
