@@ -1,1 +1,17 @@
 @import "tailwindcss";
+
+@font-face {
+    font-family: 'Outfit-Bold';
+    src: url('/fonts/Outfit-Bold.ttf') format('truetype');
+  }
+  
+  @font-face {
+    font-family: 'Outfit-Medium';
+    src: url('/fonts/Outfit-Medium.ttf') format('truetype');
+  }
+  
+  @font-face {
+    font-family: 'Outfit';
+    src: url('/fonts/Outfit-Regular.ttf') format('truetype');
+  }
+  

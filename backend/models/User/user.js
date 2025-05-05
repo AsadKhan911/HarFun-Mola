@@ -24,7 +24,7 @@ const userSchema = mongoose.Schema({
 
   city: { type: String, enum: ['Rawalpindi', 'Lahore', 'Karachi'] },
 
-  area: { type: String, required: true },
+  area: { type: String },
 
   // Add these new fields
   latitude: {
