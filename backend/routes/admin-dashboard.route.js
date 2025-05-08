@@ -7,6 +7,7 @@ import { getBookingsAnalyticsByCategory } from '../controllers/admin-dahboard/ge
 import { addServiceProvider, addUser, deleteServiceProvider, deleteUser, getAllServiceProviders, getAllUsers, updateServiceProvider, updateUser } from '../controllers/admin-dahboard/Show,Add,Edit,DeleteUsers.js';
 import { addMajorCategories, deleteCategory, getMajorCategories, updateMajorCategory } from '../controllers/majorCategory.controller.js';
 import { banMajorListing, deleteMajorListing, getAllMajorListings, updateMajorListing } from '../controllers/admin-dahboard/Listings.js';
+import { getAllBookings , getBookingById , updateBookingStatus , editBooking , deleteBooking  } from '../controllers/admin-dahboard/admin_Bookings.js'
 
 const router = express.Router()
 
@@ -40,5 +41,11 @@ router.put("/listings/:id", updateMajorListing);
 router.delete("/listings/:id", deleteMajorListing);
 router.put("/ban-listing/:banId", banMajorListing);
 
+//Show , edit , remove bookings
+router.get('/bookings' , getAllBookings);
+router.get('/bookings/:id', getBookingById);
+router.put('/bookings/:id/status', updateBookingStatus);
+router.put('/bookings/:id', editBooking);
+router.delete('/bookings/:id', deleteBooking);
 
 export default router

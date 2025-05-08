@@ -97,7 +97,7 @@ const Sidebar = ({ children }) => {
                     </li>
                     <li>
                         <Link
-                            to="/bookings"
+                            to="/payments"
                             className="flex items-center space-x-3 p-3 rounded-lg hover:bg-purple-600/80 transition-all duration-200 group"
                         >
                             <div className="p-2 rounded-md bg-purple-500 group-hover:bg-purple-400 transition-all duration-200">
@@ -156,7 +156,7 @@ const Sidebar = ({ children }) => {
                     {/* Logout with different styling */}
                     <li className="mt-8 border-t border-purple-600/50 pt-4">
                         <Link
-                            to="/logout"
+                            to="/"
                             className="flex items-center space-x-3 p-3 rounded-lg hover:bg-purple-600/80 transition-all duration-200 group text-purple-100"
                         >
                             <div className="p-2 rounded-md bg-purple-600/70 group-hover:bg-purple-500 transition-all duration-200">
