@@ -2,6 +2,9 @@ import { useState } from 'react';
 import { FaLock, FaUser, FaEye, FaEyeSlash } from 'react-icons/fa';
 import { AdminBaseUrl } from '../routes/base-url';
 import { useNavigate } from 'react-router-dom';
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
+import '../Custom CSS/customToast.css'
 
 const AdminLogin = () => {
   const [email, setEmail] = useState('');
@@ -14,7 +17,7 @@ const AdminLogin = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setIsLoading(true);
-  
+
     try {
       const res = await fetch(`${AdminBaseUrl}/login`, {
         method: 'POST',
@@ -23,22 +26,32 @@ const AdminLogin = () => {
         },
         body: JSON.stringify({ email, password }),
       });
-  
+
       const data = await res.json();
-  
+
       if (!res.ok) {
         throw new Error(data.message || 'Login failed');
       }
-  
-      alert(data.message); 
-      navigate('/dashboard');
+
+      toast.success("Logged in successfully!", {
+        className: 'customToast',  // Apply custom class for styling
+        position: "bottom-center", // Position the toast nicely
+        autoClose: 5000, // Auto close after 5 seconds
+      });
+
+      setTimeout(() => {
+        navigate('/dashboard');
+      }, 1500);
     } catch (error) {
-      alert(error.message);
+      toast.error(error.message, {
+        className: 'customToast', // Apply custom class for styling
+        position: "bottom-center", // Position the toast
+        autoClose: 5000, // Auto close after 5 seconds
+      });
     } finally {
       setIsLoading(false);
     }
   };
-  
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-purple-900 via-indigo-800 to-blue-900 flex items-center justify-center p-4">
@@ -149,6 +162,29 @@ const AdminLogin = () => {
           </div>
         </div>
       </div>
+      <ToastContainer
+        position="top-center"  // Position the toast at the bottom center
+        autoClose={5000}          // Auto close after 5 seconds
+        hideProgressBar={false}   // Keep the progress bar visible
+        newestOnTop={false}       // To show toasts in order
+        rtl={false}               // Set to false if you don't need RTL
+        pauseOnFocusLoss={false}  // Disable pause on focus loss
+        draggable={true}          // Allow toasts to be draggable
+        pauseOnHover={true}       // Pause when hovering over the toast
+        toastStyle={{
+          background: 'linear-gradient(45deg, #6a11cb, #2575fc)',  // Gradient background
+          color: '#fff',
+          borderRadius: '12px',  // Rounded corners
+          fontSize: '20px',      // Larger text size
+          boxShadow: '0 10px 30px rgba(0, 0, 0, 0.1)',  // Soft shadow
+          padding: '20px 30px',  // Increase padding
+          fontFamily: "'Roboto', sans-serif",  // Elegant font
+        }}
+        progressStyle={{
+          backgroundColor: '#fff', // White progress bar
+        }}
+      />
+
     </div>
   );
 };

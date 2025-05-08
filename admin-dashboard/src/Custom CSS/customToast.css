@@ -1,0 +1,22 @@
+/* custom-toast.css */
+.custom-toast {
+    background: linear-gradient(45deg, #6a11cb, #2575fc); /* Gradient background */
+    color: white;
+    font-size: 20px; /* Larger text */
+    font-weight: bold;
+    border-radius: 12px; /* Rounded corners */
+    padding: 20px 30px; /* Increased padding for bigger size */
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1); /* Soft shadow */
+    font-family: 'Roboto', sans-serif;
+    max-width: 500px;
+    width: 100%;
+  }
+  
+  .custom-toast .Toastify__progress-bar {
+    background-color: #fff; /* White progress bar */
+  }
+  
+  .custom-toast-container {
+    padding: 20px; /* Padding for better positioning */
+  }
+  

@@ -65,31 +65,33 @@ export const getMajorCategories = async (req, res) => {
     }
 }
 
+// In your controller
 export const updateMajorCategory = async (req, res) => {
     try {
-        const { id } = req.params; // Get category ID from request params
-        const { serviceName, pricingOptions } = req.body; // Get new service data from request body
+        const { id } = req.params;
+        const { serviceName, pricingOptions } = req.body;
 
-        // Validate input
-        if (!serviceName || !Array.isArray(pricingOptions)) {
-            return res.status(400).json({
-                message: "Missing required fields or invalid pricingOptions format",
-                success: false
-            });
-        }
+        // Validate and transform pricingOptions
+        const transformedPricingOptions = pricingOptions.map(option => {
+            if (typeof option === 'string') {
+                return { label: option };
+            }
+            return option; // In case it's already in correct format
+        });
 
-        // Find and update the category by adding a new predefined service
         const updatedCategory = await majorCategory.findByIdAndUpdate(
             id,
             {
                 $push: {
-                    predefinedServices: { serviceName, pricingOptions }
+                    predefinedServices: { 
+                        serviceName, 
+                        pricingOptions: transformedPricingOptions 
+                    }
                 }
             },
-            { new: true } // Return the updated document
+            { new: true }
         );
 
-        // Check if category exists
         if (!updatedCategory) {
             return res.status(404).json({
                 message: "Category not found",
@@ -110,3 +112,16 @@ export const updateMajorCategory = async (req, res) => {
         });
     }
 };
+
+export const deleteCategory = async (req, res) => {
+    try {
+      const { id } = req.params;
+  
+      const deletedProvider = await majorCategory.findByIdAndDelete(id);
+      if (!deletedProvider) return res.status(404).json({ message: "Service provider not found" });
+  
+      res.status(200).json({ message: "Category deleted successfully" });
+    } catch (error) {
+      res.status(500).json({ message: error.message });
+    }
+  }; 

@@ -5,6 +5,8 @@ import { getAdminDashboardStats } from '../controllers/admin-dahboard/getTotalUs
 import { getMonthlyBookingStats } from '../controllers/admin-dahboard/getMonthlyBookingStats.js';
 import { getBookingsAnalyticsByCategory } from '../controllers/admin-dahboard/getBookingsAnalyticsByCategory.js';
 import { addServiceProvider, addUser, deleteServiceProvider, deleteUser, getAllServiceProviders, getAllUsers, updateServiceProvider, updateUser } from '../controllers/admin-dahboard/Show,Add,Edit,DeleteUsers.js';
+import { addMajorCategories, deleteCategory, getMajorCategories, updateMajorCategory } from '../controllers/majorCategory.controller.js';
+import { banMajorListing, deleteMajorListing, getAllMajorListings, updateMajorListing } from '../controllers/admin-dahboard/Listings.js';
 
 const router = express.Router()
 
@@ -25,5 +27,18 @@ router.get("/providers", getAllServiceProviders);
 router.post("/providers", addServiceProvider);
 router.put("/providers/:id", updateServiceProvider);
 router.delete("/providers/:id", deleteServiceProvider);
+
+//Show , add , remove & update categories
+router.get("/categories", getMajorCategories);
+router.post("/categories", addMajorCategories);
+router.put("/categories/:id", updateMajorCategory);
+router.delete("/categories/:id", deleteCategory);
+
+//Show , edit , remove & ban service listings 
+router.get("/listings", getAllMajorListings);
+router.put("/listings/:id", updateMajorListing);
+router.delete("/listings/:id", deleteMajorListing);
+router.put("/ban-listing/:banId", banMajorListing);
+
 
 export default router
