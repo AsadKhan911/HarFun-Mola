@@ -8,6 +8,7 @@ import CategoryDetails from './components/Categories/categoryDetails';
 import Listings from './components/Listings/MainPage'
 import Bookings from './components/Bookings/MainScreen'
 import Payments from './components/Payments/MainScreen'
+import Settings from './components/Settings/MainScreen'
 
 function App() {
   return (
@@ -23,6 +24,7 @@ function App() {
         <Route path="/listings" element={<Listings />} />
         <Route path="/bookings" element={<Bookings />} />
         <Route path="/payments" element={<Payments />} />
+        <Route path="/settings" element={<Settings />} />
       </Routes>
     </Router>
     </>

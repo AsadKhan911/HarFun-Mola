@@ -124,7 +124,7 @@ const Sidebar = ({ children }) => {
                         </Link>
                     </li> */}
 
-                    <li>
+                    {/* <li>
                         <Link
                             to="/feedbacks"
                             className="flex items-center space-x-3 p-3 rounded-lg hover:bg-purple-600/80 transition-all duration-200 group"
@@ -136,7 +136,7 @@ const Sidebar = ({ children }) => {
                             </div>
                             <span style={{ fontFamily: 'Outfit-Medium' }} className="text-xl">Complaints & Feedbacks</span>
                         </Link>
-                    </li>
+                    </li> */}
 
                     <li>
                         <Link
