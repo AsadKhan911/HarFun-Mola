@@ -34,14 +34,15 @@ export const getNearbyServices = async (user, bookedCategories) => {
     );
     return distance <= MAX_DISTANCE_KM;
   });
+  
 
   // 3. Filter by booked categories
   const bookedCategoryIds = bookedCategories.map(cat => String(cat._id));
 
   const filteredServices = nearbyServices.filter(service =>
-    bookedCategoryIds.includes(String(service.category._id)),
-    console.log('Service:', service.title, 'Distance:', distance)
+    bookedCategoryIds.includes(String(service.category._id))
   );
+  
 
   return filteredServices;
 };

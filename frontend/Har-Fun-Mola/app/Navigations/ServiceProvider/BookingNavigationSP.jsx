@@ -9,6 +9,7 @@ import Home from '../../Navigations/ServiceProvider/HomeNavigationSP.jsx'
 import Profile from '../../Screens/ProfileScreen/Profile.jsx';
 import ServiceProviderMapView from '../../Screens/Maps/ServiceProviderMapView.jsx';
 import ViewServiceUserProfile from '../../Screens/ProfileScreen/ViewServiceUserProfile.jsx';
+import ReuseableChat from "../../../components/Chat_Component/ReuseableChat.jsx";
 
 const Stack = createStackNavigator();
 
@@ -26,6 +27,7 @@ const BookingNavigationSP = () => {
       <Stack.Screen name='user-pin-location' component={ServiceProviderMapView}/>
       <Stack.Screen name='final-page' component={Profile}/>
       <Stack.Screen name='user-profile-screen' component={ViewServiceUserProfile}/>
+       <Stack.Screen name='message-provider' component={ReuseableChat}/>
     </Stack.Navigator>
   );
 };

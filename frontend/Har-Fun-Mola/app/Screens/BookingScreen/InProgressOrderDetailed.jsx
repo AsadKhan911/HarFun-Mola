@@ -27,6 +27,9 @@ const InProgressOrderDetailed = () => {
   console.log(userUid)
 
 
+  const handleViewProfile = async () => {
+    console.log("view profile")
+  }
   const handleCancelOrder = async () => {
     try {
       // Step 1: Update order status to "Rejected"
@@ -53,13 +56,19 @@ const InProgressOrderDetailed = () => {
   };
 
 
-  const handleViewProfile = () => {
-    navigation.navigate("ProviderProfile", { providerId: booking?.service?.created_by?._id });
-  };
-
   const handleMessageProvider = () => {
-    navigation.navigate("MessageProvider", { providerId: booking?.service?.created_by?._id });
+    if (!booking?.service?.created_by?._id || !booking?.user?._id) {
+      alert("Missing provider or user ID.");
+      return;
+    }
+  
+    navigation.navigate("message-provider", {
+      otherUserIdis: booking?.service?.created_by?._id,
+      senderName: booking?.service?.created_by?.fullName,
+      otherUserProfilePic: booking?.service?.created_by?.profile?.profilePic
+    });
   };
+  
 
   return (
     <ScrollView contentContainerStyle={styles.container}>

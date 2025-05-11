@@ -16,13 +16,15 @@ const ActiveDetailsBookingPage = ({ route, handleCloseModal }) => {
   const { bookingId } = route.params;
   const bookingDetails = useSelector((store) => store.bookings.singleBooking);
   const serviceUser = useSelector((store) => store.bookings.singleBooking?.user);
-  const providerId = useSelector((store) => store.bookings.singleBooking?.service?.created_by?.firebaseUID)
+  // const providerId = useSelector((store) => store.bookings.singleBooking?.service?.created_by?.firebaseUID)
   const userId = useSelector((store) => store.bookings.singleBooking?.user?.firebaseUID)
-  console.log("UserId ", userId)
-  console.log("ProviderId ", providerId)
+  
+  
+  const providerId = useSelector((store) => store.bookings.singleBooking?.user?._id)
+  const senderName = useSelector((store) => store.bookings.singleBooking?.user?.fullName);
+  const otherUserProfilePic = useSelector((store) => store.bookings.singleBooking?.user?.profile?.profilePic);
 
   const [isLoading, setIsLoading] = useState(false); // For loading spinner
-  // const [isServiceStarted, setIsServiceStarted] = useState(false); // For loading spinner
   const [showConfirmationModal, setShowConfirmationModal] = useState(false); // For loading spinner
   const { updateBookingStatus, loading } = useGetBookingAcceptedToInProgress(); // Use the custom hook
   const navigation = useNavigation();
@@ -94,8 +96,18 @@ const ActiveDetailsBookingPage = ({ route, handleCloseModal }) => {
   };
 
   const handleMessage = () => {
-    console.log("message done")
-  }
+    if (!providerId) {
+      alert("Missing provider or user ID.");
+      return;
+    }
+  
+    navigation.navigate("message-provider", {
+      otherUserIdis: providerId,
+      senderName: senderName,
+      otherUserProfilePic: otherUserProfilePic
+      
+    });
+  };
 
   if (!bookingDetails || !serviceUser) {
     return (

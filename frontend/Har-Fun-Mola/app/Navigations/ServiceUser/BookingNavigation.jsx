@@ -6,6 +6,7 @@ import userInProgressOrderDetailed from '../../Screens/BookingScreen/InProgressO
 import userCompletedOrderDetailed from '../../Screens/BookingScreen/CompletedOrderDetailed.jsx'
 import userCancelledOrderDetailed from '../../Screens/BookingScreen/CancelledOrderDetailed.jsx'
 import ServiceUserMapView from "../../Screens/Maps/ServiceUserMapView.jsx";
+import ReuseableChat from "../../../components/Chat_Component/ReuseableChat.jsx";
 
 const Stack = createStackNavigator();
 
@@ -22,6 +23,7 @@ const BookingNavigation = () => {
       <Stack.Screen name='map-view-screen' component={ServiceUserMapView}/>
       <Stack.Screen name='user-order-completed-screen' component={userCompletedOrderDetailed}/>
       <Stack.Screen name='user-order-cancelled-screen' component={userCancelledOrderDetailed}/>
+      <Stack.Screen name='message-provider' component={ReuseableChat}/>
     </Stack.Navigator>
   );
 };

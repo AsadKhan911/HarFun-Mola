@@ -24,7 +24,6 @@ const InProgressDetailBookingPage = ({ route }) => {
   const serviceProviderStripeId = useSelector((state) => state.bookings.singleBooking?.service?.created_by?.stripeAccountId);
   const amount = useSelector((state) => state.bookings.singleBooking?.service?.price);
 
-
   const [elapsedTime, setElapsedTime] = useState(0);
   const [startTime, setStartTime] = useState(null);
   const [completedTime, setCompletedTime] = useState(null);

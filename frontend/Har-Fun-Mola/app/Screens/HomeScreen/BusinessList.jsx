@@ -49,7 +49,7 @@ export const BusinessList = () => {
 
   return (
     <View style={{ marginTop: 20 }}>
-      <Heading text="Recommended Businesses" isViewAll={true} />
+      <Heading text="Recommended Services" isViewAll={true} />
       <FlatList
         horizontal={true}
         showsHorizontalScrollIndicator={false}
