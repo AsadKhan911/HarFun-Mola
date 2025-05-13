@@ -2,7 +2,7 @@ import { View, FlatList, ActivityIndicator, Text } from 'react-native';
 import React, { useEffect, useState } from 'react';
 import { Heading } from '../../../components/Heading.jsx';
 import { useSelector } from 'react-redux';
-import { BusinessListItemSmall } from '../HomeScreen/BusinessListItemSmall.jsx';
+import  BusinessListItemSmall  from '../HomeScreen/BusinessListItemSmall.jsx';
 import Colors from '../../../constants/Colors.ts';
 import { IntelliServeBaseUrl } from '../../URL/userBaseUrl.js';
 

@@ -50,6 +50,29 @@ export const getAllMinorServices = async (req, res) => {
   }
 };
 
+// export const getServicesByCategory = async (req, res) => {
+//   try {
+//     const { categoryId } = req.params; 
+
+//     if (!categoryId) {
+//       return res.status(400).json({ message: "Category ID is required" });
+//     }
+
+//     const services = await Service.find({ category: categoryId })
+//       .populate("predefinedIssues")
+//       .exec();
+
+//     if (!services.length) {
+//       return res.status(404).json({ message: "No services found for this category" });
+//     }
+
+//     res.status(200).json(services);
+//   } catch (error) {
+//     console.error(error);
+//     res.status(500).json({ message: "Internal server error" });
+//   }
+// };
+
 export const getServicesByCategory = async (req, res) => {
   try {
     const { categoryId } = req.params; 
@@ -63,13 +86,13 @@ export const getServicesByCategory = async (req, res) => {
       .exec();
 
     if (!services.length) {
-      return res.status(404).json({ message: "No services found for this category" });
+      return res.status(404).json({ success: false, message: "No services found for this category" });
     }
 
-    res.status(200).json(services);
+    res.status(200).json({ success: true, services: services });
+   
   } catch (error) {
     console.error(error);
-    res.status(500).json({ message: "Internal server error" });
+    res.status(500).json({ success: false, message: "Internal server error" });
   }
 };
-

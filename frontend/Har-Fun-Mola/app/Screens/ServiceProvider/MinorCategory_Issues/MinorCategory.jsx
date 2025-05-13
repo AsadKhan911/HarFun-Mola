@@ -1,30 +1,13 @@
 import { View, Text, StyleSheet, FlatList, TouchableOpacity } from 'react-native';
-import {Image} from 'expo-image'
+import { Image } from 'expo-image';
 import { useEffect, useState } from 'react';
 import { useNavigation } from '@react-navigation/native';
 import axios from 'axios';
-import { CategoryBaseUrl } from '../../../URL/userBaseUrl.js';
+import { MinorCategoryBaseUrl } from '../../../URL/userBaseUrl.js';
 import { Card } from 'react-native-paper';
 import Colors from '../../../../constants/Colors.ts';
 
-// Icon Mapping for Categories
-const iconMap = {
-  "Cleaning": require('../../../../assets/images/mop.png'),
-  "Handy": require('../../../../assets/images/support.png'),
-  "Painting": require('../../../../assets/images/paintbrush.png'),
-  "Delivery": require('../../../../assets/images/cargo-truck.png'),
-  "Gardening": require('../../../../assets/images/gardening.png'),
-  "Moving": require('../../../../assets/images/moving.png'),
-  "Pool": require('../../../../assets/images/pool.png'),
-  "Roofing" :require('../../../../assets/images/roof.png'),
-  "PetCare" :require('../../../../assets/images/pet.png'),
-  "Fitness" :require('../../../../assets/images/fitness.png'),
-  "Photography" :require('../../../../assets/images/photography.png'),
-  "Tutoring" :require('../../../../assets/images/tutoring.png'),
-  // Add more categories as needed
-};
-
-export const ProviderCategories = () => {
+export const MinorCategory = () => {
   const [categories, setCategories] = useState([]);
   const navigation = useNavigation();
 
@@ -34,9 +17,10 @@ export const ProviderCategories = () => {
 
   const getCategories = async () => {
     try {
-      const response = await axios.get(`${CategoryBaseUrl}/getcategory`);
+      const response = await axios.get(`${MinorCategoryBaseUrl}/getcategory`);
       if (response.data.success) {
         setCategories(response.data.categories);
+        console.log(categories)
       } else {
         console.error('Failed to fetch categories');
       }
@@ -47,7 +31,7 @@ export const ProviderCategories = () => {
 
   return (
     <View style={styles.container}>
-      <Text style={styles.heading}>Choose Major Category</Text>
+      <Text style={styles.heading}>Choose Minor Category</Text>
       <FlatList
         data={categories}
         numColumns={2} // Grid Layout
@@ -56,7 +40,7 @@ export const ProviderCategories = () => {
             <TouchableOpacity
               style={styles.cardContainer}
               onPress={() =>
-                navigation.push('post-major-listings', {
+                navigation.push('minor-services', {
                   categoryId: item._id,
                   categoryName: item.name
                 })
@@ -64,7 +48,11 @@ export const ProviderCategories = () => {
             >
               <Card style={styles.card}>
                 <View style={styles.iconContainer}>
-                  <Image source={iconMap[item.name]} style={styles.icon} />
+                  <Image
+                    source={{ uri: item.icon }}
+                    style={styles.icon}
+                    contentFit="contain"
+                  />
                 </View>
                 <Text style={styles.categoryText}>{item.name}</Text>
               </Card>
@@ -80,7 +68,7 @@ export const ProviderCategories = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: Colors.WHITE, // White background
+    backgroundColor: Colors.WHITE,
     padding: 20,
     paddingTop: 50
   },
@@ -100,7 +88,7 @@ const styles = StyleSheet.create({
     borderRadius: 12,
     padding: 18,
     alignItems: 'center',
-    elevation: 5, // Better shadow effect
+    elevation: 5,
     shadowColor: '#000',
     shadowOpacity: 0.15,
     shadowRadius: 6,
@@ -127,4 +115,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default ProviderCategories;
+export default MinorCategory;

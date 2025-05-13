@@ -4,8 +4,10 @@ import { createStackNavigator } from '@react-navigation/stack';
 import BusinessListByCategoryScreen from '../../Screens/BusinessListByCategory/BusinessListByCategory.jsx';
 import BusinessDetailsScreen from '../../Screens/BusinessDetailsScreen/BusinessDetailsScreen.jsx'
 import ViewServiceProviderProfile from '../../Screens/ProfileScreen/ViewServiceProviderProfile.jsx';
-import minorBusinessList from '../../Screens/MinorListings/minorBusinessList.jsx';
-import minorIssuesList from '../../Screens/MinorListings/MinorIssuesList.jsx'
+import MinorBusinessList from '../../Screens/MinorListings/minorBusinessList.jsx';
+import MinorIssuesList from '../../Screens/MinorListings/MinorIssuesList.jsx'
+import ListingScreenMinor from '../../Screens/MinorListings/ListingScreenMinor.jsx';
+import MinorDetailedListingScreen from '../../Screens/MinorListings/MinorDetailedListingScreen.jsx';
 
 const Stack = createStackNavigator();
 
@@ -21,8 +23,10 @@ const HomeNavigation = () => {
         <Stack.Screen name='view-provider-profile' component={ViewServiceProviderProfile}/> 
 
         {/* Minor Listings */}
-        <Stack.Screen name='minor-business-list' component={minorBusinessList}/> 
-        <Stack.Screen name='minor-issues-list' component={minorIssuesList}/> 
+        <Stack.Screen name='minor-business-list' component={MinorBusinessList}/> 
+        <Stack.Screen name='minor-issues-list' component={MinorIssuesList}/> 
+        <Stack.Screen name='minor-listings-screen' component={ListingScreenMinor}/> 
+        <Stack.Screen name='minor-detailed-listing-screen' component={MinorDetailedListingScreen}/> 
     </Stack.Navigator>
   )
 }

@@ -22,12 +22,15 @@ const ServiceListScreen = ({ route }) => {
         const fetchServices = async () => {
             setLoading(true);
             dispatch(setAllMinorListingsByCategory([]));
-
+    
             try {
                 const response = await axios.get(
                     `${MinorServicesBaseUrl}/get-minor-service-by-category/${categoryId}`
                 );
-                dispatch(setAllMinorListingsByCategory(response.data));
+    
+                const services = response.data?.services || [];
+    
+                dispatch(setAllMinorListingsByCategory(services));
             } catch (error) {
                 console.log("Error fetching services:", error);
                 dispatch(setAllMinorListingsByCategory([]));
@@ -36,16 +39,21 @@ const ServiceListScreen = ({ route }) => {
                 setDataUpdated((prev) => !prev);
             }
         };
-
+    
         fetchServices();
     }, [categoryId, dispatch]);
+    
 
     const renderService = ({ item }) => (
         <TouchableOpacity
             style={styles.card}
-            onPress={() => navigation.push('minor-issues-list',
-                { predefinedIssues: item?.predefinedIssues, serviceName: item?.serviceName })}
-            activeOpacity={0.7} // Smooth tap effect
+            onPress={() => navigation.push('minor-issues-list', {
+                predefinedIssues: item?.predefinedIssues,
+                serviceName: item?.serviceName,
+                serviceId: item?._id,  // Add serviceId
+                categoryId: categoryId  // Pass the categoryId from route.params
+            })}
+            activeOpacity={0.7}
         >
             <Image source={item.serviceIcon} style={styles.image} />
             <View style={styles.textContainer}>

@@ -1,7 +1,7 @@
 import React from 'react';
-import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
-import FontAwesome from '@expo/vector-icons/FontAwesome';
+import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
+import { FontAwesome } from '@expo/vector-icons'; 
 import Colors from '../../../../constants/Colors.ts';
 
 const Items = () => {
@@ -9,8 +9,8 @@ const Items = () => {
 
   // Menu items with navigation targets
   const menuItems = [
-    { id: 1, title: 'Major Listings', icon: 'send', screen: 'MajorListingsScreen' },
-    { id: 2, title: 'Minor Listings', icon: 'file-text-o', screen: 'MinorListingsScreen' },
+    { id: 1, title: 'Major Listings', icon: 'send', screen: 'major-category' },
+    { id: 2, title: 'Minor Listings', icon: 'file-text-o', screen: 'minor-category' },
     { id: 3, title: 'View Jobs', icon: 'university', screen: 'JobsScreen' },
     { id: 4, title: 'Reviews', icon: 'id-card-o', screen: 'ReviewsScreen' },
     { id: 5, title: 'Payment', icon: 'university', screen: 'PaymentScreen' },
@@ -27,8 +27,7 @@ const Items = () => {
           <TouchableOpacity 
             key={item.id} 
             style={styles.menuItem}
-            onPress={() => navigation.push('major-category')} // Navigation added
-            //isko update krna after major listings done , k hr item ka navigation alg alg screen pr ho
+            onPress={() => navigation.push(item.screen)} // Navigate to the respective screen
           >
             <View style={styles.iconContainer}>
               <FontAwesome name={item.icon} size={35} color={Colors.PRIMARY} />
@@ -77,5 +76,6 @@ const styles = StyleSheet.create({
     marginTop: 8, // Space between the box and text
   },
 });
+
 
 export default Items;

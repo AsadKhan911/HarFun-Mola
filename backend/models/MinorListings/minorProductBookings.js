@@ -5,7 +5,7 @@ const BookingSchema = new mongoose.Schema({
 
     serviceListing: {
         type: mongoose.Schema.Types.ObjectId, ref: "MinorServiceListing", required: true
-    }, // Links to provider-specific pricing
+    }, 
 
     date: {
         type: String,

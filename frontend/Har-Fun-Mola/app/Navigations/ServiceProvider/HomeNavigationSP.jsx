@@ -4,6 +4,11 @@ import { createStackNavigator } from '@react-navigation/stack';
 import MajorCategory from '../../Screens/ServiceProvider/MajorCategory/MajorCategory.jsx'
 import PostMajorListings from '../../Screens/ServiceProvider/MajorListings/PostMajorListings.jsx'
 import CompletedDetailsBookingPage from '../../Screens/ServiceProvider/ServiceBookings/CompletedDetailsBookingPage.jsx'
+import MinorCategory from '../../Screens/ServiceProvider/MinorCategory_Issues/MinorCategory.jsx';
+import {MinorServices} from '../../Screens/ServiceProvider/MinorCategory_Issues/MinorServices.jsx';
+import PredefinedIssues from '../../Screens/ServiceProvider/MinorCategory_Issues/PredefinedIssues.jsx';
+import PricingPredefinedIssues from '../../Screens/ServiceProvider/MinorCategory_Issues/PricingPredefinedIssues.jsx';
+import submitMinorListing from '../../Screens/ServiceProvider/MinorCategory_Issues/submitMinorListing.jsx';
 
 const Stack = createStackNavigator();
 
@@ -17,6 +22,14 @@ const HomeNavigationSP = () => {
        <Stack.Screen name='major-category' component={MajorCategory}/> 
        <Stack.Screen name='post-major-listings' component={PostMajorListings}/>  
        <Stack.Screen name='completed-booking' component={CompletedDetailsBookingPage}/>  
+
+       {/* Minor Listings Module Route */}
+       <Stack.Screen name='minor-category' component={MinorCategory}/>  
+       <Stack.Screen name='minor-services' component={MinorServices}/> 
+       <Stack.Screen name="predefined-issues" component={PredefinedIssues} />
+       <Stack.Screen name="predefined-issues-pricing" component={PricingPredefinedIssues} />
+       <Stack.Screen name="submit-minor-listing" component={submitMinorListing} />
+ 
     </Stack.Navigator>
   )
 }

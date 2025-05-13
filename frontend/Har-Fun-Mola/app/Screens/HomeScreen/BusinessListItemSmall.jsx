@@ -68,3 +68,5 @@ const styles = StyleSheet.create({
         paddingHorizontal: 5,
     },
 });
+
+export default BusinessListItemSmall
