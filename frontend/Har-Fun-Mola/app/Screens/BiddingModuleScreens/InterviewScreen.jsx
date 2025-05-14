@@ -17,15 +17,25 @@ const InterviewDetailsScreen = () => {
   const { initPaymentSheet, presentPaymentSheet } = useStripe();
 
   const userId = useSelector((state)=>state.auth.user._id)
+  const senderName = offer?.serviceProviderId?.fullName
+  const otherUserProfilePic = offer?.serviceProviderId?.profile?.profilePic
+ console.log(otherUserProfilePic)
 
   useEffect(() => {
     setLoading(false);
   }, []);
 
   const handleMessage = () => {
-    navigation.navigate("ChatScreen", {
-      userId: offer.serviceProviderId._id,
-      userName: offer.serviceProviderId.fullName,
+    if (!userId) {
+      alert("Missing provider or user ID.");
+      return;
+    }
+  
+    navigation.navigate("message-provider", {
+      otherUserIdis: userId,
+      senderName: senderName,
+      otherUserProfilePic: otherUserProfilePic
+      
     });
   };
 
@@ -79,6 +89,57 @@ const InterviewDetailsScreen = () => {
     return true;
   };
 
+  // const handleHireNow = async () => {
+  //   Alert.alert(
+  //     "Confirm Hire",
+  //     "Do you want to officially hire this provider for the service?",
+  //     [
+  //       { text: "Cancel", style: "cancel" },
+  //       {
+  //         text: "Hire",
+  //         onPress: async () => {
+  //           setLoading(true);
+  
+  //           try {
+  //             // Step 1: Handle payment
+  //             const paymentSuccess = await handlePayment();
+  //             if (!paymentSuccess) {
+  //               setLoading(false);
+  //               return;
+  //             }
+  
+  //             // Step 2: Create the contract
+  //             const response = await axios.post(`${BiddingModelBaseUrl}/hire-provider`, 
+  //               {
+  //                 offerId: offer._id,
+  //                 agreedPrice: offer.proposedPrice,
+  //                 contractTerms: "Standard contract terms",
+  //                 paymentMethod: "CARD",
+  //                 paymentIntentId: paymentIntentId,
+  //                 paymentStatus: "Pending",
+  //               }
+  //             );
+  
+  //             // Step 3: Update contract status to "Agreed"
+  //             await axios.put(`${BiddingModelBaseUrl}/update-contract-status/${offer.bidId._id}`, {
+  //               status: "Agreed",
+  //             });
+  
+  //             setLoading(false);
+  //             Alert.alert("Success", "Provider hired successfully!", [
+  //               { text: "OK", onPress: () => navigation.goBack() },
+  //             ]);
+  //           } catch (error) {
+  //             setLoading(false);
+  //             console.error("Error hiring provider:", error);
+  //             Alert.alert("Error", "Failed to hire provider. Please try again.");
+  //           }
+  //         },
+  //       },
+  //     ]
+  //   );
+  // };
+
   const handleHireNow = async () => {
     Alert.alert(
       "Confirm Hire",
@@ -89,17 +150,21 @@ const InterviewDetailsScreen = () => {
           text: "Hire",
           onPress: async () => {
             setLoading(true);
-  
             try {
-              // Step 1: Handle payment
+              console.log("Starting payment process...");
+              
+              // 1. Payment
               const paymentSuccess = await handlePayment();
               if (!paymentSuccess) {
+                console.log("Payment failed or was cancelled");
                 setLoading(false);
                 return;
               }
+              console.log("Payment successful, proceeding to hire...");
   
-              // Step 2: Create the contract
-              const response = await axios.post(`${BiddingModelBaseUrl}/hire-provider`, 
+              // 2. Hire Provider
+              const hireResponse = await axios.post(
+                `${BiddingModelBaseUrl}/hire-provider`, 
                 {
                   offerId: offer._id,
                   agreedPrice: offer.proposedPrice,
@@ -110,19 +175,25 @@ const InterviewDetailsScreen = () => {
                 }
               );
   
-              // Step 3: Update contract status to "Agreed"
-              await axios.put(`${BiddingModelBaseUrl}/update-contract-status/${offer.bidId._id}`, {
-                status: "Agreed",
-              });
+              // 3. Update Contract Status
+             
+              const statusResponse = await axios.put(
+                `${BiddingModelBaseUrl}/update-contract-status/${offer.bidId._id}`, 
+                { status: "Agreed" }
+              );
+              
   
               setLoading(false);
-              Alert.alert("Success", "Provider hired successfully!", [
-                { text: "OK", onPress: () => navigation.goBack() },
-              ]);
+              Alert.alert("Success", "Provider hired successfully!");
+              navigation.goBack();
+              
             } catch (error) {
               setLoading(false);
-              console.error("Error hiring provider:", error);
-              Alert.alert("Error", "Failed to hire provider. Please try again.");
+        
+              Alert.alert(
+                "Error Details", 
+                `Failed to hire provider: ${error.response?.data?.message || error.message}`
+              );
             }
           },
         },
@@ -160,7 +231,7 @@ const InterviewDetailsScreen = () => {
           <Text style={styles.value}>{offer.serviceProviderId.email}</Text>
 
           <Text style={styles.label}>Phone:</Text>
-          <Text style={styles.value}>{offer.serviceProviderId.phone}</Text>
+          <Text style={styles.value}>{offer.serviceProviderId.phoneNumber}</Text>
 
           <Text style={styles.label}>Offered Price:</Text>
           <Text style={styles.value}>${offer.proposedPrice}</Text>
@@ -228,7 +299,7 @@ const styles = StyleSheet.create({
     fontWeight: "600",
     fontSize: 14,
     color: "#555",
-    marginTop: 8,
+    marginTop: 18,
   },
   value: {
     fontSize: 15,

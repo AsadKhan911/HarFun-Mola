@@ -1,6 +1,6 @@
 import { useRoute } from '@react-navigation/native';
 import React, { useState } from 'react';
-import {  StyleSheet, ScrollView, Image, Alert } from 'react-native';
+import {  StyleSheet, ScrollView, Image, Alert, KeyboardAvoidingView, Platform } from 'react-native';
 import { Card, Title, Paragraph, Button, TextInput, Divider, Text } from 'react-native-paper';
 import { SafeAreaView } from 'react-native';
 import axios from 'axios';
@@ -66,73 +66,91 @@ const JobDetails = () => {
     };
 
     return (
-        <SafeAreaView style={styles.safeArea}>
-            <ScrollView contentContainerStyle={styles.container}>
-                <Card style={styles.card}>
-                    <Title style={styles.title}>{job.serviceType}</Title>
-                    <Paragraph style={styles.label}>Description</Paragraph>
-                    <Text style={styles.text}>{job.description}</Text>
-
-                    <Divider style={styles.divider} />
-
-                    <Paragraph style={styles.label}>Budget</Paragraph>
-                    <Text style={styles.budget}>${job.budget}</Text>
-
-                    <Divider style={styles.divider} />
-
-                    {job.images?.length > 0 && (
-                        <>
-                            <Paragraph style={styles.label}>Images</Paragraph>
-                            <ScrollView horizontal showsHorizontalScrollIndicator={false}>
-                                {job.images.map((uri, index) => (
-                                    <Image
-                                        key={index}
-                                        source={{ uri }}
-                                        style={styles.image}
-                                    />
-                                ))}
-                            </ScrollView>
-                            <Divider style={styles.divider} />
-                        </>
-                    )}
-
-                    <Paragraph style={styles.label}>Add Note</Paragraph>
-                    <TextInput
-                        mode="outlined"
-                        label="Additional Notes (optional)"
-                        value={additionalNotes}
-                        onChangeText={setAdditionalNotes}
-                        multiline
-                        style={styles.input}
-                    />
-
-                    <Paragraph style={styles.label}>Your Offer</Paragraph>
-                    <TextInput
-                        mode="outlined"
-                        label="Enter your bid amount"
-                        value={bidAmount}
-                        onChangeText={setBidAmount}
-                        keyboardType="numeric"
-                        style={styles.input}
-                    />
-
-                    <Button
-                        mode="contained"
-                        onPress={handlePlaceBid}
-                        disabled={loading || !bidAmount}
-                        style={styles.bidButton}
-                    >
-                        {loading ? "Placing Bid..." : "Place Bid"}
-                    </Button>
-                </Card>
-            </ScrollView>
-        </SafeAreaView>
+        <KeyboardAvoidingView
+            style={{ flex: 1, backgroundColor: 'white' }}
+            behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+            keyboardVerticalOffset={Platform.OS === 'ios' ? 80 : 0} // adjust for your header height
+        >
+            <SafeAreaView style={{ flex: 1, backgroundColor: 'white' }}>
+                <ScrollView
+                    contentContainerStyle={styles.scrollContent}
+                    keyboardShouldPersistTaps="handled"
+                >
+                    <Card style={styles.card}>
+                        <Title style={styles.title}>{job.serviceType}</Title>
+    
+                        <Paragraph style={styles.label}>Description</Paragraph>
+                        <Text style={styles.text}>{job.description}</Text>
+    
+                        <Divider style={styles.divider} />
+    
+                        <Paragraph style={styles.label}>Budget</Paragraph>
+                        <Text style={styles.budget}>${job.budget}</Text>
+    
+                        <Divider style={styles.divider} />
+    
+                        {job.images?.length > 0 && (
+                            <>
+                                <Paragraph style={styles.label}>Images</Paragraph>
+                                <ScrollView horizontal showsHorizontalScrollIndicator={false}>
+                                    {job.images.map((uri, index) => (
+                                        <Image
+                                            key={index}
+                                            source={{ uri }}
+                                            style={styles.image}
+                                        />
+                                    ))}
+                                </ScrollView>
+                                <Divider style={styles.divider} />
+                            </>
+                        )}
+    
+                        <Paragraph style={styles.label}>Add Note</Paragraph>
+                        <TextInput
+                            mode="outlined"
+                            label="Additional Notes (optional)"
+                            value={additionalNotes}
+                            onChangeText={setAdditionalNotes}
+                            multiline
+                            style={styles.input}
+                        />
+    
+                        <Paragraph style={styles.label}>Your Offer</Paragraph>
+                        <TextInput
+                            mode="outlined"
+                            label="Enter your bid amount"
+                            value={bidAmount}
+                            onChangeText={setBidAmount}
+                            keyboardType="numeric"
+                            style={styles.input}
+                        />
+    
+                        <Button
+                            mode="contained"
+                            onPress={handlePlaceBid}
+                            disabled={loading || !bidAmount}
+                            style={styles.bidButton}
+                        >
+                            {loading ? "Placing Bid..." : "Place Bid"}
+                        </Button>
+                    </Card>
+                </ScrollView>
+            </SafeAreaView>
+        </KeyboardAvoidingView>
     );
+    
+    
 };
 
 export default JobDetails;
 
 const styles = StyleSheet.create({
+    scrollContent: {
+        padding: 16,
+        paddingBottom: 40,
+        backgroundColor: 'white',
+    },
+    
     safeArea: {
         flex: 1,
         backgroundColor: 'white',

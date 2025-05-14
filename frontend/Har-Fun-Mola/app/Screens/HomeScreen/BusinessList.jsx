@@ -41,7 +41,7 @@ export const BusinessList = () => {
       <View style={{ marginTop: 20, alignItems: 'center' }}>
         <Heading text="Recommended Businesses" />
         <Text style={{ marginTop: 10, color: Colors.GRAY, fontFamily: 'outfit' }}>
-          No recommendations available.
+          No nearby recommended services available.
         </Text>
       </View>
     );

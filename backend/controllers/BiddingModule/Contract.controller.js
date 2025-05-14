@@ -108,8 +108,8 @@ export const getProviderOfferResponses = async (req, res) => {
       status: { $in: ["Interviewing", "Rejected"] },
     })
       .populate("bidId")
-      .populate("customerId", "fullName email")
-      .populate("serviceProviderId", "fullName email")
+      .populate("customerId", "fullName email profile")
+      .populate("serviceProviderId", "fullName email profile")
       .sort({ createdAt: -1 });
 
     res.status(200).json({
@@ -150,6 +150,34 @@ export const getAgreedContractsForProvider = async (req, res) => {
   }
 };
 
+export const getCompletedContractsForProvider = async (req, res) => {
+  try {
+    const { serviceProviderId } = req.params;
+
+    if (!serviceProviderId) {
+      return res.status(400).json({ message: "Service provider ID is required." });
+    }
+
+    // Fetch only contracts with status "Agreed"
+    const contracts = await Contract.find({
+      serviceProviderId,
+      status: "Completed",
+    })
+      .populate("bidId")
+      .populate("customerId", "fullName email")
+      .populate("serviceProviderId", "fullName email")
+      .sort({ createdAt: -1 });
+
+    res.status(200).json({
+      message: "Agreed contracts fetched successfully.",
+      contracts,
+    });
+  } catch (error) {
+    console.error("Error fetching agreed contracts:", error);
+    res.status(500).json({ message: "Server error", error: error.message });
+  }
+};
+
 export const getInterviewingOffers = async (req, res) => {
   try {
     const { userId } = req.params;
@@ -162,11 +190,11 @@ export const getInterviewingOffers = async (req, res) => {
       .populate({
         path: "bidId",
         match: { customerId: userId },
-        select: "serviceType description status", // Select only relevant fields
+        select: "serviceType description status budget", // Select only relevant fields
       })
       .populate({
         path: "serviceProviderId",
-        select: "fullName email phone", // Optional: reduce payload
+        select: "fullName email phoneNumber profile", // Optional: reduce payload
       });
 
     // Filter out offers without matched bidId

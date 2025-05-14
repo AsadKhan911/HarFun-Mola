@@ -11,10 +11,25 @@ const DetailedProposal = () => {
   const navigation = useNavigation();
   const [loading, setLoading] = useState(false);
   
-  const userId = useSelector((state) => state.auth.user._id);
+  const userId = responses?.customerId._id
+  const senderName = responses?.customerId?.fullName
+  const otherUserProfilePic = responses?.customerId?.profile?.profilePic
 
-  // Assuming you're using `responses` as the offer data
   const offer = responses;
+
+  const handleMessage = () => {
+    if (!userId) {
+      alert("Missing provider or user ID.");
+      return;
+    }
+  
+    navigation.navigate("message-provider", {
+      otherUserIdis: userId,
+      senderName: senderName,
+      otherUserProfilePic: otherUserProfilePic
+      
+    });
+  };
 
   useEffect(() => {
     setLoading(false);
@@ -49,11 +64,8 @@ const DetailedProposal = () => {
         <Text style={styles.label}>Email:</Text>
         <Text style={styles.value}>{offer.customerId?.email}</Text>
 
-        <Text style={styles.label}>Phone:</Text>
-        <Text style={styles.value}>{offer.customerId?.phoneNumber}</Text>
-
         <Text style={styles.label}>Offered Price:</Text>
-        <Text style={styles.value}>${offer.agreedPrice || offer.proposedPrice}</Text>
+        <Text style={styles.value}>Rs {offer.agreedPrice || offer.proposedPrice}</Text>
 
         <Text style={styles.label}>Job Description:</Text>
         <Text style={styles.value}>{offer.bidId?.description}</Text>
@@ -63,7 +75,7 @@ const DetailedProposal = () => {
       </View>
 
       <View style={styles.buttonRow}>
-        <TouchableOpacity style={styles.messageButton}>
+        <TouchableOpacity style={styles.messageButton} onPress={handleMessage}>
           <Ionicons name="chatbox-ellipses-outline" size={20} color="#fff" />
           <Text style={styles.buttonText}>Message</Text>
         </TouchableOpacity>
@@ -116,7 +128,7 @@ const styles = StyleSheet.create({
     fontWeight: "600",
     fontSize: 14,
     color: "#555",
-    marginTop: 8,
+    marginTop: 18
   },
   value: {
     fontSize: 15,

@@ -1,7 +1,8 @@
+import mongoose from "mongoose";
+import { MinorBooking } from "../../models/MinorListings/minorProductBookings.js";
 import { MinorServiceListing } from "../../models/MinorListings/minorServiceListings.js";
 import { Service } from "../../models/MinorListings/minorServices.js";
 import { MinorPredefinedIssues } from "../../models/MinorListings/minorServicesIssues.js";
-
 
 // Controller for creating multiple MinorServiceListings for selected services
 export const createMinorServiceListing = async (req, res) => {
@@ -135,3 +136,135 @@ export const createMinorServiceListing = async (req, res) => {
     });
   }
 };
+
+// controllers/bookingController.js
+// Create a new booking
+// controllers/bookingController.js
+export const createBooking = async (req, res) => {
+  const session = await mongoose.startSession();
+  session.startTransaction();
+
+  try {
+    const { 
+      serviceListingId, 
+      date,
+      timeSlot,
+      latitude,
+      longitude,
+      address,
+      instructions,
+      paymentMethod,
+      pricingType,
+      amount
+    } = req.body;
+
+    const serviceUser = req.user;
+
+    // Validate inputs
+    if (!serviceListingId || !date || !timeSlot || !latitude || !longitude || !address) {
+      await session.abortTransaction();
+      return res.status(400).json({ message: "Missing required fields" });
+    }
+
+    // Get the service listing
+    const serviceListing = await MinorServiceListing.findById(serviceListingId)
+      .populate('service')
+      .populate('predefinedIssues')
+      .session(session);
+
+    if (!serviceListing || serviceListing.status !== 'Active' || !serviceListing.availability) {
+      await session.abortTransaction();
+      return res.status(404).json({ message: "Service listing not available" });
+    }
+
+    // For diagnostic pricing type, we'll use the diagnosticPrice from the listing
+    // For service pricing type, we'll need to select the first predefined issue or implement a different logic
+    let selectedIssue;
+    let issuePrice = 0;
+    
+    if (pricingType === 'diagnostic') {
+      issuePrice = serviceListing.diagnosticPrice;
+    } else {
+      // For service type, we'll select the first predefined issue (you may want to modify this)
+      if (serviceListing.predefinedIssues.length === 0) {
+        await session.abortTransaction();
+        return res.status(400).json({ message: "No service issues available for this listing" });
+      }
+      selectedIssue = serviceListing.predefinedIssues[0];
+      
+      const issuePricing = serviceListing.issuePricing.find(
+        item => item.issueName === selectedIssue.issueName
+      );
+      
+      if (!issuePricing) {
+        await session.abortTransaction();
+        return res.status(400).json({ message: "Pricing not available for selected issue" });
+      }
+      issuePrice = issuePricing.price;
+    }
+
+    // Create the booking
+    const newBooking = new MinorBooking({
+      serviceListing: serviceListingId,
+      serviceUser,
+      serviceProvider: serviceListing.created_by,
+      selectedIssue: selectedIssue?._id || null,
+      issueName: selectedIssue?.issueName || 'Diagnostic Check',
+      price: pricingType === 'service' ? issuePrice : 0,
+      diagnosticPrice: pricingType === 'diagnostic' ? issuePrice : 0,
+      totalPrice: issuePrice,
+      bookingDate: new Date(date),
+      timeSlot,
+      address,
+      coordinates: {
+        type: 'Point',
+        coordinates: [longitude, latitude]
+      },
+      specialInstructions: instructions,
+      status: 'Pending',
+      paymentStatus: paymentMethod === 'COD' ? 'Pending' : 'Paid',
+      paymentMethod
+    });
+
+    await newBooking.save({ session });
+
+    await session.commitTransaction();
+    res.status(201).json({
+      message: "Booking created successfully",
+      booking: newBooking
+    });
+  } catch (error) {
+    await session.abortTransaction();
+    console.error("Booking creation error:", error);
+    res.status(500).json({ message: "Error creating booking", error: error.message });
+  } finally {
+    session.endSession();
+  }
+};
+
+// Add this new endpoint to get booked time slots
+export const getBookedTimeSlots = async (req, res) => {
+  try {
+    const { serviceListingId, date } = req.params;
+    
+    const bookings = await MinorBooking.find({
+      serviceListing: serviceListingId,
+      bookingDate: {
+        $gte: new Date(`${date}T00:00:00.000Z`),
+        $lte: new Date(`${date}T23:59:59.999Z`)
+      },
+      status: { $nin: ['Cancelled', 'Rejected'] }
+    });
+
+    const bookedSlots = bookings.map(booking => booking.timeSlot);
+    
+    res.status(200).json({
+      bookedSlots,
+      count: bookedSlots.length
+    });
+  } catch (error) {
+    console.error("Error fetching booked time slots:", error);
+    res.status(500).json({ message: "Error fetching booked time slots", error: error.message });
+  }
+};
+

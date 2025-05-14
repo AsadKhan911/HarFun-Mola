@@ -9,6 +9,9 @@ import {MinorServices} from '../../Screens/ServiceProvider/MinorCategory_Issues/
 import PredefinedIssues from '../../Screens/ServiceProvider/MinorCategory_Issues/PredefinedIssues.jsx';
 import PricingPredefinedIssues from '../../Screens/ServiceProvider/MinorCategory_Issues/PricingPredefinedIssues.jsx';
 import submitMinorListing from '../../Screens/ServiceProvider/MinorCategory_Issues/submitMinorListing.jsx';
+import Reviews from '../../Screens/ServiceProvider/HomeScreen/Reviews.jsx';
+import Payments from '../../Screens/ServiceProvider/HomeScreen/Payments.jsx';
+import ManageCards from '../../Screens/ServiceProvider/HomeScreen/ManageCards.jsx';
 
 const Stack = createStackNavigator();
 
@@ -22,6 +25,9 @@ const HomeNavigationSP = () => {
        <Stack.Screen name='major-category' component={MajorCategory}/> 
        <Stack.Screen name='post-major-listings' component={PostMajorListings}/>  
        <Stack.Screen name='completed-booking' component={CompletedDetailsBookingPage}/>  
+       <Stack.Screen name='reviews' component={Reviews}/>  
+       <Stack.Screen name='payments' component={Payments}/>  
+       <Stack.Screen name='manage-cards' component={ManageCards}/>  
 
        {/* Minor Listings Module Route */}
        <Stack.Screen name='minor-category' component={MinorCategory}/>  
@@ -29,6 +35,7 @@ const HomeNavigationSP = () => {
        <Stack.Screen name="predefined-issues" component={PredefinedIssues} />
        <Stack.Screen name="predefined-issues-pricing" component={PricingPredefinedIssues} />
        <Stack.Screen name="submit-minor-listing" component={submitMinorListing} />
+       <Stack.Screen name="see-jobs" component={submitMinorListing} />
  
     </Stack.Navigator>
   )

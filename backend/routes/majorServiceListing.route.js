@@ -14,6 +14,7 @@ router.route('/getlisting/:categoryId').get(isAuthenticated , getListingsByCateg
 router.route('/post').post( isAuthenticated , singleUpload , postListing)
 router.route('/get').get(isAuthenticated , getAllListings)
 router.route('/get/:id').get(isAuthenticated , getListingById)
+
 //Next kam yeh h kay major categories add down karo database mein.
 
 export default router

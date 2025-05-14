@@ -3,7 +3,7 @@ import { View, KeyboardAvoidingView, ScrollView, Platform, Text } from 'react-na
 import { Button, Card, Title } from 'react-native-paper';
 import RecentJobs from './RecentJobs';
 import Proposals from './Proposals';
-import SavedJobs from './SavedJobs';
+import Completed from './CompletedJobs';
 import ActiveJobs from './ActiveJobs'
 
 const ServiceUserCreateBid = () => {
@@ -27,8 +27,10 @@ const ServiceUserCreateBid = () => {
         <ActiveJobs />
         );
 
-      case 'saved':
-       <SavedJobs />
+      case 'completed':
+        return (
+       <Completed />
+        )
 
       default:
         return null;
@@ -65,11 +67,11 @@ const ServiceUserCreateBid = () => {
             Active Jobs
           </Button>
           <Button
-            mode={activeTab === 'saved' ? "contained" : "outlined"}
-            onPress={() => setActiveTab('saved')}
+            mode={activeTab === 'completed' ? "contained" : "outlined"}
+            onPress={() => setActiveTab('completed')}
             compact
           >
-           Saved
+           Completed
           </Button>
         </View>
 

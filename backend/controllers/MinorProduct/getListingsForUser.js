@@ -63,6 +63,7 @@ export const getListingsByIssue = async (req, res) => {
 
     // Get all listings matching the query
     const listings = await MinorServiceListing.find(baseQuery)
+    .populate('category', 'name')
       .populate({
         path: 'created_by',
         select: '-password',

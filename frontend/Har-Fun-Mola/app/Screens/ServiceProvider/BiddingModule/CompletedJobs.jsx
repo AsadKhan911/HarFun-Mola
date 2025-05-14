@@ -3,80 +3,84 @@ import {
   View,
   Text,
   FlatList,
-  ActivityIndicator,
   StyleSheet,
   TouchableOpacity,
+  ActivityIndicator,
+  Image
 } from 'react-native';
 import axios from 'axios';
 import { useSelector } from 'react-redux';
 import { BiddingModelBaseUrl } from '../../../URL/userBaseUrl';
-import { useNavigation } from 'expo-router';
 
-const ActiveJobs = () => {
+const CompletedJobs = () => {
   const [loading, setLoading] = useState(true);
-  const [contracts, setContracts] = useState([]);
+  const [completedContracts, setCompletedContracts] = useState([]);
   const [error, setError] = useState(null);
-  const navigation = useNavigation();
-
   const serviceProviderId = useSelector((state) => state.auth.user?._id);
 
   useEffect(() => {
-    const fetchAgreedContracts = async () => {
+    const fetchCompletedContracts = async () => {
       try {
-        const response = await axios.get(`${BiddingModelBaseUrl}/get-agreed-contract/${serviceProviderId}`);
-        setContracts(response.data.contracts || []);
+        const response = await axios.get(`${BiddingModelBaseUrl}/get-completed-contract/${serviceProviderId}`);
+        setCompletedContracts(response.data.contracts || []);
       } catch (err) {
-        console.error('Error fetching agreed contracts:', err);
-        setError(err.response?.data?.message || 'Failed to load active jobs. Please try again.');
+        console.error('Error fetching completed contracts:', err);
+        setError(err.response?.data?.message || 'Failed to load completed bookings. Please try again.');
       } finally {
         setLoading(false);
       }
     };
 
     if (serviceProviderId) {
-      fetchAgreedContracts();
+      fetchCompletedContracts();
     }
   }, [serviceProviderId]);
 
-  const renderItem = ({ item }) => (
+  const renderBookingItem = ({ item }) => (
     <TouchableOpacity
-      onPress={() => navigation.navigate('detailed-agreed-proposal', { responses: item })}
-      style={styles.card}
+      style={styles.bookingCard}
       activeOpacity={0.8}
     >
       <View style={styles.cardHeader}>
         <View style={styles.avatar}>
-          <Text style={styles.avatarText}>
-            {item.customerId?.fullName?.charAt(0) || 'C'}
-          </Text>
+          {item.customerId?.profile?.profilePic ? (
+            <Image 
+              source={{ uri: item.customerId.profile.profilePic }}
+              style={styles.avatarImage}
+            />
+          ) : (
+            <Text style={styles.avatarText}>
+              {item.customerId?.fullName?.charAt(0) || 'C'}
+            </Text>
+          )}
         </View>
         <View style={styles.headerText}>
-          <Text style={styles.serviceType}>{item.bidId?.serviceType || 'Service'}</Text>
+          <Text style={styles.serviceTitle}>{item.bidId?.serviceType || 'Service'}</Text>
           <Text style={styles.customerName}>{item.customerId?.fullName || 'Customer'}</Text>
         </View>
-        <View style={styles.statusBadge}>
-          <Text style={styles.statusText}>Active</Text>
+        <View style={styles.completedBadge}>
+          <Text style={styles.badgeText}>Completed</Text>
         </View>
       </View>
 
       <View style={styles.divider} />
 
-      <View style={styles.detailsRow}>
-        <View style={styles.detailItem}>
-          <Text style={styles.detailLabel}>Agreed Price:</Text>
-          <Text style={styles.price}>Rs {item.agreedPrice || 'N/A'}</Text>
+      <View style={styles.detailsContainer}>
+        <View style={styles.detailRow}>
+          <Text style={styles.detailLabel}>Amount Earned:</Text>
+          <Text style={styles.amount}>Rs {item.agreedPrice}</Text>
         </View>
-        <View style={styles.detailItem}>
-          <Text style={styles.detailLabel}>Date:</Text>
-          <Text style={styles.date}>{new Date(item.createdAt).toLocaleDateString()}</Text>
+        <View style={styles.detailRow}>
+          <Text style={styles.detailLabel}>Completed On:</Text>
+          <Text style={styles.date}>
+            {new Date(item.createdAt).toLocaleDateString('en-US', {
+              year: 'numeric',
+              month: 'short',
+              day: 'numeric'
+            })}
+          </Text>
         </View>
       </View>
-
-      <Text style={styles.terms} numberOfLines={2}>
-        {item.contractTerms || 'Standard contract terms apply'}
-      </Text>
-
-      <Text style={styles.viewDetails}>Start Job →</Text>
     </TouchableOpacity>
   );
 
@@ -84,7 +88,7 @@ const ActiveJobs = () => {
     return (
       <View style={styles.loadingContainer}>
         <ActivityIndicator size="large" color="#4CAF50" />
-        <Text style={styles.loadingText}>Loading your active jobs...</Text>
+        <Text style={styles.loadingText}>Loading your completed bookings...</Text>
       </View>
     );
   }
@@ -92,28 +96,43 @@ const ActiveJobs = () => {
   if (error) {
     return (
       <View style={styles.errorContainer}>
-       
+        <Image 
+          source={require('../../../../assets/images/jobs.png')} 
+          style={styles.errorImage}
+        />
         <Text style={styles.errorText}>{error}</Text>
+        <TouchableOpacity
+          style={styles.retryButton}
+          onPress={() => setLoading(true)}
+        >
+          <Text style={styles.retryText}>Try Again</Text>
+        </TouchableOpacity>
       </View>
     );
   }
 
   return (
     <View style={styles.container}>
-      <Text style={styles.header}>Your Active Jobs</Text>
+      <Text style={styles.header}>Completed Bookings</Text>
       
-      {contracts.length > 0 ? (
+      {completedContracts.length > 0 ? (
         <FlatList
-          data={contracts}
+          data={completedContracts}
           keyExtractor={(item) => item._id}
-          renderItem={renderItem}
+          renderItem={renderBookingItem}
           contentContainerStyle={styles.listContent}
+          showsVerticalScrollIndicator={false}
         />
       ) : (
         <View style={styles.emptyContainer}>
-          
-          <Text style={styles.emptyText}>No active jobs found</Text>
-          <Text style={styles.emptySubText}>When you have agreed contracts, they'll appear here</Text>
+          <Image 
+            source={require('../../../../assets/images/jobs.png')} 
+            style={styles.emptyImage}
+          />
+          <Text style={styles.emptyTitle}>No Completed Bookings Yet</Text>
+          <Text style={styles.emptyText}>
+            Your completed service bookings will appear here
+          </Text>
         </View>
       )}
     </View>
@@ -137,7 +156,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 16,
     paddingBottom: 24,
   },
-  card: {
+  bookingCard: {
     backgroundColor: '#FFFFFF',
     borderRadius: 12,
     padding: 16,
@@ -154,23 +173,28 @@ const styles = StyleSheet.create({
     marginBottom: 12,
   },
   avatar: {
-    width: 40,
-    height: 40,
-    borderRadius: 20,
-    backgroundColor: '#4CAF50',
+    width: 48,
+    height: 48,
+    borderRadius: 24,
+    backgroundColor: '#E0E0E0',
     justifyContent: 'center',
     alignItems: 'center',
     marginRight: 12,
+    overflow: 'hidden',
+  },
+  avatarImage: {
+    width: '100%',
+    height: '100%',
   },
   avatarText: {
-    color: '#FFFFFF',
-    fontSize: 18,
+    fontSize: 20,
     fontWeight: 'bold',
+    color: '#555',
   },
   headerText: {
     flex: 1,
   },
-  serviceType: {
+  serviceTitle: {
     fontSize: 16,
     fontWeight: '600',
     color: '#1F2937',
@@ -178,15 +202,15 @@ const styles = StyleSheet.create({
   customerName: {
     fontSize: 14,
     color: '#6B7280',
-    marginTop: 2,
+    marginTop: 4,
   },
-  statusBadge: {
+  completedBadge: {
     paddingHorizontal: 10,
     paddingVertical: 4,
     borderRadius: 12,
     backgroundColor: '#E8F5E9',
   },
-  statusText: {
+  badgeText: {
     color: '#4CAF50',
     fontSize: 12,
     fontWeight: '600',
@@ -196,20 +220,19 @@ const styles = StyleSheet.create({
     backgroundColor: '#E5E7EB',
     marginVertical: 12,
   },
-  detailsRow: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
+  detailsContainer: {
     marginBottom: 12,
   },
-  detailItem: {
-    flex: 1,
+  detailRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    marginBottom: 8,
   },
   detailLabel: {
     fontSize: 14,
     color: '#6B7280',
-    marginBottom: 4,
   },
-  price: {
+  amount: {
     fontSize: 16,
     fontWeight: '600',
     color: '#4CAF50',
@@ -218,16 +241,11 @@ const styles = StyleSheet.create({
     fontSize: 14,
     color: '#6B7280',
   },
-  terms: {
-    fontSize: 14,
-    color: '#4B5563',
-    lineHeight: 20,
-    marginBottom: 12,
-  },
   viewDetails: {
     fontSize: 14,
     color: '#3B82F6',
     textAlign: 'right',
+    marginTop: 8,
   },
   loadingContainer: {
     flex: 1,
@@ -246,12 +264,28 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     padding: 40,
   },
- 
+  errorImage: {
+    width: 120,
+    height: 120,
+    marginBottom: 20,
+    opacity: 0.7,
+  },
   errorText: {
     fontSize: 16,
     color: '#EF4444',
     textAlign: 'center',
+    marginBottom: 20,
     paddingHorizontal: 30,
+  },
+  retryButton: {
+    paddingHorizontal: 24,
+    paddingVertical: 12,
+    backgroundColor: '#3B82F6',
+    borderRadius: 8,
+  },
+  retryText: {
+    color: '#FFFFFF',
+    fontWeight: '600',
   },
   emptyContainer: {
     flex: 1,
@@ -265,13 +299,13 @@ const styles = StyleSheet.create({
     marginBottom: 20,
     opacity: 0.7,
   },
-  emptyText: {
+  emptyTitle: {
     fontSize: 18,
     fontWeight: '600',
     color: '#1F2937',
     marginBottom: 8,
   },
-  emptySubText: {
+  emptyText: {
     fontSize: 14,
     color: '#6B7280',
     textAlign: 'center',
@@ -279,4 +313,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default ActiveJobs;
+export default CompletedJobs;

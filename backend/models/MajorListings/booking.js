@@ -1,5 +1,5 @@
 import mongoose from "mongoose";
-import mongoosePaginate from 'mongoose-paginate-v2';
+import mongoosePaginate from 'mongoose-paginate-v2'
 
 const bookingSchema = new mongoose.Schema(
   {
@@ -44,9 +44,9 @@ const bookingSchema = new mongoose.Schema(
     },
     orderNumber: {
       type: String,
-      required: true,
       unique: true,
       index: true,
+      default: null,
     },
     startTime: {
       type: Date,
@@ -60,10 +60,10 @@ const bookingSchema = new mongoose.Schema(
       type: String,
       default: null,
     },
-    // Enhanced Payment Fields for PKR
+    // Payment Fields
     paymentMethod: {
       type: String,
-      enum: ["COD", "CARD", "JazzCash", "EasyPaisa", "BankTransfer"],
+      enum: ["COD", "CARD"],
       required: true,
     },
     paymentIntentId: {
@@ -72,85 +72,17 @@ const bookingSchema = new mongoose.Schema(
     },
     paymentStatus: {
       type: String,
-      enum: ["Pending", "Completed", "Cancelled", "Refunded", "Partially_Refunded"],
+      enum: ["Pending", "Completed", "Cancelled" , "Refunded"],
       default: "Pending",
     },
-    currency: {
-      type: String,
-      default: "PKR",
-      immutable: true, // Ensures currency can't be changed after creation
-    },
+    // New field: Selected Pricing Option
     selectedPricingOption: {
-      label: { type: String, required: true },
-      price: { type: Number, required: true }, // Always in PKR
-      currency: {
-        type: String,
-        default: "PKR",
-      },
-    },
-    // Enhanced Refund Tracking
-    refundDetails: {
-      refundId: String, // Stripe refund ID or bank reference
-      amount: Number, // In PKR
-      reason: {
-        type: String,
-        enum: [
-          "service_unsatisfactory",
-          "service_not_provided",
-          "customer_request",
-          "duplicate_charge",
-          "other"
-        ],
-      },
-      notes: String,
-      processedBy: {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: "user",
-      },
-      processedAt: Date,
-      method: {
-        type: String,
-        enum: ["Stripe", "JazzCash", "EasyPaisa", "BankTransfer", "Cash"],
-      },
-      status: {
-        type: String,
-        enum: ["pending", "processed", "failed"],
-        default: "pending",
-      },
-    },
-    // Local Payment Method Details
-    localPaymentDetails: {
-      jazzCashReference: String,
-      easyPaisaTransactionId: String,
-      bankTransactionId: String,
+      label: { type: String, required: true }, // E.g., "250 sqft", "500 sqft"
+      price: { type: Number, required: true }, // Price for the selected option
     },
   },
-  { 
-    timestamps: true,
-    toJSON: { virtuals: true }, // For currency formatting in API responses
-    toObject: { virtuals: true },
-  }
+  { timestamps: true }
 );
 
-// Virtual for formatted price display
-bookingSchema.virtual('formattedPrice').get(function() {
-  return `${this.selectedPricingOption.price.toLocaleString('en-PK')} PKR`;
-});
-
-// Indexes for faster queries
-bookingSchema.index({ orderNumber: 1 });
-bookingSchema.index({ paymentStatus: 1 });
-bookingSchema.index({ 'refundDetails.status': 1 });
-
-// Pagination plugin
 bookingSchema.plugin(mongoosePaginate);
-
-// Pre-save hook for currency validation
-bookingSchema.pre('save', function(next) {
-  if (this.selectedPricingOption && !this.selectedPricingOption.currency) {
-    this.selectedPricingOption.currency = 'PKR';
-  }
-  next();
-});
-
 export const Booking = mongoose.model("Booking", bookingSchema);

@@ -204,8 +204,6 @@ export const BookServiceListingByListingId = async (req, res) => {
       selectedPricingOption, // Include the selected pricing option
     });
 
-    newBooking.orderNumber = `HFM -${Date.now()}`;
-
     await newBooking.save();
 
     // Call the email function

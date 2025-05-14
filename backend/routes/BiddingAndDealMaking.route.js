@@ -9,6 +9,7 @@ import { completeJobById, getAllJobsPostedByUser, saveJob, updateJobById } from 
 import {
     acceptBidOffer,
     getAgreedContractsForProvider,
+    getCompletedContractsForProvider,
     getInterviewingOffers,
     getProviderOfferResponses,
     hireBidOffer,
@@ -39,6 +40,7 @@ router.route('/get-offers-responses/:serviceProviderId').get(getProviderOfferRes
 router.route('/get-interviewing-offers/:userId').get(getInterviewingOffers)
 router.route('/update-contract-status/:bidId').put(updateContractStatus)
 router.route('/get-agreed-contract/:serviceProviderId').get(getAgreedContractsForProvider)
+router.route('/get-completed-contract/:serviceProviderId').get(getCompletedContractsForProvider)
 
 //Saved jobs
 router.route('/saved-jobs').post(saveJob)

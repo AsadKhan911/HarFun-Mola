@@ -17,28 +17,6 @@ import { v4 as uuidv4 } from 'uuid';
 
 const generateUUID = () => uuidv4();
 
-const getCityCoordinates = (city) => {
-    const cityCoordinates = {
-        Rawalpindi: "33.6844,73.0479",
-        Lahore: "31.5204,74.3587",
-        Karachi: "24.8607,67.0011",
-    };
-    return cityCoordinates[city] || "31.5204,74.3587"; // Default to Lahore
-};
-
-const handleAreaSelect = (data, details = null) => {
-    if (details?.geometry?.location) {
-        const { lat, lng } = details.geometry.location;
-        setArea(data.description);
-        setLatitude(lat);
-        setLongitude(lng);
-    } else {
-        setArea(data.description);
-        setLatitude(null);
-        setLongitude(null);
-    }
-};
-
 const GOOGLE_API_KEY = 'AIzaSyBt8hQFcT_LFuwCYQKs-pHE_MqUXJeZgpk';
 const Signup = () => {
     const navigation = useNavigation();
@@ -58,6 +36,28 @@ const Signup = () => {
     const [passwordStrength, setPasswordStrength] = useState('');
     const [passwordFeedback, setPasswordFeedback] = useState('');
     const [passwordFeedbackColor, setPasswordFeedbackColor] = useState('red');
+
+    const getCityCoordinates = (city) => {
+        const cityCoordinates = {
+            Rawalpindi: "33.6844,73.0479",
+            Lahore: "31.5204,74.3587",
+            Karachi: "24.8607,67.0011",
+        };
+        return cityCoordinates[city] || "31.5204,74.3587"; // Default to Lahore
+    };
+    
+    const handleAreaSelect = (data, details = null) => {
+        if (details?.geometry?.location) {
+            const { lat, lng } = details.geometry.location;
+            setArea(data.description);
+            setLatitude(lat);
+            setLongitude(lng);
+        } else {
+            setArea(data.description);
+            setLatitude(null);
+            setLongitude(null);
+        }
+    };
 
     const checkPasswordStrength = (password) => {
         const lengthCondition = password.length >= 8;

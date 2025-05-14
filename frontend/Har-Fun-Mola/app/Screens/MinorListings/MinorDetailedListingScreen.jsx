@@ -6,12 +6,13 @@ import FontAwesome6 from '@expo/vector-icons/FontAwesome6';
 import Colors from '../../../constants/Colors.ts';
 import { Heading } from '../../../components/Heading.jsx';
 import BookingModal from '../BookingScreen/BookingModal.jsx';
+import MinorBookingModal from './MinorBookingModal.jsx';
 
 const MinorDetailedListingScreen = () => {
   const route = useRoute();
   const navigation = useNavigation();
   const { listing } = route.params || {};
-  
+
   const [readMore, setReadMore] = useState(false);
   const [showModal, setShowModal] = useState(false);
   const [isLoading] = useState(!listing); // Show loading if no listing data
@@ -59,7 +60,7 @@ const MinorDetailedListingScreen = () => {
                 {listing?.created_by?.fullName || 'Service Provider'} 🌟
               </Text>
               <Text style={styles.categoryTag}>
-                {listing?.category?.name || 'Service Category'}
+                {listing?.category?.name || listing?.service?.category?.name || 'Service Category'}
               </Text>
             </View>
 
@@ -129,10 +130,10 @@ const MinorDetailedListingScreen = () => {
 
       {/* Action Buttons */}
       <View style={styles.buttonContainer}>
-        <TouchableOpacity 
-          style={styles.messageBtn} 
-          onPress={() => navigation.navigate('view-provider-profile', { 
-            serviceProvider: listing?.created_by 
+        <TouchableOpacity
+          style={styles.messageBtn}
+          onPress={() => navigation.navigate('view-provider-profile', {
+            serviceProvider: listing?.created_by
           })}
         >
           <Ionicons name="person-outline" size={18} color={Colors.PRIMARY} style={{ marginRight: 10 }} />
@@ -150,7 +151,10 @@ const MinorDetailedListingScreen = () => {
 
       {/* Booking Modal */}
       <Modal animationType="slide" visible={showModal}>
-        <BookingModal business={listing} handleCloseModal={handleCloseModal} />
+        <MinorBookingModal
+          business={listing}
+          handleCloseModal={handleCloseModal}
+        />
       </Modal>
     </View>
   );
@@ -233,7 +237,7 @@ const styles = StyleSheet.create({
     fontSize: 14,
     color: Colors.GRAY,
     textAlign: 'center',
-  },  
+  },
   address: {
     fontSize: 17,
     fontFamily: 'outfit',

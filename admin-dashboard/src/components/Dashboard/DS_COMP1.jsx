@@ -44,7 +44,7 @@ const DS_COMP1 = () => {
     {
       icon: <FaDollarSign className="text-purple-600 text-2xl" />,
       label: 'Total Earnings',
-      value: `$${dashboardStats.totalEarnings.toLocaleString()}`,
+      value: `Pkr ${dashboardStats.totalEarnings.toLocaleString()}`,
     },
   ];
 

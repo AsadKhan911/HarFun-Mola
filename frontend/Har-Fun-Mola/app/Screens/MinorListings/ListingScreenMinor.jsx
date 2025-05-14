@@ -39,6 +39,7 @@ const ListingScreenMinor = () => {
       if (response.data.success) {
         const safeListings = response.data.data.map(item => ({
           ...item,
+          category: item.category || { name: 'Unknown Category' },
           created_by: item.created_by || { fullName: 'Provider', profile: { profilePic: null } },
           Listingpicture: item.Listingpicture || null,
           description: item.description || 'No description available',

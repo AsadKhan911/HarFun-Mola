@@ -7,6 +7,7 @@ import { getDataUri } from '../utils/dataURI.js'
 import cloudinary from "../utils/cloudinary.js";
 import Stripe from "stripe";
 import dotenv from "dotenv";
+import mongoose from "mongoose";
 dotenv.config(); 
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY); 
 
@@ -417,3 +418,65 @@ export const getUser = async (req, res) => {
         });
     }
 };
+
+export const getServiceProviderReviews = async (req, res) => {
+    try {
+      const { serviceProviderId } = req.params;
+  
+      // Validate the ID
+      if (!mongoose.Types.ObjectId.isValid(serviceProviderId)) {
+        return res.status(400).json({ 
+          success: false,
+          message: 'Invalid service provider ID' 
+        });
+      }
+  
+      // Find the user, populate reviewer details, and limit/sort reviews
+      const serviceProvider = await User.findById(serviceProviderId)
+        .select('reviews')
+        .populate({
+          path: 'reviews.userId',
+          select: 'fullName profile.profilePic'
+        })
+        .lean(); // Convert to plain JavaScript object
+  
+      if (!serviceProvider) {
+        return res.status(404).json({ 
+          success: false,
+          message: 'Service provider not found' 
+        });
+      }
+  
+      // Sort reviews by createdAt (newest first) and take only 5
+      const sortedReviews = serviceProvider.reviews
+        .sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt))
+        .slice(0, 5);
+  
+      // Format the response
+      const formattedReviews = sortedReviews.map(review => ({
+        _id: review._id,
+        rating: review.rating,
+        comment: review.comment,
+        createdAt: review.createdAt,
+        user: {
+          _id: review.userId._id,
+          name: review.userId.fullName,
+          avatar: review.userId.profile?.profilePic || null
+        }
+      }));
+  
+      res.status(200).json({
+        success: true,
+        count: formattedReviews.length,
+        reviews: formattedReviews,
+        totalReviews: serviceProvider.reviews.length // Optional: include total count
+      });
+  
+    } catch (error) {
+      console.error('Error fetching reviews:', error);
+      res.status(500).json({
+        success: false,
+        message: 'Server error while fetching reviews'
+      });
+    }
+  };

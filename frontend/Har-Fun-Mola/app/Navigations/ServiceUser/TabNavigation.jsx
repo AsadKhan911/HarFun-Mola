@@ -43,18 +43,7 @@ const TabNavigation = () => {
                             ),
                         }}
                     />
-                    <Tab.Screen
-                        name="job"
-                        component={JobNavigation}
-                        options={{
-                            tabBarLabel: ({ color }) => (
-                                <Text style={{ color: color, fontSize: 12, marginTop: -1 }}>Jobs</Text>
-                            ),
-                            tabBarIcon: ({ color, size }) => (
-                                <Entypo name="bookmarks" size={size} color={color} />
-                            ),
-                        }}
-                    />
+                   
                     <Tab.Screen
                         name="booking"
                         component={BookingNavigationUser}
@@ -67,6 +56,20 @@ const TabNavigation = () => {
                             ),
                         }}
                     />
+
+                        <Tab.Screen
+                        name="job"
+                        component={JobNavigation}
+                        options={{
+                            tabBarLabel: ({ color }) => (
+                                <Text style={{ color: color, fontSize: 12, marginTop: -1 }}>Jobs</Text>
+                            ),
+                            tabBarIcon: ({ color, size }) => (
+                                <Entypo name="bookmarks" size={size} color={color} />
+                            ),
+                        }}
+                    />
+
                     <Tab.Screen
                         name="tab-profile"
                         component={ProfileNavigation}
@@ -87,15 +90,29 @@ const TabNavigation = () => {
                         component={HomeNavigationSP}
                         options={{
                             tabBarLabel: ({ color }) => (
-                                <Text style={{ color: color, fontSize: 12, marginTop: -1 }}>HomeSP</Text>
+                                <Text style={{ color: color, fontSize: 12, marginTop: -1 }}>Home</Text>
                             ),
                             tabBarIcon: ({ color, size }) => (
                                 <Entypo name="home" size={size} color={color} />
                             ),
                         }}
                     />
+                   
                     <Tab.Screen
-                        name="job"
+                        name="booking"
+                        component={BookingNavigationSP}
+                        options={{
+                            tabBarLabel: ({ color }) => (
+                                <Text style={{ color: color, fontSize: 12, marginTop: -1 }}>Booking</Text>
+                            ),
+                            tabBarIcon: ({ color, size }) => (
+                                <AntDesign name="book" size={size} color={color} />
+                            ),
+                        }}
+                    />
+
+<Tab.Screen
+                        name="jobSP"
                         component={BiddingNavigationSP}
                         options={{
                             tabBarLabel: ({ color }) => (
@@ -106,36 +123,13 @@ const TabNavigation = () => {
                             ),
                         }}
                     />
-                    <Tab.Screen
-                        name="booking"
-                        component={BookingNavigationSP}
-                        options={{
-                            tabBarLabel: ({ color }) => (
-                                <Text style={{ color: color, fontSize: 12, marginTop: -1 }}>BookingSP</Text>
-                            ),
-                            tabBarIcon: ({ color, size }) => (
-                                <AntDesign name="book" size={size} color={color} />
-                            ),
-                        }}
-                    />
-                    {/* <Tab.Screen
-                        name="bookings"
-                        component={Booking}
-                        options={{
-                            tabBarLabel: ({ color }) => (
-                                <Text style={{ color: color, fontSize: 12, marginTop: -1 }}>Messages</Text>
-                            ),
-                            tabBarIcon: ({ color, size }) => (
-                                <AntDesign name="book" size={size} color={color} />
-                            ),
-                        }}
-                    /> */}
+                    
                     <Tab.Screen
                         name="tab-profile"
                         component={ProfileNavigation}
                         options={{
                             tabBarLabel: ({ color }) => (
-                                <Text style={{ color: color, fontSize: 12, marginTop: -1 }}>ProfileSP</Text>
+                                <Text style={{ color: color, fontSize: 12, marginTop: -1 }}>Profile</Text>
                             ),
                             tabBarIcon: ({ color, size }) => (
                                 <AntDesign name="user" size={size} color={color} />

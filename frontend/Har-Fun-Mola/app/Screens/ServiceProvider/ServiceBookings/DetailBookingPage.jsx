@@ -87,12 +87,12 @@ const OrderDetailsScreen = () => {
 
             <Card style={styles.card}>
                 <Card.Content>
-                    {/* View Profile Button */}
+                    {/* View Profile Button
                     <View style={styles.profileButtonContainer}>
                         <TouchableOpacity style={styles.profileButton} onPress={() => navigation.navigate("UserProfile", { userId: singleBooking.user.id })}>
                             <Text style={styles.profileButtonText}>View Client's Profile</Text>
                         </TouchableOpacity>
-                    </View>
+                    </View> */}
 
                     <Text style={styles.title}>{singleBooking.service.serviceName}</Text>
 
@@ -235,27 +235,27 @@ const styles = StyleSheet.create({
         color: "white",
         fontFamily: "outfit-Medium",
     },
-    profileButtonContainer: {
-        marginTop: 0,
-        marginBottom:20,
-        alignItems: "center",
-    },
-    profileButton: {
-        paddingVertical: 12,
-        paddingHorizontal: 30,
-        borderRadius: 25,
-        backgroundColor: Colors.PRIMARY,
-        shadowColor: Colors.GRAY,
-        shadowOffset: { width: 0, height: 4 },
-        shadowOpacity: 0.3,
-        shadowRadius: 5,
-        elevation: 5,
-    },
-    profileButtonText: {
-        fontSize: 16,
-        color: Colors.WHITE,
-        fontFamily: "outfit-Medium",
-    },
+    // profileButtonContainer: {
+    //     marginTop: 0,
+    //     marginBottom:20,
+    //     alignItems: "center",
+    // },
+    // profileButton: {
+    //     paddingVertical: 12,
+    //     paddingHorizontal: 30,
+    //     borderRadius: 25,
+    //     backgroundColor: Colors.PRIMARY,
+    //     shadowColor: Colors.GRAY,
+    //     shadowOffset: { width: 0, height: 4 },
+    //     shadowOpacity: 0.3,
+    //     shadowRadius: 5,
+    //     elevation: 5,
+    // },
+    // profileButtonText: {
+    //     fontSize: 16,
+    //     color: Colors.WHITE,
+    //     fontFamily: "outfit-Medium",
+    // },
     goBackContainer: {
         position: "absolute",
         top: 50,

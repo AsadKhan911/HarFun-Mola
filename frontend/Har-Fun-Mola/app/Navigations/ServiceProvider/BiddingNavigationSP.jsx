@@ -4,6 +4,7 @@ import JobDetails from '../../Screens/ServiceProvider/BiddingModule/JobDetails.j
 import detailedProposal from '../../Screens/ServiceProvider/BiddingModule/detailedProposal.jsx';
 import detailedAgreedProposal from '../../Screens/ServiceProvider/BiddingModule/detailedAgreedProposal.jsx';
 import StartJob from '../../Screens/ServiceProvider/BiddingModule/StartJob.jsx';
+import ReuseableChat from "../../../components/Chat_Component/ReuseableChat.jsx";
 
 const Stack = createStackNavigator();
 
@@ -18,6 +19,7 @@ const BiddingNavigationSP = () => {
       <Stack.Screen name='detailed-proposal' component={detailedProposal}/>
       <Stack.Screen name='detailed-agreed-proposal' component={detailedAgreedProposal}/>
       <Stack.Screen name='start-job' component={StartJob}/>
+      <Stack.Screen name='message-provider' component={ReuseableChat}/>
     </Stack.Navigator>
   );
 };

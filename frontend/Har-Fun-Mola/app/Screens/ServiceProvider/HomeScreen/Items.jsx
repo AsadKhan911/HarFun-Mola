@@ -11,11 +11,11 @@ const Items = () => {
   const menuItems = [
     { id: 1, title: 'Major Listings', icon: 'send', screen: 'major-category' },
     { id: 2, title: 'Minor Listings', icon: 'file-text-o', screen: 'minor-category' },
-    { id: 3, title: 'View Jobs', icon: 'university', screen: 'JobsScreen' },
-    { id: 4, title: 'Reviews', icon: 'id-card-o', screen: 'ReviewsScreen' },
-    { id: 5, title: 'Payment', icon: 'university', screen: 'PaymentScreen' },
-    { id: 6, title: 'Orders', icon: 'users', screen: 'OrdersScreen' },
-    { id: 7, title: 'Manage Cards', icon: 'credit-card', screen: 'ManageCardsScreen' },
+    { id: 3, title: 'View Jobs', icon: 'university', screen: 'jobSP' },
+    { id: 4, title: 'Reviews', icon: 'id-card-o', screen: 'reviews' },
+    { id: 5, title: 'Payment', icon: 'university', screen: 'payments' },
+    { id: 6, title: 'Orders', icon: 'users', screen: 'booking' },
+    { id: 7, title: 'Manage Cards', icon: 'credit-card', screen: 'manage-cards' },
     { id: 8, title: 'More', icon: 'ellipsis-h', screen: 'MoreOptionsScreen' },
   ];
 
@@ -27,7 +27,14 @@ const Items = () => {
           <TouchableOpacity 
             key={item.id} 
             style={styles.menuItem}
-            onPress={() => navigation.push(item.screen)} // Navigate to the respective screen
+            onPress={() => {
+              if (item.screen === 'jobSP' || 'booking' ) {
+                navigation.navigate(item.screen); // Switch to the 'job' tab
+              } else {
+                navigation.push(item.screen); // Push for stack screens
+              }
+            }}
+            
           >
             <View style={styles.iconContainer}>
               <FontAwesome name={item.icon} size={35} color={Colors.PRIMARY} />

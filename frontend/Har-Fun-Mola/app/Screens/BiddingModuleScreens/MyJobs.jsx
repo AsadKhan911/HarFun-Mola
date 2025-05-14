@@ -6,107 +6,253 @@ import {
   ScrollView,
   ActivityIndicator,
   TouchableOpacity,
+  Image, RefreshControl
 } from 'react-native';
 import axios from 'axios';
 import { useSelector } from 'react-redux';
 import { BiddingModelBaseUrl } from '../../URL/userBaseUrl';
 import { useNavigation } from '@react-navigation/native';
-import Icon from 'react-native-vector-icons/MaterialIcons'; // Use any icon set you prefer
+import Icon from 'react-native-vector-icons/MaterialIcons';
+import moment from 'moment';
 
 const MyJobs = () => {
   const [jobs, setJobs] = useState([]);
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(true);
+  const [refreshing, setRefreshing] = useState(false);
 
   const { user } = useSelector((state) => state.auth);
   const { token } = useSelector((state) => state.auth.user);
   const navigation = useNavigation();
 
-  useEffect(() => {
-    const fetchUserJobs = async () => {
-      if (!user?._id) return;
+  const fetchUserJobs = async () => {
+    if (!user?._id) return;
 
-      setLoading(true);
-      try {
-        const response = await axios.get(`${BiddingModelBaseUrl}/get-all-jobs/${user._id}`, {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        });
+    setRefreshing(true);
+    try {
+      const response = await axios.get(`${BiddingModelBaseUrl}/get-all-jobs/${user._id}`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
 
-        if (response.data?.jobs) {
-          setJobs(response.data.jobs);
-        } else {
-          console.warn('No jobs found.');
-        }
-
-      } catch (error) {
-        console.error('Error fetching jobs:', error?.response?.data || error.message);
-      } finally {
-        setLoading(false);
+      if (response.data?.jobs) {
+        setJobs(response.data.jobs);
       }
-    };
+    } catch (error) {
+      console.error('Error fetching jobs:', error?.response?.data || error.message);
+    } finally {
+      setLoading(false);
+      setRefreshing(false);
+    }
+  };
 
+  useEffect(() => {
     fetchUserJobs();
   }, [user, token]);
 
+  const getStatusColor = (status) => {
+    switch (status.toLowerCase()) {
+      case 'completed':
+        return '#4CAF50';
+      case 'in progress':
+        return '#FFC107';
+      case 'pending':
+        return '#2196F3';
+      case 'cancelled':
+        return '#F44336';
+      default:
+        return '#9E9E9E';
+    }
+  };
+
   return (
-    <ScrollView contentContainerStyle={styles.container}>
+    <View style={styles.container}>
+      <Text style={styles.headerTitle}>My Posted Jobs</Text>
+      
       {loading ? (
-        <ActivityIndicator size="large" color="#0000ff" />
+        <View style={styles.loadingContainer}>
+          <ActivityIndicator size="large" color="#3498db" />
+        </View>
       ) : jobs.length > 0 ? (
-        jobs.map((job, index) => (
-          <View key={index} style={styles.jobCard}>
-            {/* Edit Icon */}
-            <TouchableOpacity
-              style={styles.editIcon}
+        <ScrollView 
+          contentContainerStyle={styles.scrollContainer}
+          refreshControl={
+            <RefreshControl
+              refreshing={refreshing}
+              onRefresh={fetchUserJobs}
+              colors={['#3498db']}
+            />
+          }
+        >
+          {jobs.map((job, index) => (
+            <TouchableOpacity 
+              key={index} 
+              style={styles.jobCard}
               onPress={() => navigation.navigate('edit-job', { job })}
             >
-              <Icon name="edit" size={20} color="#007bff" />
-            </TouchableOpacity>
+              <View style={styles.cardHeader}>
+                <Text style={styles.serviceType}>{job.serviceType}</Text>
+                <TouchableOpacity
+                  onPress={() => navigation.navigate('EditJob', { job })}
+                >
+                  <Icon name="edit" size={20} color="#3498db" />
+                </TouchableOpacity>
+              </View>
 
-            <Text style={styles.title}>Service Type: {job.serviceType}</Text>
-            <Text>Description: {job.description}</Text>
-            <Text>Budget: ${job.budget}</Text>
-            <Text>Status: {job.status}</Text>
-            <Text>Posted At: {new Date(job.createdAt).toLocaleString()}</Text>
-          </View>
-        ))
+              <Text style={styles.description} numberOfLines={2}>
+                {job.description}
+              </Text>
+
+              <View style={styles.detailsRow}>
+                <View style={styles.detailItem}>
+                  <Text style={styles.detailText}>₨ {job.budget}</Text>
+                </View>
+
+                <View style={styles.detailItem}>
+                  <Icon name="event" size={16} color="#e74c3c" />
+                  <Text style={styles.detailText}>
+                    {moment(job.createdAt).format('DD MMM YYYY')}
+                  </Text>
+                </View>
+              </View>
+
+              <View style={[styles.statusBadge, { backgroundColor: getStatusColor(job.status) }]}>
+                <Text style={styles.statusText}>{job.status}</Text>
+              </View>
+            </TouchableOpacity>
+          ))}
+        </ScrollView>
       ) : (
-        <Text style={styles.noJobsText}>No jobs posted yet.</Text>
+        <View style={styles.emptyState}>
+          <Image 
+            source={require('../../../assets/images/jobs.png')} 
+            style={styles.emptyImage}
+          />
+          <Text style={styles.emptyTitle}>No Jobs Posted Yet</Text>
+          <Text style={styles.emptyText}>When you post jobs, they'll appear here</Text>
+          <TouchableOpacity 
+            style={styles.postJobButton}
+            onPress={() => navigation.navigate('PostJob')}
+          >
+            <Text style={styles.postJobButtonText}>Post Your First Job</Text>
+          </TouchableOpacity>
+        </View>
       )}
-    </ScrollView>
+    </View>
   );
 };
 
 const styles = StyleSheet.create({
   container: {
-    padding: 16,
+    flex: 1,
+    backgroundColor: '#f8f9fa',
+  },
+  headerTitle: {
+    fontSize: 22,
+    fontWeight: '700',
+    color: '#2c3e50',
+    padding: 20,
+    paddingBottom: 10,
+    backgroundColor: '#fff',
+    borderBottomWidth: 1,
+    borderBottomColor: '#eee',
+  },
+  scrollContainer: {
+    padding: 15,
+  },
+  loadingContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
   },
   jobCard: {
-    backgroundColor: '#f0f0f0',
-    padding: 15,
-    borderRadius: 10,
+    backgroundColor: '#fff',
+    borderRadius: 12,
+    padding: 18,
     marginBottom: 15,
-    borderColor: '#ddd',
-    borderWidth: 1,
-    position: 'relative',
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
+    elevation: 3,
   },
-  title: {
-    fontSize: 16,
-    fontWeight: 'bold',
-    marginBottom: 6,
+  cardHeader: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginBottom: 10,
   },
-  noJobsText: {
+  serviceType: {
+    fontSize: 18,
+    fontWeight: '600',
+    color: '#2c3e50',
+    flex: 1,
+  },
+  description: {
+    fontSize: 14,
+    color: '#7f8c8d',
+    marginBottom: 15,
+    lineHeight: 20,
+  },
+  detailsRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    marginBottom: 15,
+  },
+  detailItem: {
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  detailText: {
+    marginLeft: 5,
+    fontSize: 14,
+    color: '#34495e',
+  },
+  statusBadge: {
+    alignSelf: 'flex-start',
+    paddingVertical: 4,
+    paddingHorizontal: 10,
+    borderRadius: 12,
+  },
+  statusText: {
+    color: '#fff',
+    fontSize: 12,
+    fontWeight: '600',
+  },
+  emptyState: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    padding: 30,
+  },
+  emptyImage: {
+    width: 200,
+    height: 200,
+    marginBottom: 20,
+    opacity: 0.7,
+  },
+  emptyTitle: {
+    fontSize: 18,
+    fontWeight: '600',
+    color: '#2c3e50',
+    marginBottom: 8,
+  },
+  emptyText: {
+    fontSize: 14,
+    color: '#7f8c8d',
     textAlign: 'center',
-    marginTop: 50,
-    fontSize: 16,
-    color: '#888',
+    marginBottom: 20,
   },
-  editIcon: {
-    position: 'absolute',
-    right: 10,
-    top: 10,
-    padding: 5,
+  postJobButton: {
+    backgroundColor: '#3498db',
+    paddingVertical: 12,
+    paddingHorizontal: 25,
+    borderRadius: 8,
+  },
+  postJobButtonText: {
+    color: '#fff',
+    fontSize: 16,
+    fontWeight: '600',
   },
 });
 

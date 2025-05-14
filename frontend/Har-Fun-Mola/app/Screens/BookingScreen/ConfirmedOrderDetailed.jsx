@@ -43,13 +43,13 @@ const ConfirmedOrderDetailed = () => {
   }
   };
 
-  const handleViewProfile = () => {
-    navigation.navigate("ProviderProfile", { providerId: booking?.service?.created_by?._id });
-  };
+  // const handleViewProfile = () => {
+  //   navigation.navigate("ProviderProfile", { providerId: booking?.service?.created_by?._id });
+  // };
 
-  const handleMessageProvider = () => {
-    navigation.navigate("MessageProvider", { providerId: booking?.service?.created_by?._id });
-  };
+  // const handleMessageProvider = () => {
+  //   navigation.navigate("MessageProvider", { providerId: booking?.service?.created_by?._id });
+  // };
 
   return (
     <ScrollView contentContainerStyle={styles.container}>
@@ -105,7 +105,7 @@ const ConfirmedOrderDetailed = () => {
 
       {/* Buttons Section */}
       <View style={styles.buttonContainer}>
-        <View style={styles.rowButtons}>
+        {/* <View style={styles.rowButtons}>
           <TouchableOpacity style={styles.profileButton} onPress={handleViewProfile}>
             <LinearGradient colors={[Colors.PRIMARY, "#6C63FF"]} style={styles.gradientButton}>
               <Text style={styles.buttonText}>View Profile</Text>
@@ -117,7 +117,7 @@ const ConfirmedOrderDetailed = () => {
               <Text style={styles.buttonText}>Message Provider</Text>
             </LinearGradient>
           </TouchableOpacity>
-        </View>
+        </View> */}
 
         {/* Cancel Order Button */}
         <TouchableOpacity style={styles.cancelButton} onPress={handleCancelOrder} disabled={loading}>
