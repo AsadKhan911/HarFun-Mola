@@ -85,7 +85,7 @@ const JobDetails = () => {
                         <Divider style={styles.divider} />
     
                         <Paragraph style={styles.label}>Budget</Paragraph>
-                        <Text style={styles.budget}>${job.budget}</Text>
+                        <Text style={styles.budget}>Rs {job.budget}</Text>
     
                         <Divider style={styles.divider} />
     
