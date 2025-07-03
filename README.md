@@ -23,7 +23,17 @@ We begin with a clean, minimal registration experience for users. Every detail y
 ✅ Profile editing  
 ✅ Feedback system
 
-![Mockup Image](assets/user-register.png)
+<p align="center">
+  <img src="assets/user-register-1.png" width="45%"/>
+  <br>
+  <em>User enters email and password</em>
+</p>
+
+<p align="center">
+  <img src="assets/user-register-2.png" width="45%"/>
+  <br>
+  <em>Email verification screen</em>
+</p>
 
 ---
 
@@ -36,7 +46,17 @@ Users are shown categorized **major home services** and **minor product diagnost
 📌 Real-Time Availability  
 📌 Booking with Instant Confirmation
 
-![Mockup Image](assets/services-list.png)
+<p align="center">
+  <img src="assets/services-list-1.png" width="45%"/>
+  <br>
+  <em>Major services categorized with descriptions</em>
+</p>
+
+<p align="center">
+  <img src="assets/services-list-2.png" width="45%"/>
+  <br>
+  <em>Detailed view of selected service with price and availability</em>
+</p>
 
 ---
 
@@ -49,7 +69,17 @@ Not sure what’s wrong with your appliance? Use **Diagnostic Mode**:
 - Accept or cancel post-diagnostic  
 - Transparent pricing
 
-![Mockup Image](assets/diagnostic-flow.png)
+<p align="center">
+  <img src="assets/diagnostic-1.png" width="45%"/>
+  <br>
+  <em>Choose a minor repair or run a diagnostic</em>
+</p>
+
+<p align="center">
+  <img src="assets/diagnostic-2.png" width="45%"/>
+  <br>
+  <em>Diagnostic results with pricing options</em>
+</p>
 
 ---
 
@@ -62,7 +92,17 @@ We ensure **fairness** with a secure escrow system:
 - 💸 Multiple payment methods (COD, JazzCash, EasyPaisa)  
 - 📊 Auto deduction of platform fee
 
-![Mockup Image](assets/escrow-system.png)
+<p align="center">
+  <img src="assets/payment-1.png" width="45%"/>
+  <br>
+  <em>Secure checkout with multiple payment methods</em>
+</p>
+
+<p align="center">
+  <img src="assets/payment-2.png" width="45%"/>
+  <br>
+  <em>Escrow wallet system for transaction transparency</em>
+</p>
 
 ---
 
@@ -76,7 +116,17 @@ Don’t want fixed-price? Let the providers **bid** on your job!
 4. Agreement forms a contract  
 5. Ratings exchanged afterward
 
-![Mockup Image](assets/bidding-flow.png)
+<p align="center">
+  <img src="assets/bidding-1.png" width="45%"/>
+  <br>
+  <em>User posts service needs with budget</em>
+</p>
+
+<p align="center">
+  <img src="assets/bidding-2.png" width="45%"/>
+  <br>
+  <em>Providers bid and chat to negotiate before deal</em>
+</p>
 
 ---
 
@@ -84,12 +134,22 @@ Don’t want fixed-price? Let the providers **bid** on your job!
 
 Keep every order in check, from start to finish:
 
-- Unique Order IDs
-- Real-time provider location tracking
-- Chat and notifications
+- Unique Order IDs  
+- Real-time provider location tracking  
+- Chat and notifications  
 - Status stages: Pending → In Progress → Completed
 
-![Mockup Image](assets/order-tracking.png)
+<p align="center">
+  <img src="assets/order-1.png" width="45%"/>
+  <br>
+  <em>Order tracking screen with status and location</em>
+</p>
+
+<p align="center">
+  <img src="assets/order-2.png" width="45%"/>
+  <br>
+  <em>Real-time chat between user and provider</em>
+</p>
 
 ---
 
@@ -97,14 +157,24 @@ Keep every order in check, from start to finish:
 
 Empowering providers with tools to grow:
 
-- Profile creation & verification
-- Real-time dashboard
-- Bidding panel
-- Wallet management
-- Task tracker
+- Profile creation & verification  
+- Real-time dashboard  
+- Bidding panel  
+- Wallet management  
+- Task tracker  
 - Client communication
 
-![Mockup Image](assets/service-provider-dashboard.png)
+<p align="center">
+  <img src="assets/provider-dashboard-1.png" width="45%"/>
+  <br>
+  <em>Service provider’s task management panel</em>
+</p>
+
+<p align="center">
+  <img src="assets/provider-dashboard-2.png" width="45%"/>
+  <br>
+  <em>Wallet view for tracking balances and payouts</em>
+</p>
 
 ---
 
@@ -118,7 +188,17 @@ Behind the scenes, admins keep everything clean and running:
 - Community moderation  
 - Announcement & notification system
 
-![Mockup Image](assets/admin-panel.png)
+<p align="center">
+  <img src="assets/admin-panel-1.png" width="45%"/>
+  <br>
+  <em>Admin dashboard: user/provider/task overview</em>
+</p>
+
+<p align="center">
+  <img src="assets/admin-panel-2.png" width="45%"/>
+  <br>
+  <em>Transaction management and reporting</em>
+</p>
 
 ---
 
@@ -126,7 +206,7 @@ Behind the scenes, admins keep everything clean and running:
 
 | Platform | Tech |
 |----------|------|
-| **Frontend (Mobile)** | React Native |
+| **Frontend (Mobile)** | React Native / Flutter |
 | **Backend** | Node.js, Express.js |
 | **Database** | MongoDB |
 | **Real-Time** | Socket.io |
@@ -136,3 +216,6 @@ Behind the scenes, admins keep everything clean and running:
 | **Storage** | Cloudinary for images |
 
 ---
+
+## 📂 Folder Structure
+
