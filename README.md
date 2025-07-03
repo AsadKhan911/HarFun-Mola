@@ -1,5 +1,11 @@
 # 📱 HarFun Mola – Smart Home Services App
 
+<p align="center">
+  <img src="mockups/starter.png" width="60%" />
+  <br>
+  <em>🌟 Beautiful onboarding screen introducing the HarFun Mola experience</em>
+</p>
+
 Welcome to **HarFun Mola** – a comprehensive, full-stack mobile + web application ecosystem that connects **users** with **trusted service providers** for all home repair, diagnostics, and booking needs. From booking an electrician to getting your blender diagnosed, HarFun Mola ensures a **secure, transparent, and delightful** experience for everyone.
 
 ---
