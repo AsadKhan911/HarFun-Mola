@@ -24,13 +24,13 @@ We begin with a clean, minimal registration experience for users. Every detail y
 ✅ Feedback system
 
 <p align="center">
-  <img src="assets/user-register-1.png" width="45%"/>
+  <img src="mockups/ok.jpg" width="45%"/>
   <br>
   <em>User enters email and password</em>
 </p>
 
 <p align="center">
-  <img src="assets/user-register-2.png" width="45%"/>
+  <img src="mockups/ok.jpg" width="45%"/>
   <br>
   <em>Email verification screen</em>
 </p>
