@@ -75,11 +75,11 @@ Users are shown categorized **major home services** and **minor product diagnost
 </p>
 
 <p align="center">
-  <em>1). Starter Screen</em>
+  <em>1). Major Categories</em>
   &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-  <em>2). Login</em>
+  <em>2). Service Listings</em>
   &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-  <em>3). Role-based Sign Up</em>
+  <em>3). List Details</em>
 </p>
 
 <p align="center">
@@ -87,15 +87,15 @@ Users are shown categorized **major home services** and **minor product diagnost
   &nbsp;&nbsp;
   <img src="mockups/MajorCat5.PNG" height="350"  width="200" />
   &nbsp;&nbsp;
-  <img src="mockups/BookingCreated.PNG" height="350"  width="200" />
+  <img src="mockups/MajorCat6.PNG" height="350"  width="200" />
 </p>
 
 <p align="center">
-  <em>4). Provider Details</em>
+  <em>4). Booking Screen</em>
   &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-  <em>5). Background Check</em>
+  <em>5). Real-time Location Suggestions</em>
   &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-  <em>6). Email Verification</em>
+  <em>6). Stripe Card Payment</em>
 </p>
 
 ---
@@ -110,15 +110,35 @@ Not sure what’s wrong with your appliance? Use **Diagnostic Mode**:
 - Transparent pricing
 
 <p align="center">
-  <img src="assets/diagnostic-1.png" width="45%"/>
-  <br>
-  <em>Choose a minor repair or run a diagnostic</em>
+  <img src="mockups/MajorCat1.PNG" height="350"  width="200" />
+  &nbsp;&nbsp;
+  <img src="mockups/MinorCat1.PNG" height="350"  width="200" />
+  &nbsp;&nbsp;
+  <img src="mockups/MinorCat2.PNG" height="350"  width="200" />
 </p>
 
 <p align="center">
-  <img src="assets/diagnostic-2.png" width="45%"/>
-  <br>
-  <em>Diagnostic results with pricing options</em>
+  <em>1). Minor Categories</em>
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+  <em>2). Minor Service Listings</em>
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+  <em>3). Select the Specific Issue</em>
+</p>
+
+<p align="center">
+  <img src="mockups/MinorCat3.PNG" height="350"  width="200" />
+  &nbsp;&nbsp;
+  <img src="mockups/View_profile.PNG" height="350"  width="200" />
+  &nbsp;&nbsp;
+  <img src="mockups/MinorCat4.PNG" height="350"  width="200" />
+</p>
+
+<p align="center">
+  <em>4). Listings Under Specific Issue</em>
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+  <em>5). View Provider's Profile & Ratings</em>
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+  <em>6). Select Diagnose if Not Sure</em>
 </p>
 
 ---
@@ -133,15 +153,26 @@ We ensure **fairness** with a secure escrow system:
 - 📊 Auto deduction of platform fee
 
 <p align="center">
-  <img src="assets/payment-1.png" width="45%"/>
-  <br>
-  <em>Secure checkout with multiple payment methods</em>
+  <img src="mockups/stripe1.png"  width="400" />
+  &nbsp;&nbsp;
+  <img src="mockups/stripe2.png" width="400" />
 </p>
 
 <p align="center">
-  <img src="assets/payment-2.png" width="45%"/>
-  <br>
-  <em>Escrow wallet system for transaction transparency</em>
+  <em>1). Stripe Dashboard Overview</em>
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+  <em>2). Total Number of Transactions</em>
+</p>
+<p align="center">
+  <img src="mockups/stripe3.png"  width="400" />
+  &nbsp;&nbsp;
+  <img src="mockups/stripe4.png" width="400" />
+</p>
+
+<p align="center">
+  <em>3).Total App Customers</em>
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+  <em>4). Total App Servive Providers</em>
 </p>
 
 ---
@@ -157,15 +188,35 @@ Don’t want fixed-price? Let the providers **bid** on your job!
 5. Ratings exchanged afterward
 
 <p align="center">
-  <img src="assets/bidding-1.png" width="45%"/>
-  <br>
-  <em>User posts service needs with budget</em>
+  <img src="mockups/Jobs1.PNG" height="350"  width="200" />
+  &nbsp;&nbsp;
+  <img src="mockups/Jobs5.PNG" height="350"  width="200" />
+  &nbsp;&nbsp;
+  <img src="mockups/Jobs3.PNG" height="350"  width="200" />
 </p>
 
 <p align="center">
-  <img src="assets/bidding-2.png" width="45%"/>
-  <br>
-  <em>Providers bid and chat to negotiate before deal</em>
+  <em>1). Latest Jobs Posted By Users</em>
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+  <em>2). Bid to your desired job</em>
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+  <em>3). On-Going Jobs of Providers</em>
+</p>
+
+<p align="center">
+  <img src="mockups/Jobs2.PNG" height="350"  width="200" />
+  &nbsp;&nbsp;
+  <img src="mockups/Jobs6.PNG" height="350"  width="200" />
+  &nbsp;&nbsp;
+  <img src="mockups/msg_USER.PNG" height="350"  width="200" />
+</p>
+
+<p align="center">
+  <em>1). Total Proposals Get</em>
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+  <em>2). Chat with User to get Hired</em>
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+  <em>3). Real-Time Chat</em>
 </p>
 
 ---
@@ -180,16 +231,59 @@ Keep every order in check, from start to finish:
 - Status stages: Pending → In Progress → Completed
 
 <p align="center">
-  <img src="assets/order-1.png" width="45%"/>
-  <br>
-  <em>Order tracking screen with status and location</em>
+  <img src="mockups/PenBookingSP.PNG" height="350"  width="200" />
+  &nbsp;&nbsp;
+  <img src="mockups/ConfBookSP.PNG" height="350"  width="200" />
+  &nbsp;&nbsp;
+  <img src="mockups/StartBookSP.PNG" height="350"  width="200" />
 </p>
 
 <p align="center">
-  <img src="assets/order-2.png" width="45%"/>
-  <br>
-  <em>Real-time chat between user and provider</em>
+  <em>1). Accept/Decline the Booking</em>
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+  <em>2). Start the Service</em>
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+  <em> 3).View Location/Complete Service</em>
 </p>
+
+<p align="center">
+  <img src="mockups/LiveLocUser.PNG" height="350"  width="200" />
+  &nbsp;&nbsp;
+  <img src="mockups/Rate_SU.PNG" height="350"  width="200" />
+  &nbsp;&nbsp;
+  <img src="mockups/BookingCreated.PNG" height="350"  width="200" />
+</p>
+
+<p align="center">
+  <em>1). User's Live Location</em>
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+  <em>2). Rate user after completion</em>
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+  <em>3). Service Completion Alert</em>
+</p>
+
+---
+
+## 🧑‍🔧 AssistiveFix Navigator
+
+Say hello to **AssistiveFix** — your **AI-powered guide** for diagnosing problems and getting the right help fast. It's like having a technician in your pocket!
+
+- 💬 Conversational interface for smart diagnostics  
+- 📝 Dynamic checklist generation by product type  
+- 🛠️ Service suggestions based on symptoms  
+- 🌍 Multilingual support for broader accessibility  
+- 🔄 Self-learning for smarter diagnostics over time  
+- 🚀 Quick, friendly, and deeply helpful UX
+
+---
+
+## 🧠 IntelliServe Insights
+
+**IntelliServe Insights** takes your service experience to the next level by offering **personalized, intelligent recommendations** tailored to your needs, history, and context.
+
+- 🧲 Smart Suggestions based on past bookings  
+- 📍 Location-aware service matching (within 5km radius)
+- 🌟 Provider selection based on top reviews, previous user ratings, and booking history
 
 ---
 
