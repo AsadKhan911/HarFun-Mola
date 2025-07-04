@@ -4,13 +4,15 @@ Welcome to **HarFun Mola** – a comprehensive, full-stack mobile + web applicat
 
 ---
 
-## 🌟 Project Highlights
+## Project Highlights
 
-- 📱 **User Mobile App** (React Native / Flutter)
+- 📱 **User Mobile App** (React Native)
 - 🔧 **Service Provider Mobile App**
 - 🖥️ **Admin Web Dashboard** (React + Node/Express)
-- 🔐 **Secure Auth & Payment with Escrow System**
-- 🔄 **Real-time Order Tracking, Bidding, and Chat**
+- 🔐 **Secure Auth, Wallet & Escrow Payment System**
+- 🔄 **Real-Time Booking, Order Tracking, Bidding, and Chat**
+- 🤖 **AssistiveFix Navigator** (AI Diagnostic Assistant)
+- 🧠 **IntelliServe Insights** (Smart Recommendations)
 
 ---
 
@@ -23,37 +25,28 @@ We begin with a clean, minimal registration experience for users. Every detail y
 ✅ Profile editing  
 ✅ Feedback system
 
-<p align="center">
-  <img src="mockups/starter.PNG" height="350"  width="200" />
-  &nbsp;&nbsp;
-  <img src="mockups/login.PNG" height="350"  width="200" />
-  &nbsp;&nbsp;
-  <img src="mockups/signup.PNG" height="350"  width="200" />
-</p>
-
-<p align="center">
-  <em>1). Starter Screen</em>
-  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-  <em>2). Login</em>
-  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-  <em>3). Role-based Sign Up</em>
-</p>
-
-<p align="center">
-  <img src="mockups/signup1.PNG" height="350"  width="200" />
-  &nbsp;&nbsp;
-  <img src="mockups/signup2.PNG" height="350"  width="200" />
-  &nbsp;&nbsp;
-  <img src="mockups/emailVer.PNG" height="350"  width="200" />
-</p>
-
-<p align="center">
-  <em>4). Provider Details</em>
-  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-  <em>5). Background Check</em>
-  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-  <em>6). Email Verification</em>
-</p>
+<table align="center">
+  <tr>
+    <td align="center"><img src="mockups/starter.PNG" width="180" /></td>
+    <td align="center"><img src="mockups/login.PNG" width="180" /></td>
+    <td align="center"><img src="mockups/signup.PNG" width="180" /></td>
+  </tr>
+  <tr>
+    <td align="center"><em>1). Starter Screen</em></td>
+    <td align="center"><em>2). Login</em></td>
+    <td align="center"><em>3). Role-based Sign Up</em></td>
+  </tr>
+  <tr>
+    <td align="center"><img src="mockups/signup1.PNG" width="180" /></td>
+    <td align="center"><img src="mockups/signup2.PNG" width="180" /></td>
+    <td align="center"><img src="mockups/emailVer.PNG" width="180" /></td>
+  </tr>
+  <tr>
+    <td align="center"><em>4). Provider Details</em></td>
+    <td align="center"><em>5). Background Check</em></td>
+    <td align="center"><em>6). Email Verification</em></td>
+  </tr>
+</table>
 
 ---
 
@@ -66,37 +59,28 @@ Users are shown categorized **major home services** and **minor product diagnost
 📌 Real-Time Availability  
 📌 Booking with Instant Confirmation
 
-<p align="center">
-  <img src="mockups/MajorCat1.PNG" height="350"  width="200" />
-  &nbsp;&nbsp;
-  <img src="mockups/MajorCat2.PNG" height="350"  width="200" />
-  &nbsp;&nbsp;
-  <img src="mockups/MajorCat3.PNG" height="350"  width="200" />
-</p>
-
-<p align="center">
-  <em>1). Major Categories</em>
-  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-  <em>2). Service Listings</em>
-  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-  <em>3). List Details</em>
-</p>
-
-<p align="center">
-  <img src="mockups/MajorCat4.PNG" height="350"  width="200" />
-  &nbsp;&nbsp;
-  <img src="mockups/MajorCat5.PNG" height="350"  width="200" />
-  &nbsp;&nbsp;
-  <img src="mockups/MajorCat6.PNG" height="350"  width="200" />
-</p>
-
-<p align="center">
-  <em>4). Booking Screen</em>
-  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-  <em>5). Real-time Location Suggestions</em>
-  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-  <em>6). Stripe Card Payment</em>
-</p>
+<table align="center" cellspacing="0" cellpadding="0">
+  <tr>
+    <td align="center"><img src="mockups/MajorCat1.PNG" width="180" /></td>
+    <td align="center"><img src="mockups/MajorCat2.PNG" width="180" /></td>
+    <td align="center"><img src="mockups/MajorCat3.PNG" width="180" /></td>
+  </tr>
+  <tr>
+    <td align="center"><em>1). Major Categories</em></td>
+    <td align="center"><em>2). Service Listings</em></td>
+    <td align="center"><em>3). List Details</em></td>
+  </tr>
+  <tr>
+    <td align="center"><img src="mockups/MajorCat4.PNG" width="180" /></td>
+    <td align="center"><img src="mockups/MajorCat5.PNG" width="180" /></td>
+    <td align="center"><img src="mockups/MajorCat6.PNG" width="180" /></td>
+  </tr>
+  <tr>
+    <td align="center"><em>4). Booking Screen</em></td>
+    <td align="center"><em>5). Real-time Location Suggestions</em></td>
+    <td align="center"><em>6). Stripe Card Payment</em></td>
+  </tr>
+</table>
 
 ---
 
@@ -109,37 +93,28 @@ Not sure what’s wrong with your appliance? Use **Diagnostic Mode**:
 - Accept or cancel post-diagnostic  
 - Transparent pricing
 
-<p align="center">
-  <img src="mockups/MajorCat1.PNG" height="350"  width="200" />
-  &nbsp;&nbsp;
-  <img src="mockups/MinorCat1.PNG" height="350"  width="200" />
-  &nbsp;&nbsp;
-  <img src="mockups/MinorCat2.PNG" height="350"  width="200" />
-</p>
-
-<p align="center">
-  <em>1). Minor Categories</em>
-  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-  <em>2). Minor Service Listings</em>
-  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-  <em>3). Select the Specific Issue</em>
-</p>
-
-<p align="center">
-  <img src="mockups/MinorCat3.PNG" height="350"  width="200" />
-  &nbsp;&nbsp;
-  <img src="mockups/View_profile.PNG" height="350"  width="200" />
-  &nbsp;&nbsp;
-  <img src="mockups/MinorCat4.PNG" height="350"  width="200" />
-</p>
-
-<p align="center">
-  <em>4). Listings Under Specific Issue</em>
-  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-  <em>5). View Provider's Profile & Ratings</em>
-  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-  <em>6). Select Diagnose if Not Sure</em>
-</p>
+<table align="center" cellspacing="0" cellpadding="0">
+  <tr>
+    <td align="center"><img src="mockups/MajorCat1.PNG" width="180" /></td>
+    <td align="center"><img src="mockups/MinorCat1.PNG" width="180" /></td>
+    <td align="center"><img src="mockups/MinorCat2.PNG" width="180" /></td>
+  </tr>
+  <tr>
+    <td align="center"><em>1). Minor Categories</em></td>
+    <td align="center"><em>2). Minor Service Listings</em></td>
+    <td align="center"><em>3). Select the Specific Issue</em></td>
+  </tr>
+  <tr>
+    <td align="center"><img src="mockups/MinorCat3.PNG" width="180" /></td>
+    <td align="center"><img src="mockups/View_profile.PNG" width="180" /></td>
+    <td align="center"><img src="mockups/MinorCat4.PNG" width="180" /></td>
+  </tr>
+  <tr>
+    <td align="center"><em>4). Listings Under Specific Issue</em></td>
+    <td align="center"><em>5). View Provider's Profile & Ratings</em></td>
+    <td align="center"><em>6). Select Diagnose if Not Sure</em></td>
+  </tr>
+</table>
 
 ---
 
@@ -152,28 +127,24 @@ We ensure **fairness** with a secure escrow system:
 - 💸 Multiple payment methods (COD, JazzCash, EasyPaisa)  
 - 📊 Auto deduction of platform fee
 
-<p align="center">
-  <img src="mockups/stripe1.png"  width="400" />
-  &nbsp;&nbsp;
-  <img src="mockups/stripe2.png" width="400" />
-</p>
-
-<p align="center">
-  <em>1). Stripe Dashboard Overview</em>
-  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-  <em>2). Total Number of Transactions</em>
-</p>
-<p align="center">
-  <img src="mockups/stripe3.png"  width="400" />
-  &nbsp;&nbsp;
-  <img src="mockups/stripe4.png" width="400" />
-</p>
-
-<p align="center">
-  <em>3).Total App Customers</em>
-  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-  <em>4). Total App Servive Providers</em>
-</p>
+<table align="center" cellspacing="0" cellpadding="0">
+  <tr>
+    <td align="center"><img src="mockups/stripe1.png" width="400" /></td>
+    <td align="center"><img src="mockups/stripe2.png" width="400" /></td>
+  </tr>
+  <tr>
+    <td align="center"><em>1). Stripe Dashboard Overview</em></td>
+    <td align="center"><em>2). Total Number of Transactions</em></td>
+  </tr>
+  <tr>
+    <td align="center"><img src="mockups/stripe3.png" width="400" /></td>
+    <td align="center"><img src="mockups/stripe4.png" width="400" /></td>
+  </tr>
+  <tr>
+    <td align="center"><em>3). Total App Customers</em></td>
+    <td align="center"><em>4). Total App Service Providers</em></td>
+  </tr>
+</table>
 
 ---
 
@@ -187,37 +158,28 @@ Don’t want fixed-price? Let the providers **bid** on your job!
 4. Agreement forms a contract  
 5. Ratings exchanged afterward
 
-<p align="center">
-  <img src="mockups/Jobs1.PNG" height="350"  width="200" />
-  &nbsp;&nbsp;
-  <img src="mockups/Jobs5.PNG" height="350"  width="200" />
-  &nbsp;&nbsp;
-  <img src="mockups/Jobs3.PNG" height="350"  width="200" />
-</p>
-
-<p align="center">
-  <em>1). Latest Jobs Posted By Users</em>
-  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-  <em>2). Bid to your desired job</em>
-  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-  <em>3). On-Going Jobs of Providers</em>
-</p>
-
-<p align="center">
-  <img src="mockups/Jobs2.PNG" height="350"  width="200" />
-  &nbsp;&nbsp;
-  <img src="mockups/Jobs6.PNG" height="350"  width="200" />
-  &nbsp;&nbsp;
-  <img src="mockups/msg_USER.PNG" height="350"  width="200" />
-</p>
-
-<p align="center">
-  <em>1). Total Proposals Get</em>
-  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-  <em>2). Chat with User to get Hired</em>
-  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-  <em>3). Real-Time Chat</em>
-</p>
+<table align="center" cellspacing="0" cellpadding="0">
+  <tr>
+    <td align="center"><img src="mockups/Jobs1.PNG" height="350" width="200" /></td>
+    <td align="center"><img src="mockups/Jobs5.PNG" height="350" width="200" /></td>
+    <td align="center"><img src="mockups/Jobs3.PNG" height="350" width="200" /></td>
+  </tr>
+  <tr>
+    <td align="center"><em>1). Latest Jobs Posted By Users</em></td>
+    <td align="center"><em>2). Bid to your desired job</em></td>
+    <td align="center"><em>3). On-Going Jobs of Providers</em></td>
+  </tr>
+  <tr>
+    <td align="center"><img src="mockups/Jobs2.PNG" height="350" width="200" /></td>
+    <td align="center"><img src="mockups/Jobs6.PNG" height="350" width="200" /></td>
+    <td align="center"><img src="mockups/msg_USER.PNG" height="350" width="200" /></td>
+  </tr>
+  <tr>
+    <td align="center"><em>4). Total Proposals Get</em></td>
+    <td align="center"><em>5). Chat with User to get Hired</em></td>
+    <td align="center"><em>6). Real-Time Chat</em></td>
+  </tr>
+</table>
 
 ---
 
@@ -230,37 +192,28 @@ Keep every order in check, from start to finish:
 - Chat and notifications  
 - Status stages: Pending → In Progress → Completed
 
-<p align="center">
-  <img src="mockups/PenBookingSP.PNG" height="350"  width="200" />
-  &nbsp;&nbsp;
-  <img src="mockups/ConfBookSP.PNG" height="350"  width="200" />
-  &nbsp;&nbsp;
-  <img src="mockups/StartBookSP.PNG" height="350"  width="200" />
-</p>
-
-<p align="center">
-  <em>1). Accept/Decline the Booking</em>
-  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-  <em>2). Start the Service</em>
-  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-  <em> 3).View Location/Complete Service</em>
-</p>
-
-<p align="center">
-  <img src="mockups/LiveLocUser.PNG" height="350"  width="200" />
-  &nbsp;&nbsp;
-  <img src="mockups/Rate_SU.PNG" height="350"  width="200" />
-  &nbsp;&nbsp;
-  <img src="mockups/BookingCreated.PNG" height="350"  width="200" />
-</p>
-
-<p align="center">
-  <em>1). User's Live Location</em>
-  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-  <em>2). Rate user after completion</em>
-  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-  <em>3). Service Completion Alert</em>
-</p>
+<table align="center" cellspacing="0" cellpadding="0">
+  <tr>
+    <td align="center"><img src="mockups/PenBookingSP.PNG" height="350" width="200" /></td>
+    <td align="center"><img src="mockups/ConfBookSP.PNG" height="350" width="200" /></td>
+    <td align="center"><img src="mockups/StartBookSP.PNG" height="350" width="200" /></td>
+  </tr>
+  <tr>
+    <td align="center"><em>1). Accept/Decline the Booking</em></td>
+    <td align="center"><em>2). Start the Service</em></td>
+    <td align="center"><em>3). View Location/Complete Service</em></td>
+  </tr>
+  <tr>
+    <td align="center"><img src="mockups/LiveLocUser.PNG" height="350" width="200" /></td>
+    <td align="center"><img src="mockups/Rate_SU.PNG" height="350" width="200" /></td>
+    <td align="center"><img src="mockups/BookingCreated.PNG" height="350" width="200" /></td>
+  </tr>
+  <tr>
+    <td align="center"><em>4). User's Live Location</em></td>
+    <td align="center"><em>5). Rate user after completion</em></td>
+    <td align="center"><em>6). Service Completion Alert</em></td>
+  </tr>
+</table>
 
 ---
 
@@ -275,20 +228,17 @@ Say hello to **AssistiveFix** — your **AI-powered guide** for diagnosing probl
 - 🔄 Self-learning for smarter diagnostics over time  
 - 🚀 Quick, friendly, and deeply helpful UX
 
-<p align="center">
-  <em>Chat Flow With AssistiveFix Navigator</em>
-  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-</p>
-
-<p align="center">
-  <img src="mockups/AiChat1.PNG" height="350"  width="200" />
-  &nbsp;&nbsp;
-  <img src="mockups/AiChat2.PNG" height="350"  width="200" />
-    &nbsp;&nbsp;
-   <img src="mockups/AiChat3.PNG" height="350"  width="200" />
-  &nbsp;&nbsp;
-  <img src="mockups/AiChat4.PNG" height="350"  width="200" />
-</p>
+<table align="center">
+  <tr>
+    <td colspan="4" align="center"><em>Chat Flow With AssistiveFix Navigator</em></td>
+  </tr>
+  <tr>
+    <td align="center"><img src="mockups/AiChat1.PNG" height="350" width="200" /></td>
+    <td align="center"><img src="mockups/AiChat2.PNG" height="350" width="200" /></td>
+    <td align="center"><img src="mockups/AiChat3.PNG" height="350" width="200" /></td>
+    <td align="center"><img src="mockups/AiChat4.PNG" height="350" width="200" /></td>
+  </tr>
+</table>
 
 ---
 
@@ -300,14 +250,18 @@ Say hello to **AssistiveFix** — your **AI-powered guide** for diagnosing probl
 - 📍 Location-aware service matching (within 5km radius)
 - 🌟 Provider selection based on top reviews, previous user ratings, and booking history
 
-<p align="center">
-  <em>   Recommended Services</em>
-  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-</p>
-
-<p align="center">
-  <img src="mockups/Home_SU.PNG" height="450"  width="300" />
-</p>
+<table align="center">
+  <tr>
+    <td align="center" style="background-color: #f6f8fa;">
+      <em>Recommended Services</em>
+    </td>
+  </tr>
+  <tr>
+    <td align="center">
+      <img src="mockups/Home_SU.PNG" height="450" width="300" />
+    </td>
+  </tr>
+</table>
 
 ---
 
@@ -322,21 +276,18 @@ Empowering providers with tools to grow:
 - Task tracker  
 - Client communication
 
-<p align="center">
-  <img src="mockups/SP_DB.PNG" height="350"  width="200" />
-  &nbsp;&nbsp;
-  <img src="mockups/View_profile1.PNG" height="350"  width="200" />
-  &nbsp;&nbsp;
-  <img src="mockups/PostListing.PNG" height="350"  width="200" />
-</p>
-
-<p align="center">
-  <em>1). Service Provider Dashboard</em>
-  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-  <em>2). More Options on Dashboard</em>
-  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-  <em> 3). Post Listings through dashboard</em>
-</p>
+<table align="center">
+  <tr>
+    <td align="center"><img src="mockups/SP_DB.PNG" width="180" /></td>
+    <td align="center"><img src="mockups/View_profile1.PNG" width="180" /></td>
+    <td align="center"><img src="mockups/PostListing.PNG" width="180" /></td>
+  </tr>
+  <tr>
+    <td align="center"><em>1). Service Provider Dashboard</em></td>
+    <td align="center"><em>2). More Options on Dashboard</em></td>
+    <td align="center"><em>3). Post Listings through Dashboard</em></td>
+  </tr>
+</table>
 
 ---
 
@@ -350,34 +301,144 @@ Behind the scenes, admins keep everything clean and running:
 - Community moderation  
 - Announcement & notification system
 
-<p align="center">
-  <img src="assets/admin-panel-1.png" width="45%"/>
-  <br>
-  <em>Admin dashboard: user/provider/task overview</em>
-</p>
+<table align="center">
+  <tr>
+    <td align="center"><img src="mockups/DB1.png" width="400" /></td>
+    <td align="center"><img src="mockups/DB2.png" width="400" /></td>
+  </tr>
+  <tr>
+    <td colspan="2" align="center"><em>Admin Panel Dashboard ☝</em></td>
+  </tr>
 
-<p align="center">
-  <img src="assets/admin-panel-2.png" width="45%"/>
-  <br>
-  <em>Transaction management and reporting</em>
-</p>
+  <tr>
+    <td align="center"><img src="mockups/DB3.png" width="400" /></td>
+    <td align="center"><img src="mockups/DB4.png" width="400" /></td>
+  </tr>
+  <tr>
+    <td colspan="2" align="center"><em>Add Users & Service Provider Directly Through Dashboard ☝</em></td>
+  </tr>
+
+  <tr>
+    <td align="center"><img src="mockups/DB5.png" width="400" /></td>
+    <td align="center"><img src="mockups/DB6.png" width="400" /></td>
+  </tr>
+  <tr>
+    <td colspan="2" align="center"><em>Manage Categories & Listings - Including Soft Disable (Ban) Listings ☝</em></td>
+  </tr>
+
+  <tr>
+    <td align="center"><img src="mockups/DB7.png" width="400" /></td>
+    <td align="center"><img src="mockups/DB8.png" width="400" /></td>
+  </tr>
+  <tr>
+    <td colspan="2" align="center"><em>Manage Booking & Payments Including Disputes ☝</em></td>
+  </tr>
+
+  <tr>
+    <td colspan="2" align="center"><img src="mockups/DB9.png" width="400" /></td>
+  </tr>
+  <tr>
+    <td colspan="2" align="center"><em>Add Multiple Admins ☝</em></td>
+  </tr>
+</table>
+
 
 ---
 
-## 🔐 Tech Stack
+<h2 align="center">🔐 Tech Stack</h2>
 
-| Platform | Tech |
-|----------|------|
-| **Frontend (Mobile)** | React Native / Flutter |
-| **Backend** | Node.js, Express.js |
-| **Database** | MongoDB |
-| **Real-Time** | Socket.io |
-| **Authentication** | JWT + Email OTP |
-| **Payments** | Custom Wallet + Escrow Logic |
-| **Admin Panel** | React + Tailwind |
-| **Storage** | Cloudinary for images |
+<div align="center">
+
+<table>
+  <tr>
+    <th>Category</th>
+    <th>Technology Used</th>
+  </tr>
+  <tr>
+    <td><strong>Frontend (Mobile)</strong></td>
+    <td>
+      <img src="https://img.shields.io/badge/React_Native-20232A?style=for-the-badge&logo=react&logoColor=61DAFB" />
+    </td>
+  </tr>
+  <tr>
+    <td><strong>Backend</strong></td>
+    <td>
+      <img src="https://img.shields.io/badge/Node.js-339933?style=for-the-badge&logo=nodedotjs&logoColor=white" />
+      <img src="https://img.shields.io/badge/Express.js-000000?style=for-the-badge&logo=express&logoColor=white" />
+    </td>
+  </tr>
+  <tr>
+    <td><strong>Database</strong></td>
+    <td>
+      <img src="https://img.shields.io/badge/MongoDB-4EA94B?style=for-the-badge&logo=mongodb&logoColor=white" />
+      <img src="https://img.shields.io/badge/Firebase-FFCA28?style=for-the-badge&logo=firebase&logoColor=black" />
+    </td>
+  </tr>
+  <tr>
+    <td><strong>Authentication</strong></td>
+    <td>
+      <img src="https://img.shields.io/badge/JWT-000000?style=for-the-badge&logo=JSON%20web%20tokens&logoColor=white" />
+      <img src="https://img.shields.io/badge/Firebase_Auth-FFCA28?style=for-the-badge&logo=firebase&logoColor=black" />
+    </td>
+  </tr>
+  <tr>
+    <td><strong>Payments</strong></td>
+    <td>
+      <img src="https://img.shields.io/badge/Stripe-635BFF?style=for-the-badge&logo=stripe&logoColor=white" />
+    </td>
+  </tr>
+  <tr>
+    <td><strong>Real-Time Updates</strong></td>
+    <td>
+      <img src="https://img.shields.io/badge/Firebase_DB-FFCA28?style=for-the-badge&logo=firebase&logoColor=black" />
+    </td>
+  </tr>
+  <tr>
+    <td><strong>AI & Recommendations</strong></td>
+    <td>
+      <img src="https://img.shields.io/badge/Gemini_API-4285F4?style=for-the-badge&logo=google&logoColor=white" />
+    </td>
+  </tr>
+  <tr>
+    <td><strong>API Architecture</strong></td>
+    <td>
+      <img src="https://img.shields.io/badge/REST_API-4A90E2?style=for-the-badge&logo=api&logoColor=white" />
+    </td>
+  </tr>
+  <tr>
+    <td><strong>Maps & Location Services</strong></td>
+    <td>
+      <img src="https://img.shields.io/badge/Google_Places_API-4285F4?style=for-the-badge&logo=googlemaps&logoColor=white" />
+    </td>
+  </tr>
+  <tr>
+    <td><strong>Admin Panel</strong></td>
+    <td>
+      <img src="https://img.shields.io/badge/React-20232A?style=for-the-badge&logo=react&logoColor=61DAFB" />
+      <img src="https://img.shields.io/badge/Tailwind_CSS-38B2AC?style=for-the-badge&logo=tailwind-css&logoColor=white" />
+    </td>
+  </tr>
+  <tr>
+    <td><strong>Storage</strong></td>
+    <td>
+      <img src="https://img.shields.io/badge/Cloudinary-3448C5?style=for-the-badge&logo=cloudinary&logoColor=white" />
+    </td>
+  </tr>
+  <tr>
+    <td><strong>Infrastructure</strong></td>
+    <td>
+      <img src="https://img.shields.io/badge/Google_Cloud-4285F4?style=for-the-badge&logo=googlecloud&logoColor=white" />
+    </td>
+  </tr>
+</table>
+</div>
 
 ---
 
-## 📂 Folder Structure
+## 🙌 Thanks for Reading!
 
+Thank you for taking the time to explore my Final Year Project – **HarFun Mola**.  
+This project represents months of learning, building, and debugging .  
+I hope it gives a clear overview of the system’s features, structure, and tech stack 💡.
+
+If you have any feedback, suggestions, or questions, feel free to reach out! 😊
