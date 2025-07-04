@@ -160,9 +160,9 @@ Don’t want fixed-price? Let the providers **bid** on your job!
 
 <table align="center" cellspacing="0" cellpadding="0">
   <tr>
-    <td align="center"><img src="mockups/Jobs1.PNG" height="350" width="200" /></td>
-    <td align="center"><img src="mockups/Jobs5.PNG" height="350" width="200" /></td>
-    <td align="center"><img src="mockups/Jobs3.PNG" height="350" width="200" /></td>
+    <td align="center"><img src="mockups/Jobs1.PNG"  width="180" /></td>
+    <td align="center"><img src="mockups/Jobs5.PNG"  width="180" /></td>
+    <td align="center"><img src="mockups/Jobs3.PNG"  width="180" /></td>
   </tr>
   <tr>
     <td align="center"><em>1). Latest Jobs Posted By Users</em></td>
@@ -170,9 +170,9 @@ Don’t want fixed-price? Let the providers **bid** on your job!
     <td align="center"><em>3). On-Going Jobs of Providers</em></td>
   </tr>
   <tr>
-    <td align="center"><img src="mockups/Jobs2.PNG" height="350" width="200" /></td>
-    <td align="center"><img src="mockups/Jobs6.PNG" height="350" width="200" /></td>
-    <td align="center"><img src="mockups/msg_USER.PNG" height="350" width="200" /></td>
+    <td align="center"><img src="mockups/Jobs2.PNG"  width="180" /></td>
+    <td align="center"><img src="mockups/Jobs6.PNG"  width="180" /></td>
+    <td align="center"><img src="mockups/msg_USER.PNG" width="180" /></td>
   </tr>
   <tr>
     <td align="center"><em>4). Total Proposals Get</em></td>
@@ -194,9 +194,9 @@ Keep every order in check, from start to finish:
 
 <table align="center" cellspacing="0" cellpadding="0">
   <tr>
-    <td align="center"><img src="mockups/PenBookingSP.PNG" height="350" width="200" /></td>
-    <td align="center"><img src="mockups/ConfBookSP.PNG" height="350" width="200" /></td>
-    <td align="center"><img src="mockups/StartBookSP.PNG" height="350" width="200" /></td>
+    <td align="center"><img src="mockups/PenBookingSP.PNG"  width="180" /></td>
+    <td align="center"><img src="mockups/ConfBookSP.PNG"  width="180" /></td>
+    <td align="center"><img src="mockups/StartBookSP.PNG" width="180" /></td>
   </tr>
   <tr>
     <td align="center"><em>1). Accept/Decline the Booking</em></td>
@@ -204,9 +204,9 @@ Keep every order in check, from start to finish:
     <td align="center"><em>3). View Location/Complete Service</em></td>
   </tr>
   <tr>
-    <td align="center"><img src="mockups/LiveLocUser.PNG" height="350" width="200" /></td>
-    <td align="center"><img src="mockups/Rate_SU.PNG" height="350" width="200" /></td>
-    <td align="center"><img src="mockups/BookingCreated.PNG" height="350" width="200" /></td>
+    <td align="center"><img src="mockups/LiveLocUser.PNG"  width="180" /></td>
+    <td align="center"><img src="mockups/Rate_SU.PNG"  width="180" /></td>
+    <td align="center"><img src="mockups/BookingCreated.PNG" width="180" /></td>
   </tr>
   <tr>
     <td align="center"><em>4). User's Live Location</em></td>
@@ -233,10 +233,10 @@ Say hello to **AssistiveFix** — your **AI-powered guide** for diagnosing probl
     <td colspan="4" align="center"><em>Chat Flow With AssistiveFix Navigator</em></td>
   </tr>
   <tr>
-    <td align="center"><img src="mockups/AiChat1.PNG" height="350" width="200" /></td>
-    <td align="center"><img src="mockups/AiChat2.PNG" height="350" width="200" /></td>
-    <td align="center"><img src="mockups/AiChat3.PNG" height="350" width="200" /></td>
-    <td align="center"><img src="mockups/AiChat4.PNG" height="350" width="200" /></td>
+    <td align="center"><img src="mockups/AiChat1.PNG"  width="180" /></td>
+    <td align="center"><img src="mockups/AiChat2.PNG"  width="180" /></td>
+    <td align="center"><img src="mockups/AiChat3.PNG"  width="180" /></td>
+    <td align="center"><img src="mockups/AiChat4.PNG"  width="180" /></td>
   </tr>
 </table>
 
@@ -258,7 +258,7 @@ Say hello to **AssistiveFix** — your **AI-powered guide** for diagnosing probl
   </tr>
   <tr>
     <td align="center">
-      <img src="mockups/Home_SU.PNG" height="450" width="300" />
+      <img src="mockups/Home_SU.PNG" height="350" width="280" />
     </td>
   </tr>
 </table>
