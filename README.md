@@ -275,6 +275,21 @@ Say hello to **AssistiveFix** — your **AI-powered guide** for diagnosing probl
 - 🔄 Self-learning for smarter diagnostics over time  
 - 🚀 Quick, friendly, and deeply helpful UX
 
+<p align="center">
+  <em>Chat Flow With AssistiveFix Navigator</em>
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+</p>
+
+<p align="center">
+  <img src="mockups/AiChat1.PNG" height="350"  width="200" />
+  &nbsp;&nbsp;
+  <img src="mockups/AiChat2.PNG" height="350"  width="200" />
+    &nbsp;&nbsp;
+   <img src="mockups/AiChat3.PNG" height="350"  width="200" />
+  &nbsp;&nbsp;
+  <img src="mockups/AiChat4.PNG" height="350"  width="200" />
+</p>
+
 ---
 
 ## 🧠 IntelliServe Insights
@@ -284,6 +299,15 @@ Say hello to **AssistiveFix** — your **AI-powered guide** for diagnosing probl
 - 🧲 Smart Suggestions based on past bookings  
 - 📍 Location-aware service matching (within 5km radius)
 - 🌟 Provider selection based on top reviews, previous user ratings, and booking history
+
+<p align="center">
+  <em>   Recommended Services</em>
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+</p>
+
+<p align="center">
+  <img src="mockups/Home_SU.PNG" height="450"  width="300" />
+</p>
 
 ---
 
@@ -299,15 +323,19 @@ Empowering providers with tools to grow:
 - Client communication
 
 <p align="center">
-  <img src="assets/provider-dashboard-1.png" width="45%"/>
-  <br>
-  <em>Service provider’s task management panel</em>
+  <img src="mockups/SP_DB.PNG" height="350"  width="200" />
+  &nbsp;&nbsp;
+  <img src="mockups/View_profile1.PNG" height="350"  width="200" />
+  &nbsp;&nbsp;
+  <img src="mockups/PostListing.PNG" height="350"  width="200" />
 </p>
 
 <p align="center">
-  <img src="assets/provider-dashboard-2.png" width="45%"/>
-  <br>
-  <em>Wallet view for tracking balances and payouts</em>
+  <em>1). Service Provider Dashboard</em>
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+  <em>2). More Options on Dashboard</em>
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+  <em> 3). Post Listings through dashboard</em>
 </p>
 
 ---
