@@ -230,13 +230,15 @@ Say hello to **AssistiveFix** — your **AI-powered guide** for diagnosing probl
 
 <table align="center">
   <tr>
-    <td colspan="4" align="center"><em>Chat Flow With AssistiveFix Navigator</em></td>
+    <td align="center"><img src="mockups/AiChat1.PNG" width="180" /></td>
+    <td align="center"><img src="mockups/AiChat2.PNG" width="180" /></td>
+    <td align="center"><img src="mockups/AiChat3.PNG" width="180" /></td>
+    <td align="center"><img src="mockups/AiChat4.PNG" width="180" /></td>
   </tr>
   <tr>
-    <td align="center"><img src="mockups/AiChat1.PNG"  width="180" /></td>
-    <td align="center"><img src="mockups/AiChat2.PNG"  width="180" /></td>
-    <td align="center"><img src="mockups/AiChat3.PNG"  width="180" /></td>
-    <td align="center"><img src="mockups/AiChat4.PNG"  width="180" /></td>
+    <td colspan="4" align="center" style="background-color: #f6f8fa;">
+      <em>Chat Flow With AssistiveFix Navigator</em>
+    </td>
   </tr>
 </table>
 
@@ -250,18 +252,20 @@ Say hello to **AssistiveFix** — your **AI-powered guide** for diagnosing probl
 - 📍 Location-aware service matching (within 5km radius)
 - 🌟 Provider selection based on top reviews, previous user ratings, and booking history
 
-<table align="center">
-  <tr>
-    <td align="center" style="background-color: #f6f8fa;">
-      <em>Recommended Services</em>
-    </td>
-  </tr>
-  <tr>
-    <td align="center">
-      <img src="mockups/Home_SU.PNG" height="350" width="280" />
-    </td>
-  </tr>
-</table>
+<div align="center">
+  <table>
+    <tr>
+      <td align="center">
+        <img src="mockups/Home_SU.PNG" height="350" width="280" />
+      </td>
+    </tr>
+    <tr>
+      <td align="center" style="background-color: #f6f8fa;">
+        <em>Recommended Services</em>
+      </td>
+    </tr>
+  </table>
+</div>
 
 ---
 
