@@ -1,11 +1,5 @@
 # 📱 HarFun Mola – Smart Home Services App
 
-<p align="center">
-  <img src="mockups/starter.png" width="60%" />
-  <br>
-  <em>🌟 Beautiful onboarding screen introducing the HarFun Mola experience</em>
-</p>
-
 Welcome to **HarFun Mola** – a comprehensive, full-stack mobile + web application ecosystem that connects **users** with **trusted service providers** for all home repair, diagnostics, and booking needs. From booking an electrician to getting your blender diagnosed, HarFun Mola ensures a **secure, transparent, and delightful** experience for everyone.
 
 ---
@@ -30,15 +24,35 @@ We begin with a clean, minimal registration experience for users. Every detail y
 ✅ Feedback system
 
 <p align="center">
-  <img src="mockups/ok.jpg" width="45%"/>
-  <br>
-  <em>User enters email and password</em>
+  <img src="mockups/starter.PNG" height="350"  width="200" />
+  &nbsp;&nbsp;
+  <img src="mockups/login.PNG" height="350"  width="200" />
+  &nbsp;&nbsp;
+  <img src="mockups/signup.PNG" height="350"  width="200" />
 </p>
 
 <p align="center">
-  <img src="mockups/ok.jpg" width="45%"/>
-  <br>
-  <em>Email verification screen</em>
+  <em>1). Starter Screen</em>
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+  <em>2). Login</em>
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+  <em>3). Role-based Sign Up</em>
+</p>
+
+<p align="center">
+  <img src="mockups/signup1.PNG" height="350"  width="200" />
+  &nbsp;&nbsp;
+  <img src="mockups/signup2.PNG" height="350"  width="200" />
+  &nbsp;&nbsp;
+  <img src="mockups/emailVer.PNG" height="350"  width="200" />
+</p>
+
+<p align="center">
+  <em>4). Provider Details</em>
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+  <em>5). Background Check</em>
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+  <em>6). Email Verification</em>
 </p>
 
 ---
@@ -53,15 +67,35 @@ Users are shown categorized **major home services** and **minor product diagnost
 📌 Booking with Instant Confirmation
 
 <p align="center">
-  <img src="assets/services-list-1.png" width="45%"/>
-  <br>
-  <em>Major services categorized with descriptions</em>
+  <img src="mockups/MajorCat1.PNG" height="350"  width="200" />
+  &nbsp;&nbsp;
+  <img src="mockups/MajorCat2.PNG" height="350"  width="200" />
+  &nbsp;&nbsp;
+  <img src="mockups/MajorCat3.PNG" height="350"  width="200" />
 </p>
 
 <p align="center">
-  <img src="assets/services-list-2.png" width="45%"/>
-  <br>
-  <em>Detailed view of selected service with price and availability</em>
+  <em>1). Starter Screen</em>
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+  <em>2). Login</em>
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+  <em>3). Role-based Sign Up</em>
+</p>
+
+<p align="center">
+  <img src="mockups/MajorCat4.PNG" height="350"  width="200" />
+  &nbsp;&nbsp;
+  <img src="mockups/MajorCat5.PNG" height="350"  width="200" />
+  &nbsp;&nbsp;
+  <img src="mockups/BookingCreated.PNG" height="350"  width="200" />
+</p>
+
+<p align="center">
+  <em>4). Provider Details</em>
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+  <em>5). Background Check</em>
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+  <em>6). Email Verification</em>
 </p>
 
 ---
